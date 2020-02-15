@@ -1,0 +1,27 @@
+{
+  "name": "battleshiproyale",
+  "version": "1.0.0",
+  "description": "A mix between the pen and paper Battleship game and a modern Battle Royale.",
+  "main": "index.js",
+  "scripts": {
+    "server": "node server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "NODE_ENV=production npm run server",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fabiansson/BattleShipRoyale.git"
+  },
+  "author": "Fabian Zbinden & Debora Mittner",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fabiansson/BattleShipRoyale/issues"
+  },
+  "homepage": "https://github.com/Fabiansson/BattleShipRoyale#readme",
+  "dependencies": {
+    "concurrently": "^5.1.0",
+    "express": "^4.17.1"
+  }
+}
