@@ -1,4 +1,4 @@
-# BattleShipRoyale :boat: :ship: :gun: :anchor:
+# BattleShipRoyale :boat:💥:gun::ship::anchor: 
 A mix between the pen and paper Battleship game and a modern Battle Royale.
 At the beginning every player has the same amount of ships. They can earn coin with sinking the enemies ships. The location of the enemy ship is not known.  Every hit generates an equal amount of coins. Every “ship-field” can normally shoot ones or move one field. If there are no actions left, it is the next players turn to make his/her move.
 The last standing player wins a round. In every round the player can use his/her coins to buy upgrades for a better chance of survival.
