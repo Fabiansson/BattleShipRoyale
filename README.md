@@ -1,17 +1,59 @@
-# BattleShipRoyale
+# BattleShipRoyale :boat: :ship: :gun: :anchor:
 A mix between the pen and paper Battleship game and a modern Battle Royale.
 At the beginning every player has the same amount of ships. They can earn coin with sinking the enemies ships. The location of the enemy ship is not known.  Every hit generates an equal amount of coins. Every “ship-field” can normally shoot ones or move one field. If there are no actions left, it is the next players turn to make his/her move.
 The last standing player wins a round. In every round the player can use his/her coins to buy upgrades for a better chance of survival.
 Earning coins with sinking ships is not the only way to make money. It is possible to find treasures by exploring different islands on the map.
 Whoever has the most wins in his/her pocket, wins the game.
 
+# Anforderungen
+## Funktional
+| ID    | Beschreibung                                                               | MUSS/KANN |
+|-------|----------------------------------------------------------------------------|-----------|
+| FA-0  | Das Spiel ist Runden-basiert.                                              | MUSS      |
+| FA-1  | Das Spiel besitzt ein grafisches Interface                                 | MUSS      |
+| FA-2  | Das Spiel können mehrere Spieler spielen.                                  | MUSS      |
+| FA-3  | Der User kann ein neues Spiel starten.                                     | MUSS      |
+| FA-4  | Die Punktezahl der Spieler ist ersichtlich.                                | MUSS      |
+| FA-5  | Der Spieler kann Schiffe platzieren.                                       | MUSS      |
+| FA-6  | Es gibt Schiffe mit verschiedenen Grössen.                                 | MUSS      |
+| FA-7  | Jeder Spieler sieht die noch vorhandenen Schiffe auf einer Legende.        | MUSS      |
+| FA-8  | Bei jedem Treffer erhält ein Spieler Geld.                                 | MUSS      |
+| FA-9  | Jeder Spieler sieht nur seine eigene oder die von ihm getroffenen Schiffe. | MUSS      |
+| FA-10 | Die Spieler können nach jeder Runde Upgrades in einem Store kaufen         | MUSS      |
+| FA-11 | Das Spiel enthält «Upgrades»                                               | MUSS      |
+| FA-12 | Das Spiel enthält Inseln mit Schatztruhen.                                 | MUSS      |
+| FA-13 | Am Ende des Spieles wird der Sieger genannt.                               | MUSS      |
+| FA-14 | Das Spiel endet, wenn nur noch ein Spieler Schiffe besitzt.                |           |
+| FA-15 | Das Spiel wird beendet, wenn alle Spieler das Spiel verlassen.             | MUSS      |
+| FA-16 | Das Spiel besitzt einen geregelten Spielverlauf                            | MUSS      |
+| FA-17 | Spieler können miteinander chatten                                         | KANN      |
+| FA-18 | Ein Spieler kann andere Spieler einladen                                   | KANN      |
+| FA-19 | Über den Chat lassen sich Emoji verschicken.                               | KANN      |
+| FA-20 | Mit der Zeit wird das Spielfeld kleiner                                    | KANN      |
+
+## Nicht-Funktional
+| ID    | Beschreibung                                                 | MUSS/KANN |
+|-------|--------------------------------------------------------------|-----------|
+| NFA-1 | Die Punkte werden richtig gezählt.                           | MUSS      |
+| NFA-2 | Spielzüge sind regelkonform.                                 | MUSS      |
+| NFA-3 | Das Spiel ist internationalisierbar.                         | MUSS      |
+| NFA-4 | Der Inhalt ist responsive.                                   | MUSS      |
+| NFA-5 | Das Spiel kann über eine Internetverbindung erreicht werden. | MUSS      |
+
+## Randbedingungen
+| ID   | Beschreibung                                           | MUSS/KANN |
+|------|--------------------------------------------------------|-----------|
+| RB-1 | Das Spiel besitzt eine Client/Server Architektur       | MUSS      |
+| RB-2 | Client kommuniziert über Text-basiertes Protokoll      | MUSS      |
+| RB-3 | Das Protokoll ist lesbar.                              | MUSS      |
+| RB-4 | Client nimmt Benutzereingabe durch GUI entgegen.       | MUSS      |
+| RB-5 | Synchronisation des Status des Spielers mit dem Client | MUSS      |
+| RB-6 | Die Umsetzung basiert auf HTML5, CSS3 und JS.          | MUSS      |
+| RB-7 | UI wird mit React und Typescript umgesetzt.            | MUSS      |
 
 
-# BattleShipRoyale API 1.0.0 documentation
-
-
-
-Event driven Socket.IO documenatation for BattleShipRoyale. :gun:🔫 ⚓️
+# BattleShipRoyale API documentation
+Event driven Socket.IO documenatation for BattleShipRoyale.
 
 ## Channels
 <a name="channel-createRoom"></a>
