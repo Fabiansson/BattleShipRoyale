@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import frame from "../assets/frame.svg";
 import ship from "../assets/ship.svg";
 import HostDialog from "./HostDialog";
+import SocketContext from '../services/SocketProvider';
 
 
 const useStyles = makeStyles({
@@ -35,15 +36,22 @@ const useStyles = makeStyles({
 });
 
 
-function WelcomeCard() {
+function WelcomeCard(props: any) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-  //const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+  const [open, setOpen] = useState(props.open);
+  const [shareLink, setShareLink] = useState('');
 
-  function joinGame() {
-    console.log("join");  }
-  const hostGame= () => {
-    console.log("host");
+  const joinGame = () => {
+    console.log("join");  
+  }
+
+  const hostGame = () => {
+    props.socket.on('roomCreated', function (data: any) {
+      setShareLink('http://localhost:3000/' + data.id);
+      props.setSocket('http://localhost:4000/' + data.id);
+      //window.location.href = "http://localhost:3000/" + data.id;
+    })
+    props.socket.emit('open');
     setOpen(true);    
   }
 
@@ -61,7 +69,7 @@ function WelcomeCard() {
       </Grid>
       <Grid item xs={12}>
       <Button id="join" variant="contained" color="primary" onClick={hostGame}>Host Game</Button>
-      <HostDialog open={open} />
+      <HostDialog open={open} text={shareLink}/>
       </Grid>
       <Grid item xs={12}>
       <img src={ship} alt="our ship" className={classes.shipstyle} />
@@ -73,4 +81,10 @@ function WelcomeCard() {
   );
 }
 
-export default WelcomeCard;
+const WelcomeCardWithSocket = (props: any) => (
+  <SocketContext.Consumer>
+      {(socket: any) => <WelcomeCard {...props} socket={socket} />}
+  </SocketContext.Consumer>
+)
+
+export default WelcomeCardWithSocket;
