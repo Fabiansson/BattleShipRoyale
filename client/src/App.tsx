@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 import WelcomeCard from "./components/WelcomeCard";
+import Battleground from './components/Battleground';
+import Chat from "./components/Chat";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 
@@ -43,6 +45,9 @@ function App() {
       {!roomError && !(room.length > 1) && <WelcomeCard setSocket={changeSocket} open={false}/>}
       {roomError && <p>This room doesent exist!</p>}
       {!roomError && (room.length > 1) && <p>Welcome to room with ID: {room}</p>}
+      <WelcomeCard />
+      <Battleground />
+      <Chat />
       </SocketContext.Provider>
     </div>
   );

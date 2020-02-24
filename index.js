@@ -25,8 +25,6 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-
-
 io.on('connection', function (socket) {
     console.log('socket connection established');
     socket.on('checkRoomId', function(data) {
@@ -42,6 +40,10 @@ io.on('connection', function (socket) {
         const nsp = io.of('/' + randomRoomId);
         nsp.on('connection', function(socket){
           console.log('someone connected to: ' + randomRoomId);
+          //nsp.emit('message', {msg: 'Someone joined this room'});
+          nsp.on("chatMessage", function(msg){
+              nsp.emit("chatMessage", msg.msg)
+          });
           nsp.emit('playerJoined', {playerName: 'Paul'});
         });
     });
