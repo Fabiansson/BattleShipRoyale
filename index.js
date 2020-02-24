@@ -25,8 +25,6 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-
-
 io.on('connection', function (socket) {
     console.log('socket connection established');
     socket.on('checkRoomId', function(data) {
@@ -46,6 +44,7 @@ io.on('connection', function (socket) {
           nsp.on("chatMessage", function(msg){
               nsp.emit("chatMessage", msg.msg)
           });
+          nsp.emit('playerJoined', {playerName: 'Paul'});
         });
     });
 });
