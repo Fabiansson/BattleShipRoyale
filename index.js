@@ -42,7 +42,7 @@ io.on('connection', function (socket) {
         const nsp = io.of('/' + randomRoomId);
         nsp.on('connection', function(socket){
           console.log('someone connected to: ' + randomRoomId);
-          nsp.emit('message', {msg: 'Someone joined this room'});
+          nsp.emit('playerJoined', {playerName: 'Paul'});
         });
     });
 });
