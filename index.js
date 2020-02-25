@@ -59,7 +59,6 @@ io.on('connection', function (socket) {
             rooms[data.id] = [...rooms[data.id], randomPlayerId]
             this.join(data.id);
             io.sockets.in(data.id).emit('checkRoomResponse', {
-                //ok: Object.keys(io.nsps).includes('/' + data.id)
                 ok: true
             });
             io.sockets.in(data.id).emit('playerJoined', {

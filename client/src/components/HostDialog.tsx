@@ -21,16 +21,13 @@ export interface Player {
 function HostDialog(props: DialogProps) {
   const [playerList, setPlayerList] = useState<Player[]>([]);
 
-  //data.players = ['asassa','adada']
   props.socket.on('playerJoined', function(data: any){
     console.log(data.players);
     setPlayerList(data.players);
-
   });
   
   return (
     <div>
-
       <Dialog
         open={props.open}
         aria-labelledby="alert-dialog-title"
@@ -44,10 +41,6 @@ function HostDialog(props: DialogProps) {
           <ul>
             {playerList.map((player, i) => <li key={i}>{player}</li>)}
           </ul>
-              
-              
-            
-          
             </DialogContentText>
             <DialogActions>
               <TextField

@@ -35,12 +35,7 @@ function App() {
     if(roomString.length > 1) {
       socket.emit('join', { id: roomString });
     }
-    
   });
-
-  
-
-  
 
   return (
     <div className="App">
