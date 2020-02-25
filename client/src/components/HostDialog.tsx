@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from "@material-ui/core/DialogActions";
@@ -15,18 +15,18 @@ export interface DialogProps {
 }
 
 export interface Player {
-  playerName: string,
+  playerId: string[],
 }
 
 function HostDialog(props: DialogProps) {
   const [playerList, setPlayerList] = useState<Player[]>([]);
 
-  props.socket.on('playerJoined', function(data: Player){
-    console.log('player joined');
-    let players: Player[] = playerList;
-    players.push(data);
-    setPlayerList(players)
-  })
+  //data.players = ['asassa','adada']
+  props.socket.on('playerJoined', function(data: any){
+    console.log(data.players);
+    setPlayerList(data.players);
+
+  });
   
   return (
     <div>
@@ -41,11 +41,11 @@ function HostDialog(props: DialogProps) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
+          <ul>
+            {playerList.map((player, i) => <li key={i}>{player}</li>)}
+          </ul>
               
-          
-              {playerList.map(player => (
-      player.playerName
-    ))}
+              
             
           
             </DialogContentText>

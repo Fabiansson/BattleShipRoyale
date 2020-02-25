@@ -91,10 +91,10 @@ function Chat(props: any) {
   );
 }
 
-const ChatWithSocket = (props: any) =>{
+const ChatWithSocket = (props: any) =>(
   <SocketContext.Consumer>
     {(socket: any) => <Chat {...props} socket={socket} />}
   </SocketContext.Consumer>
-}
+)
 
 export default ChatWithSocket;

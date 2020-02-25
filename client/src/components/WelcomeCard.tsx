@@ -48,7 +48,7 @@ function WelcomeCard(props: any) {
   const hostGame = () => {
     props.socket.on('roomCreated', function (data: any) {
       setShareLink('http://localhost:3000/' + data.id);
-      props.setSocket('http://localhost:4000/' + data.id);
+      //props.setSocket('http://localhost:4000/' + data.id);
       //window.location.href = "http://localhost:3000/" + data.id;
     })
     props.socket.emit('open');

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import WelcomeCard from "./components/WelcomeCard";
 import Battleground from './components/Battleground';
 import Chat from "./components/Chat";
+import HostDialog from "./components//HostDialog";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 
@@ -17,35 +18,36 @@ function App() {
     serverIP = "http://localhost:4000/";
   }
 
-  const [socket, setSocket] = useState(io(serverIP + room));
-
-  //let socket = io(serverIP + room);
-
-  const changeSocket = (address: string) => {
-    setSocket(io(address));
-  }
+  let socket = io(serverIP + room);
 
   if (roomString.length > 1) {
     socket.on('checkRoomResponse', function (data: any) {
       if (data.ok) {
         setRoom(roomString);
-        setSocket(io(serverIP + roomString));
       } else {
         setRoomError(true);
       }
     })
-    socket.emit('checkRoomId', { id: roomString });
+    
   }
+
+  useEffect(() => {
+    if(roomString.length > 1) {
+      socket.emit('join', { id: roomString });
+    }
+    
+  });
+
+  
 
   
 
   return (
     <div className="App">
      <SocketContext.Provider value={socket}>
-      {!roomError && !(room.length > 1) && <WelcomeCard setSocket={changeSocket} open={false}/>}
+      {!roomError && !(roomString.length > 1) && <WelcomeCard open={false}/>}
       {roomError && <p>This room doesent exist!</p>}
-      {!roomError && (room.length > 1) && <p>Welcome to room with ID: {room}</p>}
-      <WelcomeCard />
+      {!roomError && (roomString.length > 1) && <HostDialog open={true} text={roomString}/>}
       <Battleground />
       <Chat />
       </SocketContext.Provider>
