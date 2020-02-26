@@ -28,7 +28,11 @@ if (process.env.NODE_ENV === 'production') {
 let rooms = {};
 
 io.on('connection', function (socket) {
-    console.log('socket connection established');
+    console.log(`socket with id ${socket.id} connection established`);
+
+    socket.on('disconnect', () => {
+        console.log(`Socket with id ${socket.id} disconnected.`);
+    })
 
 
     /*if (typeof rooms[room] ==== "undefined") rooms[room] = {};
@@ -45,10 +49,12 @@ io.on('connection', function (socket) {
         console.log('Room with ID: ' + randomRoomId + ' got created.');
         this.join(randomRoomId);
         rooms[randomRoomId] = [randomPlayerId];
-        io.sockets.in(randomRoomId).emit('playerJoined', {
+        io.sockets.in(randomRoomId).emit('joinRp', {
+            roomId: randomRoomId,
+            exist: true,
+            started: rooms[randomRoomId].length >= 4,
             players: rooms[randomRoomId]
         })
-        socket.emit('roomCreated', { id: randomRoomId });
     });
 
     socket.on('join', function(data) {
@@ -58,16 +64,20 @@ io.on('connection', function (socket) {
             let randomPlayerId = Math.random().toString(36).substring(7) + '-P';
             rooms[data.id] = [...rooms[data.id], randomPlayerId]
             this.join(data.id);
-            io.sockets.in(data.id).emit('checkRoomResponse', {
-                ok: true
-            });
-            io.sockets.in(data.id).emit('playerJoined', {
+            let players = rooms[data.id].length;
+            io.sockets.in(data.id).emit('joinRp', {
+                roomId: data.id,
+                exist: true,
+                startet: players >= 4,
                 players: rooms[data.id]
-            })
+            });
+            
         } else {
             console.log('no matching room found to join');
-            socket.emit('checkRoomResponse', {
-                ok: false
+            socket.emit('joinRp', {
+                exists: false,
+                started: false,
+                players: []
             });
         }
     })

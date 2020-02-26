@@ -3,13 +3,20 @@ import './App.css';
 import WelcomeCard from "./components/WelcomeCard";
 import Battleground from './components/Battleground';
 import Chat from "./components/Chat";
-import HostDialog from "./components//HostDialog";
+import Game from "./components/Game";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 
+export interface Room {
+  roomId: string,
+  exist: boolean,
+  started: boolean,
+  players: string[]
+}
+
+
 function App() {
-  const [room, setRoom] = useState('');
-  const [roomError, setRoomError] = useState(false);
+  const [room, setRoom] = useState<Room>();
   const roomString = window.location.pathname.substr(1);
   
 
@@ -18,31 +25,37 @@ function App() {
     serverIP = "http://localhost:4000/";
   }
 
-  let socket = io(serverIP + room);
+  let socket = io(serverIP, { autoConnect: false });
 
-  if (roomString.length > 1) {
-    socket.on('checkRoomResponse', function (data: any) {
-      if (data.ok) {
-        setRoom(roomString);
+
+    
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected');
+    })
+
+    socket.on('joinRp', function (data: Room) {
+      if (data.exist) {
+        console.log(data);
+        setRoom(data);
       } else {
-        setRoomError(true);
+        window.location.href = "http://localhost:3000/";
       }
     })
     
-  }
-
-  useEffect(() => {
     if(roomString.length > 1) {
       socket.emit('join', { id: roomString });
     }
-  });
+
+    socket.open();
+  }, []);
 
   return (
     <div className="App">
      <SocketContext.Provider value={socket}>
-      {!roomError && !(roomString.length > 1) && <WelcomeCard open={false}/>}
-      {roomError && <p>This room doesent exist!</p>}
-      {!roomError && (roomString.length > 1) && <HostDialog open={true} text={roomString}/>}
+      {!room && <WelcomeCard />}
+      {room && <Game started={room.started} roomId={room.roomId} players={room.players}/>}
       <Battleground />
       <Chat />
       </SocketContext.Provider>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import frame from "../assets/frame.svg";
 import ship from "../assets/ship.svg";
-import HostDialog from "./HostDialog";
 import SocketContext from '../services/SocketProvider';
 
 
@@ -38,19 +37,13 @@ const useStyles = makeStyles({
 
 function WelcomeCard(props: any) {
   const classes = useStyles();
-  const [open, setOpen] = useState(props.open);
-  const [shareLink, setShareLink] = useState('');
 
   const joinGame = () => {
     console.log("join");  
   }
 
   const hostGame = () => {
-    props.socket.on('roomCreated', function (data: any) {
-      setShareLink('http://localhost:3000/' + data.id);
-    })
-    props.socket.emit('open');
-    setOpen(true);    
+    props.socket.emit('open');   
   }
 
   return (
@@ -67,7 +60,6 @@ function WelcomeCard(props: any) {
       </Grid>
       <Grid item xs={12}>
       <Button id="join" variant="contained" color="primary" onClick={hostGame}>Host Game</Button>
-      <HostDialog open={open} text={shareLink}/>
       </Grid>
       <Grid item xs={12}>
       <img src={ship} alt="our ship" className={classes.shipstyle} />
