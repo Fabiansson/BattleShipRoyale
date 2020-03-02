@@ -1,6 +1,11 @@
 var app = require("express")();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+let expressSession = require('express-session');
+let sharedsession = require("express-socket.io-session");
+//const redis = require('./redis');
+//const redisStore = require('connect-redis')(expressSession);
+//var cors = require('cors');
 
 var path = require('path');
 
@@ -16,19 +21,50 @@ server.listen(port, host, function () {
     console.log("Server running on: " + host + " : " + port);
 });
 
+
+
+let session = expressSession({
+    secret: 'my-secret',
+    //store: new redisStore({ host: 'localhost', port: 6379, client: redis, ttl: 260}),
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 10000,
+        httpOnly: true,
+        sameSite: true,
+        secure: false,
+    },
+})
+
+  app.use(session);
+
+
+let rooms = {};
+
 if (process.env.NODE_ENV === 'production') {
     //Set static folder
-    app.use(express.static('client/build'));
+    app.use(require('express').static('client/build'));
 
     app.get('/*', (req, res) => {
         res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
     });
 }
 
-let rooms = {};
+io.use(sharedsession(session, {
+    autoSave: true
+}));
+
 
 io.on('connection', function (socket) {
+
     console.log(`socket with id ${socket.id} connection established`);
+    
+    
+        socket.handshake.session.userdata = Math.random();
+        socket.handshake.session.save();
+    
+    
+    console.log(socket.handshake.sessionID);
 
     socket.on('disconnect', () => {
         console.log(`Socket with id ${socket.id} disconnected.`);

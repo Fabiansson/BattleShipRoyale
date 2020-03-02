@@ -22,7 +22,11 @@
   "homepage": "https://github.com/Fabiansson/BattleShipRoyale#readme",
   "dependencies": {
     "concurrently": "^5.1.0",
+    "connect-redis": "^4.0.4",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "express-socket.io-session": "^1.3.5",
+    "redis": "^3.0.2",
     "socket.io": "^2.3.0"
   }
 }

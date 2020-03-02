@@ -58,7 +58,7 @@ function App() {
       {room && <Game started={room.started} roomId={room.roomId} players={room.players}/>}
       <Battleground />
       <Chat />
-      </SocketContext.Provider>
+  </SocketContext.Provider>
     </div>
   );
 }
