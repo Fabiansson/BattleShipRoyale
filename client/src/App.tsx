@@ -46,7 +46,7 @@ function App() {
             console.log(data);
             setRoom(data);
           } else {
-            window.location.href = window.location.host;
+            window.location.href = 'http://localhost:3000';
           }
         })
 
