@@ -70,21 +70,17 @@ if (process.env.NODE_ENV === 'production') {
 
 io.on('connection', function (socket) {
     console.log(`socket with id ${socket.id} connection established`);
-    if (socket.handshake.session.userdata) {
-        console.log('Welcome back: ' + socket.handshake.session.userdata);
+    if (socket.handshake.session.userId) {
+        console.log('Welcome back: ' + socket.handshake.session.userId);
     } else {
-        socket.handshake.session.userdata = Math.random();
+        socket.handshake.session.userId = Math.random().toString(36).substring(7) + '-P';
         socket.handshake.session.save();
-        console.log('Welcome: ' + socket.handshake.session.userdata);
+        console.log('Welcome: ' + socket.handshake.session.userId);
     }
 
     socket.on('disconnect', () => {
         console.log(`Socket with id ${socket.id} disconnected.`);
     })
-
-    /*if (typeof rooms[room] ==== "undefined") rooms[room] = {};
-    rooms[room].count = rooms[room].total ? rooms[room].total+1 : 1; 
-    io.to(room).emit("new user", rooms[room].count)*/
 
     socket.on("chatMessage", function (msg) {
         console.log('chat ' + msg.msg);
@@ -94,13 +90,16 @@ io.on('connection', function (socket) {
     socket.on('open', async function () {
         if (!socket.handshake.session.room) {
             let randomRoomId = Math.random().toString(36).substring(7);
-            let randomPlayerId = Math.random().toString(36).substring(7) + '-P';
             console.log('Room with ID: ' + randomRoomId + ' got created.');
             this.join(randomRoomId);
-            await redis.setAsync(`room:${randomRoomId}`, socket.handshake.sessionID, 'NX');
-            socket.handshake.session.room = randomRoomId;
 
-            rooms[randomRoomId] = [randomPlayerId];
+            //dummy
+            rooms[randomRoomId] = [socket.handshake.session.userId];
+
+            await redis.setAsync(`room:${randomRoomId}`, socket.handshake.session.userId, 'NX');
+            socket.handshake.session.room = randomRoomId;
+            socket.handshake.session.save();
+
             io.sockets.in(randomRoomId).emit('joinRp', {
                 roomId: randomRoomId,
                 exist: true,
@@ -108,14 +107,14 @@ io.on('connection', function (socket) {
                 players: rooms[randomRoomId]
             })
         }
+        console.log(rooms);
     });
 
     socket.on('join', function (data) {
         console.log('tryin to join room with id: ' + data.id);
-        if (io.nsps['/'].adapter.rooms[data.id]) {
+        if (io.nsps['/'].adapter.rooms[data.id] && !rooms[data.id].includes(socket.handshake.session.userId)) {
             console.log('found matching room to join');
-            let randomPlayerId = Math.random().toString(36).substring(7) + '-P';
-            rooms[data.id] = [...rooms[data.id], randomPlayerId]
+            rooms[data.id] = [...rooms[data.id], socket.handshake.session.userId]
             this.join(data.id);
             let players = rooms[data.id].length;
             io.sockets.in(data.id).emit('joinRp', {
@@ -124,7 +123,7 @@ io.on('connection', function (socket) {
                 startet: players >= 4,
                 players: rooms[data.id]
             });
-
+            console.log(rooms);
         } else {
             console.log('no matching room found to join');
             socket.emit('joinRp', {

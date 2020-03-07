@@ -34,7 +34,7 @@ function App() {
 
   useEffect(() => {
     const roomString = window.location.pathname.substr(1);
-    
+
     fetch("/session")
       .then(() => {
         socket.on('connect', () => {
@@ -46,7 +46,7 @@ function App() {
             console.log(data);
             setRoom(data);
           } else {
-            window.location.href = "http://localhost:3000/";
+            window.location.href = window.location.host;
           }
         })
 
