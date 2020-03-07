@@ -1,7 +1,7 @@
-//const bluebird = require('bluebird');
+const bluebird = require('bluebird');
 const redis = require('redis');
 
-//bluebird.promisifyAll(redis);
+bluebird.promisifyAll(redis);
 
 const client = redis.createClient({
   host: process.env.REDIS_HOST || 'localhost',

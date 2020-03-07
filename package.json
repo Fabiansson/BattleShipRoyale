@@ -4,6 +4,7 @@
   "description": "A mix between the pen and paper Battleship game and a modern Battle Royale.",
   "main": "index.js",
   "scripts": {
+    "startdebug": "DEBUG=express-session npm run start",
     "server": "node index.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/Fabiansson/BattleShipRoyale#readme",
   "dependencies": {
+    "bluebird": "^3.7.2",
     "concurrently": "^5.1.0",
     "connect-redis": "^4.0.4",
     "express": "^4.17.1",

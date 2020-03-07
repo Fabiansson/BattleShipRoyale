@@ -17,48 +17,60 @@ export interface Room {
 
 function App() {
   const [room, setRoom] = useState<Room>();
-  const roomString = window.location.pathname.substr(1);
   
 
-  var serverIP = "http://localhost:4000/";
-  if(process.env.NODE_ENV === 'development'){
-    serverIP = "http://localhost:4000/";
+
+  var serverIP = "http://localhost:4000";
+  if (process.env.NODE_ENV === 'development') {
+    serverIP = "http://localhost:3000";
   }
 
-  let socket = io(serverIP, { autoConnect: false });
 
 
-    
+
+  let socket = io({ autoConnect: false });
+
+
 
   useEffect(() => {
-    socket.on('connect', () => {
-      console.log('Connected');
-    })
-
-    socket.on('joinRp', function (data: Room) {
-      if (data.exist) {
-        console.log(data);
-        setRoom(data);
-      } else {
-        window.location.href = "http://localhost:3000/";
-      }
-    })
+    const roomString = window.location.pathname.substr(1);
     
-    if(roomString.length > 1) {
-      socket.emit('join', { id: roomString });
-    }
+    fetch("/session")
+      .then(() => {
+        socket.on('connect', () => {
+          console.log('Connected');
+        })
 
-    socket.open();
+        socket.on('joinRp', function (data: Room) {
+          if (data.exist) {
+            console.log(data);
+            setRoom(data);
+          } else {
+            window.location.href = "http://localhost:3000/";
+          }
+        })
+
+        if (roomString.length > 1) {
+          socket.emit('join', { id: roomString });
+        }
+
+        socket.open();
+      },
+        (error) => {
+          console.log(error);
+        }
+      )
+
   }, []);
 
   return (
     <div className="App">
-     <SocketContext.Provider value={socket}>
-      {!room && <WelcomeCard />}
-      {room && <Game started={room.started} roomId={room.roomId} players={room.players}/>}
-      <Battleground />
-      <Chat />
-  </SocketContext.Provider>
+      {<SocketContext.Provider value={socket}>
+        {!room && <WelcomeCard />}
+        {room && <Game started={room.started} roomId={room.roomId} players={room.players} />}
+        <Battleground />
+        <Chat />
+      </SocketContext.Provider>}
     </div>
   );
 }
