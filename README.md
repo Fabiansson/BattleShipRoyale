@@ -23,13 +23,17 @@ Whoever has the most wins in his/her pocket, wins the game.
 | FA-11 | Das Spiel enthält «Upgrades»                                               | MUSS      |
 | FA-12 | Das Spiel enthält Inseln mit Schatztruhen.                                 | MUSS      |
 | FA-13 | Am Ende des Spieles wird der Sieger genannt.                               | MUSS      |
-| FA-14 | Das Spiel endet, wenn nur noch ein Spieler Schiffe besitzt.                |           |
+| FA-14 | Das Spiel endet, wenn nur noch ein Spieler Schiffe besitzt.                | MUS       |
 | FA-15 | Das Spiel wird beendet, wenn alle Spieler das Spiel verlassen.             | MUSS      |
 | FA-16 | Das Spiel besitzt einen geregelten Spielverlauf                            | MUSS      |
 | FA-17 | Spieler können miteinander chatten                                         | KANN      |
 | FA-18 | Ein Spieler kann andere Spieler einladen                                   | KANN      |
 | FA-19 | Über den Chat lassen sich Emoji verschicken.                               | KANN      |
-| FA-20 | Mit der Zeit wird das Spielfeld kleiner                                    | KANN      |
+| FA-20 | Mit der Zeit wird das Spielfeld kleiner.                                   | KANN      |
+| FA-21 | Der Spielstand wird gespeichert (für Verbindungsverlust)                   | MUSS      |
+| FA-22 | Spieler können einen Spielraum beitreten.                                  | MUSS      |
+| FA-23 | Spieler können einen Spielraum eröffnen.                                   | MUSS      |
+
 
 ## Nicht-Funktional
 | ID    | Beschreibung                                                 | MUSS/KANN |

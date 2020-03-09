@@ -1,55 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import WelcomeCard from "./components/WelcomeCard";
 import Battleground from './components/Battleground';
 import Chat from "./components/Chat";
+import Game from "./components/Game";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import Gamebar from "./components/Gamebar";
 
+export interface Room {
+  roomId: string,
+  exist: boolean,
+  started: boolean,
+  players: string[]
+}
+
+
 function App() {
-  const [room, setRoom] = useState('');
-  const [roomError, setRoomError] = useState(false);
-  const roomString = window.location.pathname.substr(1);
+  const [room, setRoom] = useState<Room>();
   
 
-  var serverIP = "http://localhost:4000/";
-  if(process.env.NODE_ENV === 'development'){
-    serverIP = "http://localhost:4000/";
+
+  var serverIP = "http://localhost:4000";
+  if (process.env.NODE_ENV === 'development') {
+    serverIP = "http://localhost:3000";
   }
 
-  const [socket, setSocket] = useState(io(serverIP + room));
 
-  //let socket = io(serverIP + room);
 
-  const changeSocket = (address: string) => {
-    setSocket(io(address));
-  }
 
-  if (roomString.length > 1) {
-    socket.on('checkRoomResponse', function (data: any) {
-      if (data.ok) {
-        setRoom(roomString);
-        setSocket(io(serverIP + roomString));
-      } else {
-        setRoomError(true);
-      }
-    })
-    socket.emit('checkRoomId', { id: roomString });
-  }
+  let socket = io({ autoConnect: false });
 
-  
+
+
+  useEffect(() => {
+    const roomString = window.location.pathname.substr(1);
+
+    fetch("/session")
+      .then(() => {
+        socket.on('connect', () => {
+          console.log('Connected');
+        })
+
+        socket.on('joinRp', function (data: Room) {
+          if (data.exist) {
+            console.log(data);
+            setRoom(data);
+          } else {
+            window.location.href = 'http://localhost:3000';
+          }
+        })
+
+        if (roomString.length > 1) {
+          socket.emit('join', { id: roomString });
+        }
+
+        socket.open();
+      },
+        (error) => {
+          console.log(error);
+        }
+      )
+
+  }, []);
 
   return (
     <div className="App">
-     <SocketContext.Provider value={socket}>
-     <Gamebar />
-      {!roomError && !(room.length > 1) && <WelcomeCard setSocket={changeSocket} open={false}/>}
-      {roomError && <p>This room doesent exist!</p>}
-      {!roomError && (room.length > 1) && <p>Welcome to room with ID: {room}</p>}
-      <Battleground />
-      <Chat />
-      </SocketContext.Provider>
+      {<SocketContext.Provider value={socket}>
+        {!room && <WelcomeCard />}
+        {room && <Game started={room.started} roomId={room.roomId} players={room.players} />}
+        <Battleground />
+        <Chat />
+      </SocketContext.Provider>}
     </div>
   );
 }
