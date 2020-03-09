@@ -19,7 +19,14 @@ function initSocket(io) {
     
         socket.on("chatMessage", function (msg) {
             console.log('chat ' + msg.msg);
-            socket.emit("chatMessage", msg.msg)
+            let sender = socket.handshake.session.userId;
+            let payload = {
+                sender: sender,
+                msg: msg.msg,      
+            }
+            socket.emit("chatMessage", Object.assign(payload, {owner: true}));
+            socket.broadcast.emit("chatMessage", Object.assign(payload, {owner: false}));
+            
         });
     
         socket.on('open', async function () {

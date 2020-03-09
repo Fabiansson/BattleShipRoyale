@@ -6,7 +6,6 @@ import Chat from "./components/Chat";
 import Game from "./components/Game";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
-import Gamebar from "./components/Gamebar";
 
 export interface Room {
   roomId: string,
@@ -21,10 +20,10 @@ function App() {
   
 
 
-  var serverIP = "http://localhost:4000";
+  /*var serverIP = "http://localhost:4000";
   if (process.env.NODE_ENV === 'development') {
     serverIP = "http://localhost:3000";
-  }
+  }*/
 
 
 
