@@ -1,6 +1,7 @@
 const redis = require('./redis');
+const game = require('./game');
 
-let rooms = {};
+
 
 function initSocket(io) {
     io.on('connection', function (socket) {
@@ -31,25 +32,24 @@ function initSocket(io) {
     
         socket.on('open', async function () {
             if (!socket.handshake.session.room) {
-                let randomRoomId = Math.random().toString(36).substring(7);
-                console.log('Room with ID: ' + randomRoomId + ' got created.');
-                this.join(randomRoomId);
+                let gameId = await game.initGame(socket);
+                console.log('Room with ID: ' + gameId + ' got created.');
+                this.join(gameId);
     
-                //dummy
-                rooms[randomRoomId] = [socket.handshake.session.userId];
-    
-                await redis.setAsync(`room:${randomRoomId}`, socket.handshake.session.userId, 'NX');
-                socket.handshake.session.room = randomRoomId;
+                
+                
+                socket.handshake.session.room = gameId;
                 socket.handshake.session.save();
+
+                let generalGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
     
-                io.sockets.in(randomRoomId).emit('joinRp', {
-                    roomId: randomRoomId,
+                io.sockets.in(gameId).emit('joinRp', {
+                    roomId: gameId,
                     exist: true,
-                    started: rooms[randomRoomId].length >= 4,
-                    players: rooms[randomRoomId]
+                    started: generalGameState.started,//rooms[randomRoomId].length >= 4, //OR EVEN FALSE
+                    players: generalGameState.players//rooms[randomRoomId]
                 })
             }
-            console.log(rooms);
         });
     
         socket.on('join', function (data) {

@@ -8,7 +8,7 @@ import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 
 export interface Room {
-  roomId: string,
+  gameId: string,
   exist: boolean,
   started: boolean,
   players: string[]
@@ -67,7 +67,7 @@ function App() {
     <div className="App">
       {<SocketContext.Provider value={socket}>
         {!room && <WelcomeCard />}
-        {room && <Game started={room.started} roomId={room.roomId} players={room.players} />}
+        {room && <Game started={room.started} roomId={room.gameId} players={room.players} />}
         <Battleground />
         <Chat />
       </SocketContext.Provider>}
