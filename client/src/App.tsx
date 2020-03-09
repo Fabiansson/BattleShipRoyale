@@ -5,6 +5,7 @@ import Battleground from './components/Battleground';
 import Chat from "./components/Chat";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
+import Gamebar from "./components/Gamebar";
 
 function App() {
   const [room, setRoom] = useState('');
@@ -42,10 +43,10 @@ function App() {
   return (
     <div className="App">
      <SocketContext.Provider value={socket}>
+     <Gamebar />
       {!roomError && !(room.length > 1) && <WelcomeCard setSocket={changeSocket} open={false}/>}
       {roomError && <p>This room doesent exist!</p>}
       {!roomError && (room.length > 1) && <p>Welcome to room with ID: {room}</p>}
-      <WelcomeCard />
       <Battleground />
       <Chat />
       </SocketContext.Provider>

@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       '& .MuiTextField-root': {
         margin: theme.spacing(1),
         //width: 200,
-        backgroundColor: "white",
+        
       },
     },
     paper: {
@@ -40,10 +40,8 @@ function Chat(props: any) {
   const [chatList, setChatList] = React.useState(initialList);
 
   useEffect(() =>{
-    props.socket.on("chatMessage", function(msg: string){
-      let newMessages: string[] = chatList;
-      newMessages.push(msg); 
-      setChatList(newMessages);
+    props.socket.on("chatMessage", function(msg: string){ 
+      setChatList([...chatList, msg]);
 
     })
     var submitText = document.getElementById("submitText");
@@ -54,14 +52,14 @@ function Chat(props: any) {
       }
       
     });
-  });
+  },[]);
 
   const sendText = (e: any) => {
-    console.log(e.target.value);
+    //console.log(e.target.value);
     props.socket.emit("chatMessage", {msg: e.target.value});
-   
-    e.target.value = "";
+    //e.target.value = "";
   }
+
 
   return (
       <div className={classes.rootGrid}>
@@ -71,14 +69,17 @@ function Chat(props: any) {
               id="standard-multiline-static"
               multiline
               value={chatList}
+            //  onChange={useEffect}
               InputProps={{
               readOnly: true,
               }}
             />
           <ul>
+            <p>moin
           {chatList.map(item => (
             <li key={item}>{item}</li>
           ))}
+          </p>
         </ul>
 
           </Grid>
@@ -91,10 +92,10 @@ function Chat(props: any) {
   );
 }
 
-const ChatWithSocket = (props: any) =>{
+const ChatWithSocket = (props: any) =>(
   <SocketContext.Consumer>
     {(socket: any) => <Chat {...props} socket={socket} />}
   </SocketContext.Consumer>
-}
+)
 
 export default ChatWithSocket;

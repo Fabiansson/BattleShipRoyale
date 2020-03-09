@@ -1,23 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+
+const gamebarStyle = {
+  backgroundColor: "#E8A656",
+  fontFamily: "Arial",
+  height: "80px",
+  borderRadius: "0px 0px 15px 15px",
+};
 
 function Gamebar() {
-  var field = 20;
-  var grid = function(field: Number){
-    
-  }
   return (
-    <div>
+    <div style={gamebarStyle}>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
-      <Button variant="contained" color="primary" onClick={joinGame}>Join Game</Button>
+          <Grid item xs={4}>
+      <h1>BattleshipRoyale</h1>
       </Grid>
-      <Grid item xs={12}>
-      <Button id="join" variant="contained" color="primary" onClick={hostGame}>Host Game</Button>
-      <HostDialog open={open} />
+      <Grid item xs={4}>
+      <p>Runde: </p>
       </Grid>
-      <Grid item xs={12}>
-      <img src={ship} alt="our ship" className={classes.shipstyle} />
+      <Grid item xs={4}>
+        <p>Coins: </p>
       </Grid>
       </Grid>
     </div>);
