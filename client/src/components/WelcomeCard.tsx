@@ -21,7 +21,8 @@ const useStyles = makeStyles({
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-     marginTop: "50px"   
+    marginTop: "50px",
+    textAlign: "center"   
 
   },
   title: {
