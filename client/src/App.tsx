@@ -6,6 +6,7 @@ import Chat from "./components/Chat";
 import Game from "./components/Game";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
+import Gamebar from "./components/Gamebar";
 
 export interface Room {
   roomId: string,

@@ -32,6 +32,9 @@ const useStyles = makeStyles({
   shipstyle: {
     height:"150px"
   },
+  button: {
+    backgroundColor: "#56BAE8"
+  }
 });
 
 
@@ -56,7 +59,7 @@ function WelcomeCard(props: any) {
       <CardActions>
       <Grid container spacing={3}>
           <Grid item xs={12}>
-      <Button variant="contained" color="primary" onClick={joinGame}>Join Game</Button>
+      <Button variant="contained" className={classes.button} onClick={joinGame}>Join Game</Button>
       </Grid>
       <Grid item xs={12}>
       <Button id="join" variant="contained" color="primary" onClick={hostGame}>Host Game</Button>
