@@ -48,17 +48,17 @@ function initSocket(io) {
         });
 
         socket.on('join', async function (data) {
-            console.log('Trying to join room with id: ' + data.id);
-            if (!io.nsps['/'].adapter.rooms[data.id]) { return console.error(new Error('ROOM_DOES_NOT_EXIST')); }
+            console.log('Trying to join room with id: ' + data.gameId);
+            if (!io.nsps['/'].adapter.rooms[data.gameId]) { return console.error(new Error('ROOM_DOES_NOT_EXIST')); }
             try {
-                let generalGameState = await game.join(data.id, socket);
+                let generalGameState = await game.join(data.gameId, socket);
                 console.log('Found matching room to join');
-                socket.join(data.id);
+                socket.join(data.gameId);
 
                 socket.handshake.session.room = generalGameState.gameId;
                 socket.handshake.session.save();
 
-                return io.sockets.in(data.id).emit('joinRp', {
+                return io.sockets.in(data.gameId).emit('joinRp', {
                     gameId: generalGameState.gameId,
                     startet: generalGameState.started,
                     players: generalGameState.players,

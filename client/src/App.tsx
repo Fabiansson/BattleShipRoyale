@@ -17,20 +17,13 @@ export interface Room {
 function App() {
   const [room, setRoom] = useState<Room>();
   const [socket, setSocket] = useState<any>(io({autoConnect: false}));
-  
-
 
   /*var serverIP = "http://localhost:4000";
   if (process.env.NODE_ENV === 'development') {
     serverIP = "http://localhost:3000";
   }*/
 
-
-
-
   //let socket = io({ autoConnect: false });
-
-
 
   useEffect(() => {
     const roomString = window.location.pathname.substr(1);
@@ -52,7 +45,7 @@ function App() {
         })
 
         if (roomString.length > 1 && !room) {
-          socket.emit('join', { id: roomString });
+          socket.emit('join', { gameId: roomString });
         }
 
         socket.open();
