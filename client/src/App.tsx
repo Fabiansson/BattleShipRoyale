@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import WelcomeCard from "./components/WelcomeCard";
 import Battleground from './components/Battleground';
+import Lobby from "./components/Lobby";
 import Chat from "./components/Chat";
-import Game from "./components/Game";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 
 export interface Room {
   gameId: string,
-  exist: boolean,
   started: boolean,
   players: string[]
 }
@@ -17,6 +16,7 @@ export interface Room {
 
 function App() {
   const [room, setRoom] = useState<Room>();
+  const [socket, setSocket] = useState<any>(io({autoConnect: false}));
   
 
 
@@ -28,7 +28,7 @@ function App() {
 
 
 
-  let socket = io({ autoConnect: false });
+  //let socket = io({ autoConnect: false });
 
 
 
@@ -42,15 +42,16 @@ function App() {
         })
 
         socket.on('joinRp', function (data: Room) {
-          if (data.exist) {
+          if (data.gameId != null) {
             console.log(data);
             setRoom(data);
+            setSocket(socket);
           } else {
             window.location.href = 'http://localhost:3000';
           }
         })
 
-        if (roomString.length > 1) {
+        if (roomString.length > 1 && !room) {
           socket.emit('join', { id: roomString });
         }
 
@@ -60,16 +61,16 @@ function App() {
           console.log(error);
         }
       )
-
+// eslint-disable-next-line
   }, []);
 
   return (
     <div className="App">
       {<SocketContext.Provider value={socket}>
         {!room && <WelcomeCard />}
-        {room && <Game started={room.started} roomId={room.gameId} players={room.players} />}
-        <Battleground />
-        <Chat />
+        {room && !room.started && <Lobby room={room} />}
+        {room && room.started && <Battleground/>}
+
       </SocketContext.Provider>}
     </div>
   );

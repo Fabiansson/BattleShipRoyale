@@ -73,9 +73,12 @@ function Chat(props: any) {
   useEffect(scrollToBottom, [chatList]);
  
   useEffect(() =>{
-    props.socket.on("chatMessage", function(payload: Message){ 
-      setChatList(chatList => [...chatList, payload]);
-    })
+      if(props.socket) {
+          props.socket.on("chatMessage", function (payload: Message) {
+              console.log('chatmessagereceived');
+              setChatList(chatList => [...chatList, payload]);
+          })
+      }
     var submitText = document.getElementById("submitText");
     submitText?.addEventListener("keydown", function(e) {
       if(e != null && e.keyCode === 13){
@@ -84,6 +87,7 @@ function Chat(props: any) {
       }
       
     });
+      // eslint-disable-next-line
   },[]);
 
   const sendText = (e: any) => {
