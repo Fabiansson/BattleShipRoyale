@@ -43,7 +43,7 @@ function WelcomeCard(props: any) {
   const classes = useStyles();
 
   const joinGame = () => {
-    console.log("join");  
+    props.socket.emit('findGame');
   }
 
   const hostGame = () => {

@@ -4,8 +4,8 @@ import Input from '@material-ui/core/Input';
 import SocketContext from "../services/SocketProvider";
 import "../App.css";
 
-export interface Message{
- sender: string,
+export interface Message {
+  sender: string,
   msg: string,
   owner: boolean
 }
@@ -32,15 +32,15 @@ const useStyles = makeStyles((theme: Theme) =>
         width: '0.4em'
       },
       '&::-webkit-scrollbar-track': {
-        
-	 webkitBoxShadow:"inset 0 0 6px rgba(0,0,0,0.3)",
-	backgroundColor: "#F5F5F5",
-	borderRadius: "10px"
+
+        webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.3)",
+        backgroundColor: "#F5F5F5",
+        borderRadius: "10px"
       },
       '&::-webkit-scrollbar-thumb': {
         borderRadius: "10px",
-        backgroundImage: 
-        `-webkit-gradient(linear,
+        backgroundImage:
+          `-webkit-gradient(linear,
                            left bottom,
                            left top,
                            color-stop(0.44, rgb(122,153,217)),
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
     inputField: {
       paddingLeft: 20,
     },
-    
+
   }),
 );
 
@@ -65,54 +65,57 @@ function Chat(props: any) {
   const [chatList, setChatList] = React.useState(initialList);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
-    if(messagesEndRef.current != null) {
+    if (messagesEndRef.current != null) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-   
+
   };
   useEffect(scrollToBottom, [chatList]);
- 
-  useEffect(() =>{
-    props.socket.on("chatMessage", function(payload: Message){ 
+
+  useEffect(() => {
+    props.socket.on("chatMessage", function (payload: Message) {
+      console.log('chatmessagereceived');
       setChatList(chatList => [...chatList, payload]);
     })
+    
     var submitText = document.getElementById("submitText");
-    submitText?.addEventListener("keydown", function(e) {
-      if(e != null && e.keyCode === 13){
+    submitText?.addEventListener("keydown", function (e) {
+      if (e != null && e.keyCode === 13) {
         e.preventDefault();
         sendText(e);
       }
-      
+
     });
-  },[]);
+    // eslint-disable-next-line
+  }, []);
 
   const sendText = (e: any) => {
-    props.socket.emit("chatMessage", {msg: e.target.value});
+    props.socket.emit("chatMessage", { msg: e.target.value });
     e.target.value = "";
   }
 
 
   return (
-      <div className={classes.rootGrid}>
-        <div className={classes.listDiv} id="listDiv">
-          <ul className={classes.list}>   
+    <div className={classes.rootGrid}>
+      <div className={classes.listDiv} id="listDiv">
+        <ul className={classes.list}>
           {chatList.map((item, index) => (
-            <li style={item.owner ? {color: "blue"} : {color: "black"}} 
-            key={index}><span className={classes.sender}>{item.sender}:</span> {item.msg}</li>
+            <li style={item.owner ? { color: "blue" } : { color: "black" }}
+              key={index}><span className={classes.sender}>{item.sender}:</span> {item.msg}</li>
           ))}
         </ul>
         <div ref={messagesEndRef} />
-        </div>
-        <div className={classes.inputField}>
-            <Input  id="submitText"  placeholder="Message" inputProps={{ 'aria-label': 'description' }} />
-            </div>
-
       </div>
+      <div className={classes.inputField}>
+        <Input id="submitText" placeholder="Message" inputProps={{ 'aria-label': 'description' }} />
+      </div>
+
+    </div>
 
   );
 }
 
-const ChatWithSocket = (props: any) =>(
+const ChatWithSocket = (props: any) => (
   <SocketContext.Consumer>
     {(socket: any) => <Chat {...props} socket={socket} />}
   </SocketContext.Consumer>
