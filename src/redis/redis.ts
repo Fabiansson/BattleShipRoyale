@@ -1,12 +1,25 @@
-const bluebird = require('bluebird');
-const redis = require('redis');
+import bluebird from 'bluebird';
+import redis from 'redis';
+import connectRedis from 'connect-redis';
+import { REDIS_HOST, REDIS_PORT, REDIS_PASS, REDIS_TTL } from '../helpers/constants';
 
 bluebird.promisifyAll(redis);
 
 const client = redis.createClient({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: process.env.REDIS_PORT || 6379,
-  password: process.env.REDIS_PASS || 'password',
+  host: REDIS_HOST,
+  port: REDIS_PORT,
+  //password: REDIS_PASS
 });
 
-export { client as redis };
+const redisStore = (expressSession) => {
+  const redisStore = connectRedis(expressSession);
+  const storeOptions = {
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+    client: client,
+    ttl: REDIS_TTL
+  }
+  return new redisStore(storeOptions);
+}
+
+export { client as redis, redisStore };
