@@ -1745,7 +1745,8 @@ Error for incorrect game events.
     ├── interfaces
     ├── redis
     ├── services
-    └── socket
+    ├── socket
+    └── tests
 ```
 The project is divided in two parts. The client folder for the frontend and the first src folder which contains the backend.
 
@@ -1791,6 +1792,9 @@ The socket folder contains two files:
   <li><strong>index.ts:</strong> Initializing of socket instance</li>
   <li><strong>socketController.ts:</strong>Endpoint/Handlers</li>
 </ul>  
+
+### tests
+Testcases for different functions.  
 
 
 
