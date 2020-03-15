@@ -1,6 +1,6 @@
-const redis = require('./redis');
+import { redis } from '../redis/redis';
 
-function initGame(socket) {
+export function initGame(socket) {
     return new Promise(async function (resolve, reject) {
         let randomRoomId = Math.random().toString(36).substring(7);
 
@@ -28,7 +28,7 @@ function initGame(socket) {
 
 }
 
-function join(gameId, socket) {
+export function join(gameId, socket) {
     return new Promise(async function (resolve, reject) {
         let generalGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
 
@@ -44,9 +44,4 @@ function join(gameId, socket) {
         }
     })
 
-}
-
-module.exports = {
-    initGame,
-    join
 }
