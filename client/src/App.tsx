@@ -3,7 +3,6 @@ import './App.css';
 import WelcomeCard from "./components/WelcomeCard";
 import Battleground from './components/Battleground';
 import Lobby from "./components/Lobby";
-import Chat from "./components/Chat";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 
@@ -63,7 +62,7 @@ function App() {
         {!room && <WelcomeCard />}
         {room && !room.started && <Lobby room={room} />}
         {room && room.started && <Battleground/>}
-
+        <Battleground />
       </SocketContext.Provider>}
     </div>
   );
