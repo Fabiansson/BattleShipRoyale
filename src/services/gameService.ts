@@ -1,8 +1,10 @@
 import { redis } from '../redis/redis';
+import { GeneralGameState } from 'interfaces/interfaces';
+import { Socket } from 'socket.io';
 
-export function initGame(socket) {
-    return new Promise(async function (resolve, reject) {
-        let randomRoomId = Math.random().toString(36).substring(7);
+export function initGame(socket: Socket) {
+    return new Promise<GeneralGameState>(async function (resolve, reject) {
+        let randomRoomId: string = Math.random().toString(36).substring(7);
 
         let generalGameState = {
             gameId: randomRoomId,
@@ -10,7 +12,7 @@ export function initGame(socket) {
             playerNames: ['Karl'],
             admin: socket.handshake.session.userId,
             turn: socket.handshake.session.userId,
-            generalMap: [0, 1, 0, 3, 2, 0, 1, 0, 1, 0, 3, 0, 0, 0, 0, 0, 0],
+            terrainMap: [0, 1, 0, 3, 2, 0, 1, 0, 1, 0, 3, 0, 0, 0, 0, 0, 0],
             fog: {
                 radius: 200,
                 xCenter: 0,
@@ -28,9 +30,9 @@ export function initGame(socket) {
 
 }
 
-export function join(gameId, socket) {
-    return new Promise(async function (resolve, reject) {
-        let generalGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+export function join(gameId: string, socket: Socket) {
+    return new Promise<GeneralGameState>(async function (resolve, reject) {
+        let generalGameState: GeneralGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
 
         if (generalGameState.players.includes(socket.handshake.session.userId)) { //[NOT] IS FOR DEV ONLY!
             reject(new Error('USER_ALREADY_CONNECTED')); //TODO: Some reconnect functionality
