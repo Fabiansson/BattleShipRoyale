@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     maxWidth: 675,
     minHeight: 600,
     backgroundImage: `url(${frame})`,
-    backgroundColor: "#282c34",
+    backgroundColor: 'transparent',
     backgroundSize: "700px 600px",
     display: "block",
     marginLeft: "auto",
@@ -51,10 +51,10 @@ function WelcomeCard(props: any) {
   }
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} >
       <CardContent>
         <Typography className={classes.title} >
-          Welcome to BattleShipRoyal
+          Welcome to BattleShipRoyale
         </Typography>
       </CardContent>
       <CardActions>

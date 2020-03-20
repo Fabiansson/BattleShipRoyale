@@ -77,9 +77,9 @@ export interface GeneralGameState {
   players: string[],
   playerNames: string[],
   admin: string,
-  turn: string,
-  terrainMap: number[],
-  fog: Fog,
+  turn?: string,
+  terrainMap?: number[],
+  fog?: Fog,
   started: boolean
 }
 

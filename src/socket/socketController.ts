@@ -33,7 +33,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     players: generalGameState.players,
                     playerNames: generalGameState.playerNames
                 }
-                io.sockets.in(generalGameState.gameId).emit('joinRp', response);
+                io.sockets.in(generalGameState.gameId).emit('joinRp', generalGameState);
             });
         }
     });
@@ -54,7 +54,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     players: generalGameState.players,
                     playerNames: generalGameState.playerNames
                 }
-                return io.sockets.in(data.gameId).emit('joinRp', response);
+                return io.sockets.in(data.gameId).emit('joinRp', generalGameState);
             });
         } catch (e) {
             console.error(e);
@@ -87,7 +87,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                             players: generalGameState.players,
                             playerNames: generalGameState.playerNames
                         }
-                        return io.sockets.in(socketRoom).emit('joinRp', response);
+                        return io.sockets.in(socketRoom).emit('joinRp', generalGameState);
                     }); 
                 } catch (e) {
                     //TODO: Retry if failed

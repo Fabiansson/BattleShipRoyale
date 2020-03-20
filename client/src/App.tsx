@@ -17,9 +17,28 @@ export interface ErrorResponse {
   error: string
 }
 
+export interface Fog {
+  radius: number,
+  xCenter: number,
+  yCenter: number,
+  nextXCenter: number,
+  nextYCenter: number
+}
+
+export interface GeneralGameState {
+  gameId: string,
+  players: string[],
+  playerNames: string[],
+  admin: string,
+  turn?: string,
+  terrainMap?: number[],
+  fog?: Fog,
+  started: boolean
+}
+
 
 function App() {
-  const [room, setRoom] = useState<Room>();
+  const [generalGameState, setGeneralGameState] = useState<GeneralGameState>();
   const [socket, setSocket] = useState<any>(io({ autoConnect: false }));
 
   /*var serverIP = "http://localhost:4000";
@@ -38,9 +57,9 @@ function App() {
           console.log('Connected');
         })
 
-        socket.on('joinRp', function (data: Room) {
+        socket.on('joinRp', function (data: GeneralGameState) {
           console.log(data);
-          setRoom(data);
+          setGeneralGameState(generalGameState);
           setSocket(socket);
         })
 
@@ -54,7 +73,7 @@ function App() {
           }
         })
 
-        if (roomString.length > 1 && !room) {
+        if (roomString.length > 1 && !generalGameState) {
           socket.emit('join', { gameId: roomString });
         }
 
@@ -70,9 +89,9 @@ function App() {
   return (
     <div className="App">
       {<SocketContext.Provider value={socket}>
-        {!room && <WelcomeCard />}
-        {room && !room.started && <Lobby room={room} />}
-        {room && room.started && <Battleground />}
+        {!generalGameState && <WelcomeCard />}
+        {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
+        {generalGameState && generalGameState.started && <Battleground />}
         {/*<Battleground />*/}
       </SocketContext.Provider>}
     </div>

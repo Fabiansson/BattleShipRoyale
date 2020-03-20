@@ -2,7 +2,6 @@ import React from "react";
 import './Battleground.css';
 
 function Battleground() {
-
     const createTableRows = () => {
         let mapData: number[] = [8, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -33,7 +32,6 @@ function Battleground() {
         }
         return table
     }
-
     return (
         <table style={{ left: '50%', top: '10%' }}>
             <tbody>
