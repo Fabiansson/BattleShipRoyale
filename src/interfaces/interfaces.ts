@@ -48,7 +48,7 @@ export interface JoinResponse {
 export interface ChatMessage {
   sender?: string,
   msg: string,
-  owner?: string
+  owner?: boolean
 }
 
 export interface Map {

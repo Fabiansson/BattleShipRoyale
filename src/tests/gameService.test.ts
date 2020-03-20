@@ -1,4 +1,5 @@
 import { initGame, join } from '../services/gameService';
+import { Socket } from 'socket.io';
 
 describe('GameService Test', () => {
     it('creates a game', async () => {
@@ -11,7 +12,7 @@ describe('GameService Test', () => {
           }
       };
       
-      const result: any = await initGame(socketMock);
+      const result: any = await initGame(socketMock as unknown as Socket);
       return expect(result).not.toBeNull();
     });
 
@@ -33,8 +34,8 @@ describe('GameService Test', () => {
             }
         };
   
-        const result: any = await initGame(socketMock);
-        const joinResult: any = await join(result.gameId, socketMock2)
+        const result: any = await initGame(socketMock as unknown as Socket);
+        const joinResult: any = await join(result.gameId, socketMock2 as unknown as Socket)
         return expect(joinResult).not.toBeNull();
       });
 
@@ -48,8 +49,8 @@ describe('GameService Test', () => {
             }
         };
     
-        const game: any = await initGame(socketMock);
-        return expect(join(game.gameId, socketMock)).rejects.toEqual(new Error('USER_ALREADY_CONNECTED'))
+        const game: any = await initGame(socketMock as unknown as Socket);
+        return expect(join(game.gameId, socketMock as unknown as Socket)).rejects.toEqual(new Error('USER_ALREADY_CONNECTED'))
       });
   
     
