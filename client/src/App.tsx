@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import WelcomeCard from "./components/WelcomeCard";
-import Battleground from './components/Battleground';
 import Lobby from "./components/Lobby";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
+import Battleground from './components/Battleground';
 
 export interface Room {
   gameId: string,
@@ -12,10 +12,15 @@ export interface Room {
   players: string[]
 }
 
+export interface ErrorResponse {
+  errorId?: number,
+  error: string
+}
+
 
 function App() {
   const [room, setRoom] = useState<Room>();
-  const [socket, setSocket] = useState<any>(io({autoConnect: false}));
+  const [socket, setSocket] = useState<any>(io({ autoConnect: false }));
 
   /*var serverIP = "http://localhost:4000";
   if (process.env.NODE_ENV === 'development') {
@@ -34,12 +39,18 @@ function App() {
         })
 
         socket.on('joinRp', function (data: Room) {
-          if (data.gameId != null) {
-            console.log(data);
-            setRoom(data);
-            setSocket(socket);
-          } else {
-            window.location.href = 'http://localhost:3000';
+          console.log(data);
+          setRoom(data);
+          setSocket(socket);
+        })
+
+        socket.on('error', function (data: ErrorResponse) {
+          switch (data.errorId) {
+            case 1:
+              window.location.href = 'http://localhost:3000'
+              break;
+            default:
+              console.log('An error occured');
           }
         })
 
@@ -53,7 +64,7 @@ function App() {
           console.log(error);
         }
       )
-// eslint-disable-next-line
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -61,8 +72,8 @@ function App() {
       {<SocketContext.Provider value={socket}>
         {!room && <WelcomeCard />}
         {room && !room.started && <Lobby room={room} />}
-        {room && room.started && <Battleground/>}
-        <Battleground />
+        {room && room.started && <Battleground />}
+        {/*<Battleground />*/}
       </SocketContext.Provider>}
     </div>
   );

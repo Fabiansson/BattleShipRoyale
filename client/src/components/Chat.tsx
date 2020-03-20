@@ -4,10 +4,10 @@ import Input from '@material-ui/core/Input';
 import SocketContext from "../services/SocketProvider";
 import "../App.css";
 
-export interface Message {
-  sender: string,
+export interface ChatMessage {
+  sender?: string,
   msg: string,
-  owner: boolean
+  owner?: string
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Chat(props: any) {
   const classes = useStyles();
-  const initialList: Message[] = [];
+  const initialList: ChatMessage[] = [];
   const [chatList, setChatList] = React.useState(initialList);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
@@ -73,13 +73,13 @@ function Chat(props: any) {
   useEffect(scrollToBottom, [chatList]);
 
   useEffect(() => {
-    props.socket.on("chatMessage", function (payload: Message) {
+    props.socket.on("chatMessage", function (payload: ChatMessage) {
       console.log('chatmessagereceived');
       setChatList(chatList => [...chatList, payload]);
     })
     
     var submitText = document.getElementById("submitText");
-    submitText?.addEventListener("keydown", function (e) {
+    submitText?.addEventListener("keydown", function (e: any) {
       if (e != null && e.keyCode === 13) {
         e.preventDefault();
         sendText(e);
@@ -90,7 +90,10 @@ function Chat(props: any) {
   }, []);
 
   const sendText = (e: any) => {
-    props.socket.emit("chatMessage", { msg: e.target.value });
+    let message: ChatMessage = {
+      msg: e.target.value
+    }
+    props.socket.emit("chatMessage", message);
     e.target.value = "";
   }
 

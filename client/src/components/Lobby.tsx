@@ -1,7 +1,7 @@
 import React from "react";
 import SocketContext from '../services/SocketProvider';
-import {createStyles, Theme} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
+/*import {createStyles, Theme} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";*/
 import {Room} from "../App";
 import Chat from "./Chat";
 
@@ -9,7 +9,7 @@ export interface LobbyProps {
     room: Room;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
+/*const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         paper: {
             width: '80%',
@@ -17,10 +17,10 @@ const useStyles = makeStyles((theme: Theme) =>
             marginRight: '0'
         }
     }),
-);
+);*/
 
 function Lobby(props: LobbyProps) {
-    const classes = useStyles();
+    //const classes = useStyles();
     //const [playerList, setPlayerList] = useState<Player[]>([]);
 
 

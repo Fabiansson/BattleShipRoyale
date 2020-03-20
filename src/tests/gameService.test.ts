@@ -10,7 +10,7 @@ describe('GameService Test', () => {
               }
           }
       };
-
+      
       const result: any = await initGame(socketMock);
       return expect(result).not.toBeNull();
     });

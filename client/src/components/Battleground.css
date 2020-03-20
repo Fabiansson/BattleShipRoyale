@@ -1,0 +1,91 @@
+table{
+	transform: rotateX(60deg) rotateZ(45deg);
+	position: absolute;
+    border-spacing: 0px;
+}
+
+tr{
+  height: 0px;
+  width: 0px;
+  display: block;
+}
+td{
+  height: 0px;
+  width: 0px;
+  display: block;
+padding: 0px;
+}
+.tile{
+transform: translate3d(0em, 0em, 0em);
+width: 5em;
+height: 5em;
+
+transition: all 1s cubic-bezier(0.22, 0.6, 0.39, 1.42);
+}
+
+.tile>div{
+transform: 
+  rotateZ(-45deg) rotateY(-60deg)
+  translate3d(-1.1em, -4.8em, 0em);
+
+width: 11.5em;
+height: 10em;
+
+  background-size: 1600% 100%;
+  background-position: -6px 0px;
+  background-repeat: no-repeat;
+  background-image: url(http://img14.deviantart.net/f99b/i/2011/354/d/5/isometric_new_tiles_by_spasquini-d4jnp2i.png);
+  image-rendering: pixelated;
+}
+
+
+
+.tile>div.tile-0{
+  background-position: calc(-6px + (-183.5px * 0)) 0px;
+  /*background-color: red;*/
+}
+.tile>div.tile-1{
+  background-position: calc(-6px + (-183.5px * 1)) 0px;
+}
+.tile>div.tile-2{
+background-position: calc(-6px + (-183.5px * 2)) 0px;
+}
+.tile>div.tile-3{
+background-position: calc(-6px + (-183.5px * 3)) 0px;
+}
+.tile>div.tile-4{
+background-position: calc(-6px + (-183.5px * 4)) 0px;
+}
+.tile>div.tile-5{
+background-position: calc(-6px + (-183.5px * 5)) 0px;
+}
+.tile>div.tile-6{
+background-position: calc(-6px + (-183.5px * 6)) 0px;
+}
+.tile>div.tile-7{
+background-position: calc(-6px + (-183.5px * 7)) 0px;
+}
+.tile>div.tile-8{
+background-position: calc(-6px + (-183.5px * 8)) 0px;
+}
+.tile>div.tile-9{
+background-position: calc(-6px + (-183.5px * 9)) 0px;
+}
+.tile>div.tile-10{
+background-position: calc(-6px + (-183.5px * 10)) 0px;
+}
+.tile>div.tile-11{
+background-position: calc(-6px + (-183.5px * 11)) 0px;
+}
+.tile>div.tile-12{
+background-position: calc(-6px + (-183.5px * 12)) 0px;
+}
+.tile>div.tile-13{
+background-position: calc(-6px + (-183.5px * 13)) 0px;
+}
+.tile>div.tile-14{
+background-position: calc(-6px + (-183.5px * 14)) 0px;
+}
+.tile>div.tile-15{
+background-position: calc(-6px + (-183.5px * 15)) 0px;
+}
