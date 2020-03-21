@@ -27,12 +27,6 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
             socket.handshake.session.room = generalGameState.gameId;
             socket.handshake.session.save(() => {
-                let response: JoinResponse = {
-                    gameId: generalGameState.gameId,
-                    started: generalGameState.started,
-                    players: generalGameState.players,
-                    playerNames: generalGameState.playerNames
-                }
                 io.sockets.in(generalGameState.gameId).emit('joinRp', generalGameState);
             });
         }
@@ -48,12 +42,6 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
             socket.handshake.session.room = generalGameState.gameId;
             socket.handshake.session.save(() => {
-                let response: JoinResponse = {
-                    gameId: generalGameState.gameId,
-                    started: generalGameState.started,
-                    players: generalGameState.players,
-                    playerNames: generalGameState.playerNames
-                }
                 return io.sockets.in(data.gameId).emit('joinRp', generalGameState);
             });
         } catch (e) {
@@ -81,12 +69,6 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
                     socket.handshake.session.room = generalGameState.gameId;
                     socket.handshake.session.save(() => {
-                        let response: JoinResponse = {
-                            gameId: generalGameState.gameId,
-                            started: generalGameState.started,
-                            players: generalGameState.players,
-                            playerNames: generalGameState.playerNames
-                        }
                         return io.sockets.in(socketRoom).emit('joinRp', generalGameState);
                     }); 
                 } catch (e) {
