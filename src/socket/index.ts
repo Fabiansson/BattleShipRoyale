@@ -61,11 +61,14 @@ export const initSocket = (http: Server, session: RequestHandler) => {
             io.on('connection', (socket: socket.Socket) => {
                 console.log(`socket with id ${socket.id} connection established`);
                 if (socket.handshake.session.userId) {
+                    // TODO: Check if user was in room and eventually rejoin
                     console.log('Welcome back: ' + socket.handshake.session.userId);
+                    socket.emit('userId', socket.handshake.session.userId);
                 } else {
                     socket.handshake.session.userId = Math.random().toString(36).substring(7) + '-P';
                     socket.handshake.session.save(() => {
                         console.log('Welcome: ' + socket.handshake.session.userId);
+                        socket.emit('userId', socket.handshake.session.userId);
                     });
                 }
                 initHandlers(io, socket)

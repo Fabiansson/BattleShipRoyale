@@ -4,6 +4,7 @@ import WelcomeCard from "./components/WelcomeCard";
 import Lobby from "./components/Lobby";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
+import UserContext from './services/UserProvider';
 import Battleground from './components/Battleground';
 
 export interface Room {
@@ -17,10 +18,30 @@ export interface ErrorResponse {
   error: string
 }
 
+export interface Fog {
+  radius: number,
+  xCenter: number,
+  yCenter: number,
+  nextXCenter: number,
+  nextYCenter: number
+}
+
+export interface GeneralGameState {
+  gameId: string,
+  players: string[],
+  playerNames: string[],
+  admin: string,
+  turn?: string,
+  terrainMap?: number[],
+  fog?: Fog,
+  started: boolean
+}
+
 
 function App() {
-  const [room, setRoom] = useState<Room>();
-  const [socket, setSocket] = useState<any>(io({ autoConnect: false }));
+  const [generalGameState, setGeneralGameState] = useState<GeneralGameState | null>(null);
+  const [socket, setSocket] = useState<SocketIOClient.Socket>(io({ autoConnect: false }));
+  const [userId, setuUserId] = useState<string>('');
 
   /*var serverIP = "http://localhost:4000";
   if (process.env.NODE_ENV === 'development') {
@@ -34,13 +55,14 @@ function App() {
 
     fetch("/session")
       .then(() => {
-        socket.on('connect', () => {
-          console.log('Connected');
+        socket.on('userId', (userId: string) => {
+          console.log('UserId: ' + userId);
+          setuUserId(userId);
         })
 
-        socket.on('joinRp', function (data: Room) {
+        socket.on('joinRp', function (data: GeneralGameState) {
           console.log(data);
-          setRoom(data);
+          setGeneralGameState(data);
           setSocket(socket);
         })
 
@@ -54,7 +76,7 @@ function App() {
           }
         })
 
-        if (roomString.length > 1 && !room) {
+        if (roomString.length > 1 && !generalGameState) {
           socket.emit('join', { gameId: roomString });
         }
 
@@ -69,12 +91,14 @@ function App() {
 
   return (
     <div className="App">
-      {<SocketContext.Provider value={socket}>
-        {!room && <WelcomeCard />}
-        {room && !room.started && <Lobby room={room} />}
-        {room && room.started && <Battleground />}
+      {<UserContext.Provider value={userId}>
+        <SocketContext.Provider value={socket}>
+        {!generalGameState && <WelcomeCard />}
+        {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
+        {generalGameState && generalGameState.started && <Battleground />}
         {/*<Battleground />*/}
-      </SocketContext.Provider>}
+      </SocketContext.Provider>
+      </UserContext.Provider>}
     </div>
   );
 }

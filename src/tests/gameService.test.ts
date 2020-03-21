@@ -35,7 +35,7 @@ describe('GameService Test', () => {
         };
   
         const result: any = await initGame(socketMock as unknown as Socket);
-        const joinResult: any = await join(result.gameId, socketMock2 as unknown as Socket)
+        const joinResult: any = await join(result.gameId, socketMock2 as unknown as Socket, true)
         return expect(joinResult).not.toBeNull();
       });
 
@@ -50,7 +50,7 @@ describe('GameService Test', () => {
         };
     
         const game: any = await initGame(socketMock as unknown as Socket);
-        return expect(join(game.gameId, socketMock as unknown as Socket)).rejects.toEqual(new Error('USER_ALREADY_CONNECTED'))
+        return expect(join(game.gameId, socketMock as unknown as Socket, true)).rejects.toEqual(new Error('USER_ALREADY_CONNECTED'))
       });
   
     

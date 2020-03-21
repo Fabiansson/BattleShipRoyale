@@ -15,10 +15,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
     rootGrid: {
       flexGrow: 1,
-      backgroundColor: "white",
-      width: 300,
+      backgroundColor: "#f2f2f2",
+      width: '100%',
       height: 200,
-      float: "left",
+      marginTop: '2em',
       borderRadius: "15px 15px 15px 15px",
     },
     list: {
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: "bold"
     },
     inputField: {
-      paddingLeft: 20,
+      paddingLeft: 20
     },
 
   }),
