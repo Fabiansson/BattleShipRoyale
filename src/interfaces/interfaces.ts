@@ -29,6 +29,11 @@ let map: Map = {
   ]
 }
 
+export interface GameSettings {
+  privateLobby: boolean,
+  rounds: number
+}
+
 export interface ErrorResponse {
   errorId?: number,
   error: string
@@ -77,10 +82,13 @@ export interface GeneralGameState {
   players: string[],
   playerNames: string[],
   admin: string,
+  rounds: number,
+  currentRound?: number
   turn?: string,
   terrainMap?: number[],
   fog?: Fog,
-  started: boolean
+  started: boolean,
+  privateLobby: boolean
 }
 
 export interface PlayerGameState {

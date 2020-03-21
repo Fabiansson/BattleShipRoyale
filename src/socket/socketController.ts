@@ -1,7 +1,7 @@
 import { Server, Socket, Rooms } from 'socket.io';
 
 import * as game from '../services/gameService';
-import { ChatMessage, JoinResponse, GeneralGameState, JoinRequest, ErrorResponse } from 'interfaces/interfaces';
+import { ChatMessage, JoinResponse, GeneralGameState, JoinRequest, ErrorResponse, GameSettings } from 'interfaces/interfaces';
 
 export const initHandlers = (io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
@@ -42,7 +42,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
         console.log('Trying to join room with id: ' + data.gameId);
         if (!io.nsps['/'].adapter.rooms[data.gameId]) { return console.error(new Error('ROOM_DOES_NOT_EXIST')); }
         try {
-            let generalGameState: GeneralGameState = await game.join(data.gameId, socket);
+            let generalGameState: GeneralGameState = await game.join(data.gameId, socket, true);
             console.log('Found matching room to join');
             socket.join(data.gameId);
 
@@ -70,12 +70,12 @@ export const initHandlers = (io: Server, socket: Socket) => {
         console.log('Trying to find a game...');
         let socketRooms: Rooms = io.nsps['/'].adapter.rooms;
         for (let socketRoom in socketRooms) {
-            let members = Object.keys(io.nsps['/'].adapter.rooms[socketRoom].sockets);
+            let members: string[] = Object.keys(io.nsps['/'].adapter.rooms[socketRoom].sockets);
 
             if (members.length < 4 && socketRoom.length < 10) {
                 console.log('FOUND A ROOM...' + socketRoom);
                 try {
-                    let generalGameState: GeneralGameState = await game.join(socketRoom, socket);
+                    let generalGameState: GeneralGameState = await game.join(socketRoom, socket, false);
                     console.log('Found matching room to join');
                     socket.join(socketRoom);
 
@@ -101,6 +101,28 @@ export const initHandlers = (io: Server, socket: Socket) => {
             }
         }
 
+    })
+
+    socket.on('gameSettings', async (data: GameSettings) => {
+        console.log('Changing game Settings')
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+        if(userId && gameId) {
+            try {
+                let generalGameState: GeneralGameState = await game.changeSettings(data, userId, gameId);
+                console.log('GameSettings changed.')
+
+                return io.sockets.in(generalGameState.gameId).emit('generalGameStateUpdate', generalGameState);
+            } catch(e) {
+                console.error(e);
+                let response: ErrorResponse = {
+                    errorId: 3,
+                    error: 'Could not change Game Settings.'
+                }
+                socket.emit('error', response);
+            }
+        }
+        
     })
 }
 
