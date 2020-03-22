@@ -59,14 +59,10 @@ Event driven Socket.IO documenatation for BattleShipRoyale.
 
 ## Channels
 <a name="channel-createRoom"></a>
-###  `subscribe` createRoom
+###  `subscribe` open
 Opens new game session for players.
 
 ##### Payload
-
-
-
-
 <table>
   <thead>
     <tr>
@@ -76,9 +72,7 @@ Opens new game session for players.
       <th>Accepted values</th>
     </tr>
   </thead>
-  <tbody>
-    
-      
+  <tbody>  
 <tr>
   <td>playerId </td>
   <td>string</td>
@@ -86,30 +80,13 @@ Opens new game session for players.
 </td>
   <td><em>Any</em></td>
 </tr>
-
-
-
-
-
-
-
-    
-      
 <tr>
   <td>playerName </td>
   <td>string</td>
   <td><p>Name of initiating player.</p>
 </td>
   <td><em>Any</em></td>
-</tr>
-
-
-
-
-
-
-
-    
+</tr>    
   </tbody>
 </table>
 
