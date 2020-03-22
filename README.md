@@ -9,51 +9,49 @@ Whoever has the most wins in his/her pocket, wins the game.
 ## Funktional
 | ID    | Beschreibung                                                               | MUSS/KANN |
 |-------|----------------------------------------------------------------------------|-----------|
-| FA-0  | The game is bsed on rounds.                                              | MUSS      |
-| FA-1  | The game has a graphical User Interface.                                 | MUSS      |
-| FA-2  | The game is a multiplayer game.                                | MUSS      |
-| FA-3  | Der User kann ein neues Spiel starten.                                     | MUSS      |
-| FA-4  | Die Punktezahl der Spieler ist ersichtlich.                                | MUSS      |
-| FA-5  | Der Spieler kann Schiffe platzieren.                                       | MUSS      |
-| FA-6  | Es gibt Schiffe mit verschiedenen Grössen.                                 | MUSS      |
-| FA-7  | Jeder Spieler sieht die noch vorhandenen Schiffe auf einer Legende.        | MUSS      |
-| FA-8  | Bei jedem Treffer erhält ein Spieler Geld.                                 | MUSS      |
-| FA-9  | Jeder Spieler sieht nur seine eigene oder die von ihm getroffenen Schiffe. | MUSS      |
-| FA-10 | Die Spieler können nach jeder Runde Upgrades in einem Store kaufen         | MUSS      |
-| FA-11 | Das Spiel enthält «Upgrades»                                               | MUSS      |
-| FA-12 | Das Spiel enthält Inseln mit Schatztruhen.                                 | MUSS      |
-| FA-13 | Am Ende des Spieles wird der Sieger genannt.                               | MUSS      |
-| FA-14 | Das Spiel endet, wenn nur noch ein Spieler Schiffe besitzt.                | MUS       |
-| FA-15 | Das Spiel wird beendet, wenn alle Spieler das Spiel verlassen.             | MUSS      |
-| FA-16 | Das Spiel besitzt einen geregelten Spielverlauf                            | MUSS      |
-| FA-17 | Spieler können miteinander chatten                                         | KANN      |
-| FA-18 | Ein Spieler kann andere Spieler einladen                                   | KANN      |
-| FA-19 | Über den Chat lassen sich Emoji verschicken.                               | KANN      |
-| FA-20 | Mit der Zeit wird das Spielfeld kleiner.                                   | KANN      |
-| FA-21 | Der Spielstand wird gespeichert (für Verbindungsverlust)                   | MUSS      |
-| FA-22 | Spieler können einen Spielraum beitreten.                                  | MUSS      |
-| FA-23 | Spieler können einen Spielraum eröffnen.                                   | MUSS      |
+| FA-0  | The game is bsed on rounds.                                                | MUSS      |
+| FA-1  | The game has a graphical User Interface.                                   | MUSS      |
+| FA-2  | The game is a multiplayer game.                                            | MUSS      |
+| FA-3  | A player can host his own game.                                            | MUSS      |
+| FA-4  | The game can be won by getting the most points.                            | MUSS      |
+| FA-5  | The player can use battleships to play.                                    | MUSS      |
+| FA-6  | There are battleships in different sizes.                                  | MUSS      |
+| FA-7  | Each Player sees his own ships in a overview.                              | MUSS      |
+| FA-8  | The player gets coins for each hit.                                        | MUSS      |
+| FA-9  | Each player only sees his own and the ships that he hit from the enemies.  | MUSS      |
+| FA-10 | After each round Upgrades and Items can be bought.                         | MUSS      |
+| FA-11 | The game contains Upgrades                                                 | MUSS      |
+| FA-12 | The game has islands with lootboxes.                                       | MUSS      |
+| FA-13 | Ther will be a winner at the end and it will show who it was.              | MUSS      |
+| FA-14 | The game ends if all rounds are player and only one player has ships left. | MUS       |
+| FA-15 | The game ends if all players leave.                                        | MUSS      |
+| FA-16 | The game has his own game progress.                                        | MUSS      |
+| FA-17 | Players can chat with eachother.                                           | KANN      |
+| FA-18 | A player can invite other players into his game.                           | MUSS      |
+| FA-19 | The chat supports emojis.                                                  | KANN      |
+| FA-20 | Depending on progress of the game the battleground will be limited by fog. | KANN      |
+| FA-21 | Players can rejoin the game if they leave or loose connection.             | MUSS      |
 
 
 ## Nicht-Funktional
 | ID    | Beschreibung                                                 | MUSS/KANN |
 |-------|--------------------------------------------------------------|-----------|
-| NFA-1 | Die Punkte werden richtig gezählt.                           | MUSS      |
-| NFA-2 | Spielzüge sind regelkonform.                                 | MUSS      |
-| NFA-3 | Das Spiel ist internationalisierbar.                         | MUSS      |
-| NFA-4 | Der Inhalt ist responsive.                                   | MUSS      |
-| NFA-5 | Das Spiel kann über eine Internetverbindung erreicht werden. | MUSS      |
+| NFA-1 | Points are counted correctly and by certain rules.           | MUSS      |
+| NFA-2 | Game moves work according to certain rules.                  | MUSS      |
+| NFA-3 | The game is international.                                   | MUSS      |
+| NFA-4 | The User Interface is responsive.                            | MUSS      |
+| NFA-5 | The game can be played online in a browser.                  | MUSS      |
 
 ## Randbedingungen
 | ID   | Beschreibung                                           | MUSS/KANN |
 |------|--------------------------------------------------------|-----------|
-| RB-1 | Das Spiel besitzt eine Client/Server Architektur       | MUSS      |
-| RB-2 | Client kommuniziert über Text-basiertes Protokoll      | MUSS      |
-| RB-3 | Das Protokoll ist lesbar.                              | MUSS      |
-| RB-4 | Client nimmt Benutzereingabe durch GUI entgegen.       | MUSS      |
-| RB-5 | Synchronisation des Status des Spielers mit dem Client | MUSS      |
-| RB-6 | Die Umsetzung basiert auf HTML5, CSS3 und JS.          | MUSS      |
-| RB-7 | UI wird mit React und Typescript umgesetzt.            | MUSS      |
+| RB-1 | The game is built with a client/server architecture.   | MUSS      |
+| RB-2 | The client communicates with the server over a text-protocol.      | MUSS      |
+| RB-3 | The protocol is readable.                              | MUSS      |
+| RB-4 | The game server is controller via the User Interface.  | MUSS      |
+| RB-5 | The Game State is always n sync with all game clients. | MUSS      |
+| RB-6 | The client is based on HTML, CSS & JS.                 | MUSS      |
+| RB-7 | The UI is built with React.js and Typescript.          | MUSS      |
 
 
 # BattleShipRoyale API documentation
