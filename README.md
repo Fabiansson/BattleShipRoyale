@@ -62,78 +62,27 @@ Event driven Socket.IO documenatation for BattleShipRoyale.
 ###  `subscribe` open
 Opens new game session for players.
 
-##### Payload
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Accepted values</th>
-    </tr>
-  </thead>
-  <tbody>  
-<tr>
-  <td>playerId </td>
-  <td>string</td>
-  <td><p>ID of initiating player.</p>
-</td>
-  <td><em>Any</em></td>
-</tr>
-<tr>
-  <td>playerName </td>
-  <td>string</td>
-  <td><p>Name of initiating player.</p>
-</td>
-  <td><em>Any</em></td>
-</tr>    
-  </tbody>
-</table>
+###### Example of payload _(generated)_
 
-
+```json
+{
+  [empty]
+}
+```
+###  `subscribe` findGame
+Player requesting to join a random game.
 
 ###### Example of payload _(generated)_
 
 ```json
 {
-  "playerId": "string",
-  "playerName": "string"
+ [empty]
 }
 ```
 
-
-
-
-
-
-
-
-<a name="channel-joinRoom"></a>
-
-
-
-
-
-
-
-
-
-
-
-###  `subscribe` joinRoom
-Joins an existing game.
-
-
-
-
-
-
-
-
+###  `subscribe` gameSettings
+Changes game Settings before it starts.
 ##### Payload
-
-
-
 
 <table>
   <thead>
@@ -144,60 +93,24 @@ Joins an existing game.
       <th>Accepted values</th>
     </tr>
   </thead>
-  <tbody>
-    
-      
+  <tbody> 
 <tr>
-  <td>playerId </td>
-  <td>string</td>
-  <td><p>ID of initiating player.</p>
+  <td>privateLobby</td>
+  <td>boolean</td>
+  <td><p>If lobby is private or free to join.</p>
 </td>
   <td><em>Any</em></td>
-</tr>
-
-
-
-
-
-
-
-    
-      
+</tr>  
 <tr>
-  <td>playerName </td>
-  <td>string</td>
-  <td><p>Name of initiating player.</p>
+  <td>rounds </td>
+  <td>number</td>
+  <td><p>How many rounds should be played.</p>
 </td>
   <td><em>Any</em></td>
-</tr>
+</tr> 
 
-
-
-
-
-
-
-    
-      
-<tr>
-  <td>roomId </td>
-  <td>string</td>
-  <td><p>Possible room ID for joining a specific game.</p>
-</td>
-  <td><em>Any</em></td>
-</tr>
-
-
-
-
-
-
-
-    
   </tbody>
 </table>
-
-
 
 ###### Example of payload _(generated)_
 
@@ -209,20 +122,36 @@ Joins an existing game.
 }
 ```
 
+###  `subscribe` join
+Joins an existing game.
+##### Payload
 
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Accepted values</th>
+    </tr>
+  </thead>
+  <tbody> 
+<tr>
+  <td>gameId </td>
+  <td>string</td>
+  <td><p>ID of game to join.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>  
+  </tbody>
+</table>
+###### Example of payload _(generated)_
 
-
-
-
-
-
-<a name="channel-leaveRoom"></a>
-
-
-
-
-
-
+```json
+{
+  "gameId": "string",
+}
+```
 
 
 ###  `subscribe` leaveRoom
@@ -1033,28 +962,9 @@ Leaves currently attending game.
 
 
 <a name="channel-chatMessage"></a>
-
-
-
-
-
-
-
 ###  `subscribe` chatMessage
 Player sends a chat message.
-
-
-
-
-
-
-
-
 ##### Payload
-
-
-
-
 <table>
   <thead>
     <tr>
@@ -1064,120 +974,66 @@ Player sends a chat message.
       <th>Accepted values</th>
     </tr>
   </thead>
-  <tbody>
-    
-      
-<tr>
-  <td>playerId </td>
-  <td>string</td>
-  <td><p>ID of sending player.</p>
-</td>
-  <td><em>Any</em></td>
-</tr>
-
-
-
-
-
-
-
-    
-      
-<tr>
-  <td>playerName </td>
-  <td>string</td>
-  <td><p>Name of sending player.</p>
-</td>
-  <td><em>Any</em></td>
-</tr>
-
-
-
-
-
-
-
-    
-      
-<tr>
-  <td>roomId </td>
-  <td>string</td>
-  <td><p>ID of attending game room.</p>
-</td>
-  <td><em>Any</em></td>
-</tr>
-
-
-
-
-
-
-
-    
-      
-<tr>
-  <td>receiverId </td>
-  <td>string</td>
-  <td><p>Possible reciver of message. (default is broadcast)</p>
-</td>
-  <td><em>Any</em></td>
-</tr>
-
-
-
-
-
-
-
-    
-      
+  <tbody>      
 <tr>
   <td>message </td>
   <td>string</td>
-  <td><p>Content of chat message.</p>
+  <td><p>Message sent.</p>
 </td>
   <td><em>Any</em></td>
-</tr>
-
-
-
-
-
-
-
-    
+</tr> 
   </tbody>
 </table>
-
-
-
 ###### Example of payload _(generated)_
 
 ```json
 {
-  "playerId": "string",
-  "playerName": "string",
-  "roomId": "string",
-  "receiverId": "string",
-  "message": "string"
+  "message": "string",
+}
+```
+
+<a name="channel-userId"></a>
+###  `publish` userId
+Response of a connection for sending unique player information.
+##### Payload
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Accepted values</th>
+    </tr>
+  </thead>
+  <tbody>      
+<tr>
+  <td>userId </td>
+  <td>string</td>
+  <td><p>The userId that belongs to the newly connected user.</p>
+</td>
+  <td><em>Any</em></td>
+</tr> 
+    <tr>
+  <td>playerName </td>
+  <td>string</td>
+  <td><p>The player name that belongs to the newly connected user.</p>
+</td>
+  <td><em>Any</em></td>
+</tr> 
+  </tbody>
+</table>
+###### Example of payload _(generated)_
+
+```json
+{
+  "userId": "string",
+  "playerName": "string
 }
 ```
 
 
 
-
-
-
-
-
 <a name="channel-createRoomRp"></a>
-
-
-
-
-
-
-
 ###  `publish` createRoomRp
 
 Response of createRoom-Event.
@@ -1422,7 +1278,7 @@ Response of joinRoom-Event.
 
 
 
-###  `publish` gameState
+###  `publish` playerGameStateUpdate
 
 Game state for specific player.
 
@@ -1451,9 +1307,44 @@ Game state for specific player.
     
       
 <tr>
-  <td>tbd </td>
-  <td>tbd</td>
-  <td><p>tbd...</p>
+  <td>playerId </td>
+  <td>string</td>
+  <td><p>The ID of the player to which this playerGameState belongs.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>coins </td>
+  <td>number</td>
+  <td><p>The aomount of coins this player has.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>inventory </td>
+  <td>InventoryItem[]</td>
+  <td><p>All items the player has in his inventory with the corresponding amount.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>ships </td>
+  <td>Ship[]</td>
+  <td><p>All ships the player owns with the position, size, healt, ec.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>hits </td>
+  <td>Coordinates[]</td>
+  <td><p>All successfull shots of the player towards a enemy.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>alive </td>
+  <td>boolean</td>
+  <td><p>If the player is still alive.</p>
 </td>
   <td><em>Any</em></td>
 </tr>
@@ -1474,7 +1365,12 @@ Game state for specific player.
 
 ```json
 {
-  "tbd": null
+  "playerId": "string",
+  "coins": "number",
+  "inventory": "InventoryItem[]",
+  "ships": "Ship[]",
+  "hits": "Coordinates[]",
+  "alive": "boolean"
 }
 ```
 
@@ -1521,9 +1417,79 @@ Game state for all players in a specific room.
     
       
 <tr>
-  <td>tbd </td>
-  <td>tbd</td>
-  <td><p>tbd...</p>
+  <td>gameId </td>
+  <td>string</td>
+  <td><p>The gameId to which this gameState belongs.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>players </td>
+  <td>string[]</td>
+  <td><p>All player IDs in this room.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>playerNames </td>
+  <td>string[]</td>
+  <td><p>All the player names of the players in this room.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>admin </td>
+  <td>string</td>
+  <td><p>The userId of the admin of this game.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>rounds </td>
+  <td>number</td>
+  <td><p>How many rounds will be played in this game.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>currentRound </td>
+  <td>string?</td>
+  <td><p>In which round the current game actually is.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>turn </td>
+  <td>string?</td>
+  <td><p>The userId if the player that it is its turn.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>terrainMap </td>
+  <td>number[]</td>
+  <td><p>The general terrain of the battlefield.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>fog </td>
+  <td>Fog?</td>
+  <td><p>The game boundaries as a fog.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>started </td>
+  <td>boolean</td>
+  <td><p>If the game started already or not.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>privateLobby </td>
+  <td>boolean</td>
+  <td><p>If the game is private or free to join.</p>
 </td>
   <td><em>Any</em></td>
 </tr>
@@ -1544,7 +1510,17 @@ Game state for all players in a specific room.
 
 ```json
 {
-  "tbd": null
+  "gameId": "string",
+  players: ["aiu230", "9a7f8p"],
+  playerNames: ["Paul", "Josh"]
+  admin: "aiu230",
+  rounds: 5,
+  currentRound: 2,
+  turn: "aiu230",
+  terrainMap: [0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,...],
+  fog: FOG,
+  started: true,
+  privateLobby: false
 }
 ```
 
@@ -1555,7 +1531,7 @@ Game state for all players in a specific room.
 
 
 
-<a name="channel-chatMessageRp"></a>
+<a name="channel-chatMessage"></a>
 
 
 
@@ -1563,7 +1539,7 @@ Game state for all players in a specific room.
 
 
 
-###  `publish` chatMessageRp
+###  `publish` chatMessage
 
 Response when chat message got sent.
 
@@ -1592,9 +1568,9 @@ Response when chat message got sent.
     
       
 <tr>
-  <td>playerName </td>
-  <td>string</td>
-  <td><p>Name of sender.</p>
+  <td>sender </td>
+  <td>string?</td>
+  <td><p>Player name of Sender.</p>
 </td>
   <td><em>Any</em></td>
 </tr>
@@ -1608,9 +1584,16 @@ Response when chat message got sent.
     
       
 <tr>
-  <td>message </td>
+  <td>msg </td>
   <td>string</td>
   <td><p>Content of chat message.</p>
+</td>
+  <td><em>Any</em></td>
+</tr>
+<tr>
+  <td>owner </td>
+  <td>boolean?</td>
+  <td><p>If the sender of the message is the owner himself.</p>
 </td>
   <td><em>Any</em></td>
 </tr>
@@ -1631,8 +1614,9 @@ Response when chat message got sent.
 
 ```json
 {
-  "playerName": "string",
-  "message": "string"
+  "sender": "ui8786",
+  "message": "Hello this is a chat message!",
+  "owner": true
 }
 ```
 
