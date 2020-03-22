@@ -9,7 +9,7 @@ Whoever has the most wins in his/her pocket, wins the game.
 ## Funktional
 | ID    | Beschreibung                                                               | MUSS/KANN |
 |-------|----------------------------------------------------------------------------|-----------|
-| FA-0  | The game is bsed on rounds.                                                | MUSS      |
+| FA-0  | The game is based on rounds.                                                | MUSS      |
 | FA-1  | The game has a graphical User Interface.                                   | MUSS      |
 | FA-2  | The game is a multiplayer game.                                            | MUSS      |
 | FA-3  | A player can host his own game.                                            | MUSS      |
