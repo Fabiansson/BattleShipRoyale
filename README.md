@@ -116,9 +116,9 @@ Changes game Settings before it starts.
 
 ```json
 {
-  "playerId": "string",
-  "playerName": "string",
-  "roomId": "string"
+  "playerId": "Oi87oqw",
+  "playerName": "Peter",
+  "roomId": "I8652d"
 }
 ```
 
@@ -1026,8 +1026,8 @@ Response of a connection for sending unique player information.
 
 ```json
 {
-  "userId": "string",
-  "playerName": "string
+  "userId": "ozudzw7",
+  "playerName": "Paul"
 }
 ```
 
@@ -1365,12 +1365,12 @@ Game state for specific player.
 
 ```json
 {
-  "playerId": "string",
-  "coins": "number",
-  "inventory": "InventoryItem[]",
-  "ships": "Ship[]",
-  "hits": "Coordinates[]",
-  "alive": "boolean"
+  "playerId": "7zuad7",
+  "coins": 3000,
+  "inventory": InventoryItem[],
+  "ships": Ship[],
+  "hits": Coordinates[],
+  "alive": true
 }
 ```
 
@@ -1511,16 +1511,16 @@ Game state for all players in a specific room.
 ```json
 {
   "gameId": "string",
-  players: ["aiu230", "9a7f8p"],
-  playerNames: ["Paul", "Josh"]
-  admin: "aiu230",
-  rounds: 5,
-  currentRound: 2,
-  turn: "aiu230",
-  terrainMap: [0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,...],
-  fog: FOG,
-  started: true,
-  privateLobby: false
+  "players": ["aiu230", "9a7f8p"],
+  "playerNames": ["Paul", "Josh"]
+  "admin": "aiu230",
+  "rounds": 5,
+  "currentRound": 2,
+  "turn": "aiu230",
+  "terrainMap": [0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,...],
+  "fog": FOG,
+  "started": true,
+  "privateLobby": false
 }
 ```
 
