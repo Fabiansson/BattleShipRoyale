@@ -9,9 +9,9 @@ Whoever has the most wins in his/her pocket, wins the game.
 ## Funktional
 | ID    | Beschreibung                                                               | MUSS/KANN |
 |-------|----------------------------------------------------------------------------|-----------|
-| FA-0  | Das Spiel ist Runden-basiert.                                              | MUSS      |
-| FA-1  | Das Spiel besitzt ein grafisches Interface                                 | MUSS      |
-| FA-2  | Das Spiel können mehrere Spieler spielen.                                  | MUSS      |
+| FA-0  | The game is bsed on rounds.                                              | MUSS      |
+| FA-1  | The game has a graphical User Interface.                                 | MUSS      |
+| FA-2  | The game is a multiplayer game.                                | MUSS      |
 | FA-3  | Der User kann ein neues Spiel starten.                                     | MUSS      |
 | FA-4  | Die Punktezahl der Spieler ist ersichtlich.                                | MUSS      |
 | FA-5  | Der Spieler kann Schiffe platzieren.                                       | MUSS      |
