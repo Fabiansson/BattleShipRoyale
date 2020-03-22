@@ -5,8 +5,8 @@ The last standing player wins a round. In every round the player can use his/her
 Earning coins with sinking ships is not the only way to make money. It is possible to find treasures by exploring different islands on the map.
 Whoever has the most wins in his/her pocket, wins the game.
 
-# Anforderungen
-## Funktional
+# Requirements
+## Functional
 | ID    | Beschreibung                                                               | MUSS/KANN |
 |-------|----------------------------------------------------------------------------|-----------|
 | FA-0  | The game is based on rounds.                                                | MUSS      |
@@ -33,7 +33,7 @@ Whoever has the most wins in his/her pocket, wins the game.
 | FA-21 | Players can rejoin the game if they leave or loose connection.             | MUSS      |
 
 
-## Nicht-Funktional
+## Non-Functional
 | ID    | Beschreibung                                                 | MUSS/KANN |
 |-------|--------------------------------------------------------------|-----------|
 | NFA-1 | Points are counted correctly and by certain rules.           | MUSS      |
@@ -42,7 +42,7 @@ Whoever has the most wins in his/her pocket, wins the game.
 | NFA-4 | The User Interface is responsive.                            | MUSS      |
 | NFA-5 | The game can be played online in a browser.                  | MUSS      |
 
-## Randbedingungen
+## Boundry Conditions
 | ID   | Beschreibung                                           | MUSS/KANN |
 |------|--------------------------------------------------------|-----------|
 | RB-1 | The game is built with a client/server architecture.   | MUSS      |
