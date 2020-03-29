@@ -96,7 +96,7 @@ export interface PlayerGameState {
   coins: number,
   inventory: InventoryItem[],
   ships: Ship[],
-  hits: Coordinates[],
+  hits: HitCoordinates[],
   alive: boolean,
 }
 
@@ -115,7 +115,7 @@ export interface Ship {
   health: number[]  //[1,1,1] or [0,0,1] for ship with size 3
 }
 
-export interface Coordinates {
+export interface HitCoordinates {
   x: number,
   y: number
 }

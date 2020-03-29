@@ -29,7 +29,7 @@ html, body{
 }
 
 canvas{
-  width: 50%;
+  width: 100%;
   /*height: 100%;*/
-  background-image: linear-gradient( 135deg, rgba(224,235,213,1), rgba(37,148,141,1) );
+  /*background-image: linear-gradient( 135deg, rgba(224,235,213,1), rgba(37,148,141,1) );*/
 }

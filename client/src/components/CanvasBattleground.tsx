@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { Ship, HitCoordinates } from "../App";
 
 export interface TileType {
   name: string,
@@ -19,7 +20,13 @@ export interface TileTypesObject {
   [key: string]: TileType
 }
 
-function CanvasBattleground() {
+interface CanvasBattlegroundProps {
+  terrain: number[],
+  ships: Ship[],
+  hits: HitCoordinates[]
+}
+
+function CanvasBattleground(props: CanvasBattlegroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [rows, setRows] = React.useState(10);
@@ -27,6 +34,7 @@ function CanvasBattleground() {
   const [s, setseize] = React.useState(64);
 
   useEffect(() => {
+    console.log(props.terrain);
     /*let tiles = [[0,1,0],[0,2,0],[0,2,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
@@ -42,18 +50,7 @@ function CanvasBattleground() {
       '0': {name: 'water', h: 0.75, color: ['#34a4eb','#1d9ef0','#1481c7']},
       '1': {name: 'land', h: 1, color: ['#f5b32f']}
     }
-    let tiles: number[] = [0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,1,1,0,0,0,0,0,0,
-      0,0,1,1,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,1,1,0,0,
-      0,0,0,0,0,0,1,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0]
+    let tiles: number[] = props.terrain;
 
       let eff = []
       let size = Math.round(Math.sqrt(tiles.length));

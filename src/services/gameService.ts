@@ -1,5 +1,5 @@
 import { redis } from '../redis/redis';
-import { GeneralGameState, GameSettings } from 'interfaces/interfaces';
+import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState } from 'interfaces/interfaces';
 import { Socket } from 'socket.io';
 
 export function initGame(socket: Socket) {
@@ -13,15 +13,9 @@ export function initGame(socket: Socket) {
             admin: socket.handshake.session.userId,
             rounds: 5,
             currentRound: null,
-            turn: socket.handshake.session.userId,
-            terrainMap: [0, 1, 0, 3, 2, 0, 1, 0, 1, 0, 3, 0, 0, 0, 0, 0, 0],
-            fog: {
-                radius: 200,
-                xCenter: 0,
-                yCenter: 0,
-                nextXCenter: 0,
-                nextYCenter: 0
-            },
+            turn: null,
+            terrainMap: null,
+            fog: null,
             started: false,
             privateLobby: true
         }
@@ -67,6 +61,76 @@ export function changeSettings(settings: GameSettings, userId: string, gameId: s
             resolve(generalGameState);
         } else {
             reject(new Error('USER_NOT_ADMIN_OR_SETTINGS_WRONG'));
+        }
+    })
+}
+
+export function startGame(userId: string, gameId: string) {
+    return new Promise<ServerGameState>(async function (resolve, reject) {
+        let generalGameState: GeneralGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+
+        if(generalGameState.admin === userId && generalGameState.players.length > 0 && !generalGameState.started) {
+            generalGameState.started = true;
+            generalGameState.currentRound = 1;
+            generalGameState.turn = generalGameState.players[Math.floor(Math.random() * generalGameState.players.length)],
+            //TODO map.createTerrain();
+            generalGameState.terrainMap = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+                0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 1, 1, 0, 0,
+                0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            //TODO: map.createFog();
+            generalGameState.fog = {
+                radius: 100,
+                xCenter: 4,
+                yCenter: 4,
+                nextXCenter: 4 + 2,
+                nextYCenter: 4 - 1
+            }
+            let playerGameStates: PlayerGameState[] = [];
+            for(let player in generalGameState.players) {
+                let playerGameState = {playerId: generalGameState.players[player],
+                    coins: 0,
+                    inventory: [],
+                    ships: [{
+                        size: 2,
+                        xStart: 1,
+                        xEnd: 2,
+                        yStart: 1,
+                        yEnd: 2,
+                        shotsOrMoves: 2,
+                        health: [1,1]  //[1,1,1] or [0,0,1] for ship with size 3
+                      }],
+                    hits: [],
+                    alive: true}
+                playerGameStates.push(playerGameState)
+            }
+
+            let serverGameState: ServerGameState = {
+                generalState: generalGameState,
+                playerGameStates: playerGameStates,
+                map: { gameId: generalGameState.gameId,
+                    map: [[0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+                [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+                [0,''], [0,''], [5,'a'], [5,'a'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+                [5,'b'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+                [5,'b'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+                [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+                [0,''], [0,''], [0,''], [0,''], [5,'c'], [5,'c'], [0,''], [0,''], [0,''], [0,''],
+                [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+                [5,'d'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+                [5,'d'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,'']]
+                }
+            }
+            resolve(serverGameState);
+
+        } else {
+            reject(new Error('USER_NOT_ADMIN_OR_NOT_ENOUGH_PLAYERS_OR_GAME_ALREADY_STARTED'));
         }
     })
 }
