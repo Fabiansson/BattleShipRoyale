@@ -48,7 +48,8 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
 
     let tileTypes: TileTypesObject = {
       '0': {name: 'water', h: 0.75, color: ['#34a4eb','#1d9ef0','#1481c7']},
-      '1': {name: 'land', h: 1, color: ['#f5b32f']}
+      '1': {name: 'land', h: 1, color: ['#f5b32f']},
+      '2': {name: 'boat', h: 1.5, color: ['black']}
     }
     let tiles: number[] = props.terrain;
 
@@ -122,6 +123,18 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
           ctx.fillStyle = t.type.color[Math.floor(Math.random() * t.type.color.length)];
           ctx.fill();
           ctx.restore();
+
+          /*ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(s + cx, s * .75 + cy + oy + .1);
+          ctx.lineTo(s * .25 + cx, s * 0.85 + cy + oy + .1);
+          ctx.lineTo(0 + cx, s * .75 + cy + oy + .1);
+          ctx.lineTo(0 + cx, s * .75 + cy+ oy + .1);
+          ctx.closePath();
+          ctx.fillStyle = 'red';
+          ctx.fill();
+          ctx.restore();*/
+
 
           ctx.save();
           ctx.beginPath();

@@ -20,7 +20,7 @@ export function initGame(socket: Socket) {
             privateLobby: true
         }
 
-        await redis.setAsync(`room:${randomRoomId}`, JSON.stringify(generalGameState));
+        await redis.setAsync(`room:${randomRoomId}`, JSON.stringify({generalGameState}));
 
         resolve(generalGameState);
     })
@@ -28,7 +28,8 @@ export function initGame(socket: Socket) {
 
 export function join(gameId: string, socket: Socket, privateLobby: boolean) {
     return new Promise<GeneralGameState>(async function (resolve, reject) {
-        let generalGameState: GeneralGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let generalGameState: GeneralGameState = sgs.generalGameState;
 
         console.log('Room is private: ' + generalGameState.privateLobby);
         console.log('Join Type is private: ' + privateLobby);
@@ -40,7 +41,7 @@ export function join(gameId: string, socket: Socket, privateLobby: boolean) {
         } else if(!generalGameState.started) {
             generalGameState.players.push(socket.handshake.session.userId);
             generalGameState.playerNames.push('Salvatore');
-            await redis.setAsync(`room:${gameId}`, JSON.stringify(generalGameState));
+            await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
             resolve(generalGameState);
         } else {
             reject(new Error('GAME_ALREADY_STARTED'));
@@ -50,13 +51,14 @@ export function join(gameId: string, socket: Socket, privateLobby: boolean) {
 
 export function changeSettings(settings: GameSettings, userId: string, gameId: string) {
     return new Promise<GeneralGameState>(async function (resolve, reject) {
-        let generalGameState: GeneralGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let generalGameState: GeneralGameState = sgs.generalGameState;
 
         if(generalGameState.admin === userId && settings.rounds != null && settings.privateLobby != null) {
             generalGameState.rounds = settings.rounds;
             generalGameState.privateLobby = settings.privateLobby;
             
-            await redis.setAsync(`room:${gameId}`, JSON.stringify(generalGameState));
+            await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
 
             resolve(generalGameState);
         } else {
@@ -67,7 +69,8 @@ export function changeSettings(settings: GameSettings, userId: string, gameId: s
 
 export function startGame(userId: string, gameId: string) {
     return new Promise<ServerGameState>(async function (resolve, reject) {
-        let generalGameState: GeneralGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let generalGameState: GeneralGameState = sgs.generalGameState;
 
         if(generalGameState.admin === userId && generalGameState.players.length > 0 && !generalGameState.started) {
             generalGameState.started = true;
@@ -79,7 +82,7 @@ export function startGame(userId: string, gameId: string) {
                 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
                 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 2, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 1, 1, 0, 0,
                 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
@@ -111,24 +114,23 @@ export function startGame(userId: string, gameId: string) {
                 playerGameStates.push(playerGameState)
             }
 
-            let serverGameState: ServerGameState = {
-                generalState: generalGameState,
-                playerGameStates: playerGameStates,
-                map: { gameId: generalGameState.gameId,
-                    map: [[0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
-                [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
-                [0,''], [0,''], [5,'a'], [5,'a'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
-                [5,'b'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
-                [5,'b'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
-                [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
-                [0,''], [0,''], [0,''], [0,''], [5,'c'], [5,'c'], [0,''], [0,''], [0,''], [0,''],
-                [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
-                [5,'d'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
-                [5,'d'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,'']]
-                }
-            }
-            resolve(serverGameState);
+            sgs.playerGameStates = playerGameStates;
+            sgs.map = { gameId: generalGameState.gameId,
+                map: [[0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+            [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+            [0,''], [0,''], [5,'a'], [5,'a'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+            [5,'b'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+            [5,'b'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+            [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+            [0,''], [0,''], [0,''], [0,''], [5,'c'], [5,'c'], [0,''], [0,''], [0,''], [0,''],
+            [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+            [5,'d'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
+            [5,'d'], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,'']]
+            };
 
+            await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
+
+            resolve(sgs);
         } else {
             reject(new Error('USER_NOT_ADMIN_OR_NOT_ENOUGH_PLAYERS_OR_GAME_ALREADY_STARTED'));
         }

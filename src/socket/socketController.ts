@@ -1,7 +1,7 @@
 import { Server, Socket, Rooms } from 'socket.io';
 
 import * as game from '../services/gameService';
-import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, PlayerGameState, ServerGameState } from 'interfaces/interfaces';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState } from 'interfaces/interfaces';
 
 export const initHandlers = (io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
@@ -117,7 +117,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 let serverGameState: ServerGameState = await game.startGame(userId, gameId);
                 console.log('Game started...');
 
-                io.sockets.in(serverGameState.generalState.gameId).emit('generalGameStateUpdate', serverGameState.generalState);
+                io.sockets.in(serverGameState.generalGameState.gameId).emit('generalGameStateUpdate', serverGameState.generalGameState);
                 for(let playerGameState of serverGameState.playerGameStates) {
                     io.to(playerGameState.playerId).emit('playerGameStateUpdate', playerGameState);
                 }
