@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Ship, HitCoordinates } from "../App";
 
 export interface TileType {
@@ -28,13 +28,15 @@ interface CanvasBattlegroundProps {
 
 function CanvasBattleground(props: CanvasBattlegroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [map, setMap] = useState<number[]>(props.terrain);
 
   const [rows, setRows] = React.useState(10);
   const [cols, setcols] = React.useState(10);
   const [s, setseize] = React.useState(64);
 
   useEffect(() => {
-    console.log(props.terrain);
+    console.log('repainting');
+    console.log(map);
     /*let tiles = [[0,1,0],[0,2,0],[0,2,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
@@ -47,11 +49,11 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]];*/
 
     let tileTypes: TileTypesObject = {
-      '0': {name: 'water', h: 0.75, color: ['#34a4eb','#1d9ef0','#1481c7']},
+      '0': {name: 'water', h: .75, color: ['#34a4eb','#1d9ef0','#1481c7']},
       '1': {name: 'land', h: 1, color: ['#f5b32f']},
-      '2': {name: 'boat', h: 1.5, color: ['black']}
+      '2': {name: 'clicked', h: 1.2, color: ['red']}
     }
-    let tiles: number[] = props.terrain;
+    let tiles: number[] = map;
 
       let eff = []
       let size = Math.round(Math.sqrt(tiles.length));
@@ -83,7 +85,7 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
     
     drawCanvas(eff);
     // eslint-disable-next-line
-  });
+  }, [map]);
 
   const drawCanvas = (tiles: Tile[]) => {
     const canvas = canvasRef.current;
@@ -172,8 +174,16 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
               var dy = Math.abs(event.pageY - bounds.top - yCenter!);
 
               if (dx / (64 * 0.5) + dy / (32 * 0.5) <= 1) {
-                alert('X: ' + tiles[i].x + ' Y: ' + tiles[i].y +
-                  " clickX: " + event.pageX + " clickY: " + event.pageY);
+                let newMap = [...map];
+
+                var selected = newMap.indexOf(2);
+
+                if (selected !== -1) {
+                  newMap[selected] = 0;
+              }
+                newMap[i] = 2;
+                setMap(newMap);
+                //alert('X: ' + tiles[i].x + ' Y: ' + tiles[i].y + " clickX: " + event.pageX + " clickY: " + event.pageY);
                 break;
               }
             }
