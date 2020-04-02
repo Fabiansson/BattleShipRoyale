@@ -49,23 +49,24 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]];*/
 
     let tileTypes: TileTypesObject = {
-      '0': {name: 'water', h: .75, color: ['#34a4eb','#1d9ef0','#1481c7']},
-      '1': {name: 'land', h: 1, color: ['#f5b32f']},
-      '2': {name: 'clicked', h: 1.2, color: ['red']}
+      '0': { name: 'water', h: .75, color: ['#34a4eb', '#1d9ef0', '#1481c7'] },
+      '1': { name: 'land', h: 1, color: ['#f5b32f'] },
+      '2': { name: 'clicked', h: 1.2, color: ['red'] },
+      '3': { name: 'boat', h: 0.5, color: ['green'] }
     }
     let tiles: number[] = map;
 
-      let eff = []
-      let size = Math.round(Math.sqrt(tiles.length));
-      for(let i = 0; i < tiles.length; i++){
-        //let key: keyof TileTypesObject = tiles[i];
-        let tile: Tile = {
-          x: i % size, //x and y should logicaly be swapped but canvas draws like this
-          y: Math.floor(i / size),
-          type: tileTypes[tiles[i]]
-        }
-        eff.push(tile);
+    let eff = []
+    let size = Math.round(Math.sqrt(tiles.length));
+    for (let i = 0; i < tiles.length; i++) {
+      //let key: keyof TileTypesObject = tiles[i];
+      let tile: Tile = {
+        x: i % size, //x and y should logicaly be swapped but canvas draws like this
+        y: Math.floor(i / size),
+        type: tileTypes[tiles[i]]
       }
+      eff.push(tile);
+    }
     /*for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         let t: TileType = {
@@ -82,7 +83,7 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
         tiles.push(tile);
       }
     }*/
-    
+
     drawCanvas(eff);
     // eslint-disable-next-line
   }, [map]);
@@ -91,6 +92,12 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
     const canvas = canvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext('2d');
+      var image = new Image();
+
+      image.onload = () => {
+        ctx?.drawImage(image, 100, 100);
+      }
+      image.src = 'http://s4.postimage.org/1fxt9xtyc/floor_standard.png';
       if (ctx) {
         let w = window.innerWidth;
         let h = window.innerHeight;
@@ -104,7 +111,7 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
         ////DRAW
         const x = cw - (s * (1 + (((cols - 1) - (rows - 1)) * .5))) / 2;
         const y = ch - (s * (1 + (((cols - 1) + (rows - 1)) * .25))) / 2;
-        for (let i = 0, l = tiles.length; i < l; i++) {
+        for (let i = 0, l = tiles.length; i < 1; i++) {
           let t = tiles[i];
           let cx = Math.round(x + s * (t.x * .5) - s * (t.y * .5));
           let cy = Math.round(y + s * (t.x * .25) + s * (t.y * .25));
@@ -126,17 +133,23 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
           ctx.fill();
           ctx.restore();
 
-          /*ctx.save();
-          ctx.beginPath();
-          ctx.moveTo(s + cx, s * .75 + cy + oy + .1);
-          ctx.lineTo(s * .25 + cx, s * 0.85 + cy + oy + .1);
-          ctx.lineTo(0 + cx, s * .75 + cy + oy + .1);
-          ctx.lineTo(0 + cx, s * .75 + cy+ oy + .1);
-          ctx.closePath();
-          ctx.fillStyle = 'red';
-          ctx.fill();
-          ctx.restore();*/
-
+          /*if (t.type.name === 'boat') {
+            console.log('it is a boat');
+            ctx.save();
+            ctx.beginPath();
+            let height = 20;
+            
+            ctx.moveTo(s + cx * 0.875, s + cy); //oben rechts
+            ctx.lineTo(s * 0.625 + cx, s *1.0625  + cy); //BL
+            ctx.lineTo(s * .125 + cx, s *0.75 + cy); //TL
+            ctx.lineTo(s * .125 + cx,  s*0.6 + cy + oy); //TT
+            ctx.lineTo(s * 0.375 + cx, s * 0.53 + cy + oy); //TR
+            ctx.lineTo(s + cx * 0.875, s * .8125 + cy); //BR
+            ctx.closePath();
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            ctx.restore();
+          }*/
 
           ctx.save();
           ctx.beginPath();
@@ -180,7 +193,7 @@ function CanvasBattleground(props: CanvasBattlegroundProps) {
 
                 if (selected !== -1) {
                   newMap[selected] = 0;
-              }
+                }
                 newMap[i] = 2;
                 setMap(newMap);
                 //alert('X: ' + tiles[i].x + ' Y: ' + tiles[i].y + " clickX: " + event.pageX + " clickY: " + event.pageY);

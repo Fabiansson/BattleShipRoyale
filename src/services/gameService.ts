@@ -77,12 +77,12 @@ export function startGame(userId: string, gameId: string) {
             generalGameState.currentRound = 1;
             generalGameState.turn = generalGameState.players[Math.floor(Math.random() * generalGameState.players.length)],
             //TODO map.createTerrain();
-            generalGameState.terrainMap = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            generalGameState.terrainMap = [3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
                 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 1, 1, 0, 0,
                 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,

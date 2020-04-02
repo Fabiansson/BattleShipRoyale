@@ -7,6 +7,7 @@ import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
 import Battleground from './components/Battleground';
 import CanvasBattleground from './components/CanvasBattleground';
+import TwoDBattleground from './components/TwoDBattleground';
 
 export interface Room {
   gameId: string,
@@ -132,7 +133,7 @@ function App() {
         {!generalGameState && <WelcomeCard />}
         {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
         {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
-         <CanvasBattleground terrain={generalGameState.terrainMap} ships={playerGameState.ships} hits={playerGameState.hits}/>}
+         <TwoDBattleground terrain={generalGameState.terrainMap} ships={playerGameState.ships} hits={playerGameState.hits}/>}
       </SocketContext.Provider>
       </UserContext.Provider>}
     </div>
