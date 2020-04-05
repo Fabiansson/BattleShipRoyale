@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+
 import WelcomeCard from "./components/WelcomeCard";
 import Lobby from "./components/Lobby";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
-import Battleground from './components/Battleground';
-import CanvasBattleground from './components/CanvasBattleground';
-import TwoDBattleground from './components/TwoDBattleground';
+import Game from './components/Game';
 
 export interface Room {
   gameId: string,
@@ -75,12 +75,14 @@ function App() {
   const [socket, setSocket] = useState<SocketIOClient.Socket>(io({ autoConnect: false }));
   const [userId, setuUserId] = useState<string>('');
 
-  /*var serverIP = "http://localhost:4000";
-  if (process.env.NODE_ENV === 'development') {
-    serverIP = "http://localhost:3000";
-  }*/
-
-  //let socket = io({ autoConnect: false });
+  const theme = createMuiTheme({
+    typography: {
+      fontFamily: [
+        'Indie Flower',
+        'Arial'
+      ].join(','),
+    },
+  });
 
   useEffect(() => {
     const roomString = window.location.pathname.substr(1);
@@ -128,14 +130,16 @@ function App() {
 
   return (
     <div className="App">
+      <ThemeProvider theme={theme}>
       {<UserContext.Provider value={userId}>
         <SocketContext.Provider value={socket}>
         {!generalGameState && <WelcomeCard />}
         {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
         {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
-         <TwoDBattleground terrain={generalGameState.terrainMap} ships={playerGameState.ships} hits={playerGameState.hits}/>}
+          <Game generalGameState={generalGameState} playerGameState={playerGameState}/>}
       </SocketContext.Provider>
       </UserContext.Provider>}
+      </ThemeProvider>
     </div>
   );
 }

@@ -80,7 +80,7 @@ function Lobby(props: LobbyProps) {
                 style={{ minHeight: '100vh' }}
             >
 
-                <Grid item xs={6}>
+                <Grid item xs={6} style={{width: '50%'}}>
                     <Paper elevation={3} style={{ padding: '3em' }}>
                         Invite Link: <a href={'http://localhost:3000/' + props.generalGameState.gameId}>{'http://localhost:3000/' + props.generalGameState.gameId}</a>
                         <Grid container spacing={2}>
@@ -118,7 +118,7 @@ function Lobby(props: LobbyProps) {
                                 <Grid item xs={12}>
                                     <Button id="startButton" variant="contained" color="primary" onClick={startGame}>Start</Button>
                                 </Grid>}
-                            <Grid item xs={12}>
+                            <Grid item xs={12} style={{height: '300px'}}>
                                 <Chat />
                             </Grid>
                         </Grid>
