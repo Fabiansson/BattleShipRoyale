@@ -3,16 +3,16 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
 const gamebarStyle = {
-  backgroundColor: "#E8A656",
-  fontFamily: "Arial",
-  height: "80px",
-  borderRadius: "0px 0px 15px 15px",
+  backgroundColor: '#525252',
+    opacity: '0.8',
+    color: 'white',
+  height: '100%'
 };
 
 function Gamebar() {
   return (
     <div style={gamebarStyle}>
-        <Grid container spacing={3}>
+        <Grid container spacing={0}>
           <Grid item xs={4}>
       <h1>BattleshipRoyale</h1>
       </Grid>

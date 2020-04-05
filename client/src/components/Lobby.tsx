@@ -65,7 +65,7 @@ function Lobby(props: LobbyProps) {
     }
 
     const startGame = () => {
-        console.log('startgame');
+        socket?.emit('startGame');
     }
 
     return (
@@ -80,7 +80,7 @@ function Lobby(props: LobbyProps) {
                 style={{ minHeight: '100vh' }}
             >
 
-                <Grid item xs={6}>
+                <Grid item xs={6} style={{width: '50%'}}>
                     <Paper elevation={3} style={{ padding: '3em' }}>
                         Invite Link: <a href={'http://localhost:3000/' + props.generalGameState.gameId}>{'http://localhost:3000/' + props.generalGameState.gameId}</a>
                         <Grid container spacing={2}>
@@ -114,11 +114,11 @@ function Lobby(props: LobbyProps) {
                                         </li>)}
                                 </ul>
                             </Grid>
-                            {props.generalGameState.players.length >= 2 && props.generalGameState.admin === userId &&
+                            {props.generalGameState.players.length >= 1 && props.generalGameState.admin === userId &&
                                 <Grid item xs={12}>
-                                    <Button id="join" variant="contained" color="primary" onClick={startGame}>Start</Button>
+                                    <Button id="startButton" variant="contained" color="primary" onClick={startGame}>Start</Button>
                                 </Grid>}
-                            <Grid item xs={12}>
+                            <Grid item xs={12} style={{height: '300px'}}>
                                 <Chat />
                             </Grid>
                         </Grid>

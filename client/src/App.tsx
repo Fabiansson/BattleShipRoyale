@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+
 import WelcomeCard from "./components/WelcomeCard";
 import Lobby from "./components/Lobby";
 import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
-import Battleground from './components/Battleground';
+import Game from './components/Game';
 
 export interface Room {
   gameId: string,
@@ -16,6 +18,35 @@ export interface Room {
 export interface ErrorResponse {
   errorId?: number,
   error: string
+}
+
+export interface InventoryItem {
+  itemId: number,
+  amount: number
+}
+
+export interface Ship {
+  size: number,
+  xStart: number,
+  xEnd: number,
+  yStart: number,
+  yEnd: number,
+  shotsOrMoves: number,
+  health: number[]
+}
+
+export interface HitCoordinates {
+  x: number,
+  y: number
+}
+
+export interface PlayerGameState {
+  playerId: string,
+  coins: number,
+  inventory: InventoryItem[],
+  ships: Ship[],
+  hits: HitCoordinates[],
+  alive: boolean,
 }
 
 export interface Fog {
@@ -40,15 +71,18 @@ export interface GeneralGameState {
 
 function App() {
   const [generalGameState, setGeneralGameState] = useState<GeneralGameState | null>(null);
+  const [playerGameState, setPlayerGameState] = useState<PlayerGameState | null>(null);
   const [socket, setSocket] = useState<SocketIOClient.Socket>(io({ autoConnect: false }));
   const [userId, setuUserId] = useState<string>('');
 
-  /*var serverIP = "http://localhost:4000";
-  if (process.env.NODE_ENV === 'development') {
-    serverIP = "http://localhost:3000";
-  }*/
-
-  //let socket = io({ autoConnect: false });
+  const theme = createMuiTheme({
+    typography: {
+      fontFamily: [
+        'Indie Flower',
+        'Arial'
+      ].join(','),
+    },
+  });
 
   useEffect(() => {
     const roomString = window.location.pathname.substr(1);
@@ -60,10 +94,15 @@ function App() {
           setuUserId(userId);
         })
 
-        socket.on('joinRp', function (data: GeneralGameState) {
+        socket.on('generalGameStateUpdate', function (data: GeneralGameState) {
           console.log(data);
           setGeneralGameState(data);
           setSocket(socket);
+        })
+
+        socket.on('playerGameStateUpdate', function(data: PlayerGameState) {
+          console.log(data);
+          setPlayerGameState(data);
         })
 
         socket.on('error', function (data: ErrorResponse) {
@@ -91,14 +130,16 @@ function App() {
 
   return (
     <div className="App">
+      <ThemeProvider theme={theme}>
       {<UserContext.Provider value={userId}>
         <SocketContext.Provider value={socket}>
         {!generalGameState && <WelcomeCard />}
         {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
-        {generalGameState && generalGameState.started && <Battleground />}
-        {/*<Battleground />*/}
+        {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
+          <Game generalGameState={generalGameState} playerGameState={playerGameState}/>}
       </SocketContext.Provider>
       </UserContext.Provider>}
+      </ThemeProvider>
     </div>
   );
 }

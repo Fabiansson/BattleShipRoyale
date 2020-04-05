@@ -65,7 +65,7 @@ export const initSocket = (http: Server, session: RequestHandler) => {
                     console.log('Welcome back: ' + socket.handshake.session.userId);
                     socket.emit('userId', socket.handshake.session.userId);
                 } else {
-                    socket.handshake.session.userId = Math.random().toString(36).substring(7) + '-P';
+                    socket.handshake.session.userId = socket.id;
                     socket.handshake.session.save(() => {
                         console.log('Welcome: ' + socket.handshake.session.userId);
                         socket.emit('userId', socket.handshake.session.userId);

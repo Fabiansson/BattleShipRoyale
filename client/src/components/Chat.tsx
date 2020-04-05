@@ -14,11 +14,11 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
 
     rootGrid: {
+      position: 'relative',
       flexGrow: 1,
       backgroundColor: "#f2f2f2",
       width: '100%',
-      height: 200,
-      marginTop: '2em',
+      height: '100%',
       borderRadius: "15px 15px 15px 15px",
     },
     list: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "inline-block"
     },
     listDiv: {
-      height: 150,
+      height: '90%',
       overflowY: "auto",
       '&::-webkit-scrollbar': {
         width: '0.4em'
@@ -53,6 +53,8 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: "bold"
     },
     inputField: {
+      position: 'absolute',
+      bottom: 2,
       paddingLeft: 20
     },
 
@@ -112,9 +114,7 @@ function Chat(props: any) {
       <div className={classes.inputField}>
         <Input id="submitText" placeholder="Message" inputProps={{ 'aria-label': 'description' }} />
       </div>
-
     </div>
-
   );
 }
 

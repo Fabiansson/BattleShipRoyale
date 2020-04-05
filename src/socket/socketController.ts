@@ -1,7 +1,7 @@
 import { Server, Socket, Rooms } from 'socket.io';
 
 import * as game from '../services/gameService';
-import { ChatMessage, JoinResponse, GeneralGameState, JoinRequest, ErrorResponse, GameSettings } from 'interfaces/interfaces';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState } from 'interfaces/interfaces';
 
 export const initHandlers = (io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
@@ -27,7 +27,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
             socket.handshake.session.room = generalGameState.gameId;
             socket.handshake.session.save(() => {
-                io.sockets.in(generalGameState.gameId).emit('joinRp', generalGameState);
+                io.sockets.in(generalGameState.gameId).emit('generalGameStateUpdate', generalGameState);
             });
         }
     });
@@ -42,7 +42,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
             socket.handshake.session.room = generalGameState.gameId;
             socket.handshake.session.save(() => {
-                return io.sockets.in(data.gameId).emit('joinRp', generalGameState);
+                return io.sockets.in(data.gameId).emit('generalGameStateUpdate', generalGameState);
             });
         } catch (e) {
             console.error(e);
@@ -69,7 +69,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
                     socket.handshake.session.room = generalGameState.gameId;
                     socket.handshake.session.save(() => {
-                        return io.sockets.in(socketRoom).emit('joinRp', generalGameState);
+                        return io.sockets.in(socketRoom).emit('generalGameStateUpdate', generalGameState);
                     }); 
                 } catch (e) {
                     //TODO: Retry if failed
@@ -105,6 +105,32 @@ export const initHandlers = (io: Server, socket: Socket) => {
             }
         }
         
+    })
+
+    socket.on('startGame', async () => {
+        console.log('Starting game...');
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+        let members: string[] = Object.keys(io.nsps['/'].adapter.rooms[gameId].sockets);
+        if(members.length > 0) { //ONLY FOR DEV
+            try {
+                let serverGameState: ServerGameState = await game.startGame(userId, gameId);
+                console.log('Game started...');
+
+                io.sockets.in(serverGameState.generalGameState.gameId).emit('generalGameStateUpdate', serverGameState.generalGameState);
+                for(let playerGameState of serverGameState.playerGameStates) {
+                    io.to(playerGameState.playerId).emit('playerGameStateUpdate', playerGameState);
+                }
+                return;
+            } catch(e) {
+                console.error(e);
+                let response: ErrorResponse = {
+                    errorId: 4,
+                    error: 'Could not start game.'
+                }
+                socket.emit('error', response);
+            }
+        }
     })
 }
 

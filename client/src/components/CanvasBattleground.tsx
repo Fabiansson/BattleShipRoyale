@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { Ship, HitCoordinates } from "../App";
 
 export interface TileType {
   name: string,
@@ -19,14 +20,23 @@ export interface TileTypesObject {
   [key: string]: TileType
 }
 
-function CanvasBattleground() {
+interface CanvasBattlegroundProps {
+  terrain: number[],
+  ships: Ship[],
+  hits: HitCoordinates[]
+}
+
+function CanvasBattleground(props: CanvasBattlegroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [map, setMap] = useState<number[]>(props.terrain);
 
   const [rows, setRows] = React.useState(10);
   const [cols, setcols] = React.useState(10);
   const [s, setseize] = React.useState(64);
 
   useEffect(() => {
+    console.log('repainting');
+    console.log(map);
     /*let tiles = [[0,1,0],[0,2,0],[0,2,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],
@@ -39,33 +49,24 @@ function CanvasBattleground() {
     [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]];*/
 
     let tileTypes: TileTypesObject = {
-      '0': {name: 'water', h: 0.75, color: ['#34a4eb','#1d9ef0','#1481c7']},
-      '1': {name: 'land', h: 1, color: ['#f5b32f']}
+      '0': { name: 'water', h: .75, color: ['#34a4eb', '#1d9ef0', '#1481c7'] },
+      '1': { name: 'land', h: 1, color: ['#f5b32f'] },
+      '2': { name: 'clicked', h: 1.2, color: ['red'] },
+      '3': { name: 'boat', h: 0.5, color: ['green'] }
     }
-    let tiles: number[] = [0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,1,1,0,0,0,0,0,0,
-      0,0,1,1,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,1,1,0,0,
-      0,0,0,0,0,0,1,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0]
+    let tiles: number[] = map;
 
-      let eff = []
-      let size = Math.round(Math.sqrt(tiles.length));
-      for(let i = 0; i < tiles.length; i++){
-        //let key: keyof TileTypesObject = tiles[i];
-        let tile: Tile = {
-          x: i % size, //x and y should logicaly be swapped but canvas draws like this
-          y: Math.floor(i / size),
-          type: tileTypes[tiles[i]]
-        }
-        eff.push(tile);
+    let eff = []
+    let size = Math.round(Math.sqrt(tiles.length));
+    for (let i = 0; i < tiles.length; i++) {
+      //let key: keyof TileTypesObject = tiles[i];
+      let tile: Tile = {
+        x: i % size, //x and y should logicaly be swapped but canvas draws like this
+        y: Math.floor(i / size),
+        type: tileTypes[tiles[i]]
       }
+      eff.push(tile);
+    }
     /*for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         let t: TileType = {
@@ -82,15 +83,21 @@ function CanvasBattleground() {
         tiles.push(tile);
       }
     }*/
-    
+
     drawCanvas(eff);
     // eslint-disable-next-line
-  });
+  }, [map]);
 
   const drawCanvas = (tiles: Tile[]) => {
     const canvas = canvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext('2d');
+      var image = new Image();
+
+      image.onload = () => {
+        ctx?.drawImage(image, 100, 100);
+      }
+      image.src = 'http://s4.postimage.org/1fxt9xtyc/floor_standard.png';
       if (ctx) {
         let w = window.innerWidth;
         let h = window.innerHeight;
@@ -104,7 +111,7 @@ function CanvasBattleground() {
         ////DRAW
         const x = cw - (s * (1 + (((cols - 1) - (rows - 1)) * .5))) / 2;
         const y = ch - (s * (1 + (((cols - 1) + (rows - 1)) * .25))) / 2;
-        for (let i = 0, l = tiles.length; i < l; i++) {
+        for (let i = 0, l = tiles.length; i < 1; i++) {
           let t = tiles[i];
           let cx = Math.round(x + s * (t.x * .5) - s * (t.y * .5));
           let cy = Math.round(y + s * (t.x * .25) + s * (t.y * .25));
@@ -125,6 +132,24 @@ function CanvasBattleground() {
           ctx.fillStyle = t.type.color[Math.floor(Math.random() * t.type.color.length)];
           ctx.fill();
           ctx.restore();
+
+          /*if (t.type.name === 'boat') {
+            console.log('it is a boat');
+            ctx.save();
+            ctx.beginPath();
+            let height = 20;
+            
+            ctx.moveTo(s + cx * 0.875, s + cy); //oben rechts
+            ctx.lineTo(s * 0.625 + cx, s *1.0625  + cy); //BL
+            ctx.lineTo(s * .125 + cx, s *0.75 + cy); //TL
+            ctx.lineTo(s * .125 + cx,  s*0.6 + cy + oy); //TT
+            ctx.lineTo(s * 0.375 + cx, s * 0.53 + cy + oy); //TR
+            ctx.lineTo(s + cx * 0.875, s * .8125 + cy); //BR
+            ctx.closePath();
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            ctx.restore();
+          }*/
 
           ctx.save();
           ctx.beginPath();
@@ -162,8 +187,16 @@ function CanvasBattleground() {
               var dy = Math.abs(event.pageY - bounds.top - yCenter!);
 
               if (dx / (64 * 0.5) + dy / (32 * 0.5) <= 1) {
-                alert('X: ' + tiles[i].x + ' Y: ' + tiles[i].y +
-                  " clickX: " + event.pageX + " clickY: " + event.pageY);
+                let newMap = [...map];
+
+                var selected = newMap.indexOf(2);
+
+                if (selected !== -1) {
+                  newMap[selected] = 0;
+                }
+                newMap[i] = 2;
+                setMap(newMap);
+                //alert('X: ' + tiles[i].x + ' Y: ' + tiles[i].y + " clickX: " + event.pageX + " clickY: " + event.pageY);
                 break;
               }
             }

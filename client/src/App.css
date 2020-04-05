@@ -1,13 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
 html, body{
   height: 100%;
   width: 100%;
   padding: 0;
   margin: 0;
-  /*overflow: hidden;*/
+  overflow: hidden;
   background-color: #282c34;
   background-image: url('./assets/game_background_1.png');
   background-attachment: fixed;
   background-size: cover;
+  font-family: 'Indie Flower', cursive;
 }
 
 .App {
@@ -29,7 +32,7 @@ html, body{
 }
 
 canvas{
-  width: 50%;
-  /*height: 100%;*/
-  background-image: linear-gradient( 135deg, rgba(224,235,213,1), rgba(37,148,141,1) );
+  width: 100vw;
+  height: 100vh;
+  /*background-image: linear-gradient( 135deg, rgba(224,235,213,1), rgba(37,148,141,1) );*/
 }
