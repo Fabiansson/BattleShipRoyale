@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 import WelcomeCard from "./components/WelcomeCard";
 import Lobby from "./components/Lobby";
@@ -26,22 +26,23 @@ export interface InventoryItem {
 }
 
 export interface Ship {
-  size: number,
-  xStart: number,
-  xEnd: number,
-  yStart: number,
-  yEnd: number,
   shotsOrMoves: number,
-  health: number[]
+  position: ShipBlock[]
+}
+
+export interface ShipBlock {
+  x: number,
+  y: number,
+  health: number
 }
 
 export interface HitCoordinates {
   x: number,
-  y: number
+  y: number,
+  hit: boolean
 }
 
 export interface PlayerGameState {
-  playerId: string,
   coins: number,
   inventory: InventoryItem[],
   ships: Ship[],
@@ -59,13 +60,20 @@ export interface Fog {
 
 export interface GeneralGameState {
   gameId: string,
-  players: string[],
-  playerNames: string[],
+  players: Player[],
   admin: string,
-  turn?: string,
+  rounds: number,
+  currentRound?: number
+  turn?: Player,
   terrainMap?: number[],
   fog?: Fog,
-  started: boolean
+  started: boolean,
+  privateLobby: boolean
+}
+
+export interface Player {
+  playerId: string,
+  playerName: string
 }
 
 

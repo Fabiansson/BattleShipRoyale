@@ -118,8 +118,8 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 console.log('Game started...');
 
                 io.sockets.in(serverGameState.generalGameState.gameId).emit('generalGameStateUpdate', serverGameState.generalGameState);
-                for(let playerGameState of serverGameState.playerGameStates) {
-                    io.to(playerGameState.playerId).emit('playerGameStateUpdate', playerGameState);
+                for(let playerGameState in serverGameState.playerGameStates) {
+                    io.to(playerGameState).emit('playerGameStateUpdate', serverGameState.playerGameStates[playerGameState]);
                 }
                 return;
             } catch(e) {

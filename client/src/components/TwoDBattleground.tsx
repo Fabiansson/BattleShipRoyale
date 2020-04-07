@@ -16,6 +16,14 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         let mapData: number[] = props.terrain;
 
         mapSize = Math.floor(Math.sqrt(mapData.length));
+
+        props.ships.forEach(ship => {
+            ship.position.forEach(field => {
+                let fieldNumber: number = getFieldFromCoordinates(mapSize, field.x, field.y);
+                mapData[fieldNumber] = 3;
+            })
+        })
+
         let table = []
         for (let i = 0; i < mapSize; i++) {
             let cols = []
@@ -29,6 +37,11 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         
         return table
     }
+
+    const getFieldFromCoordinates = (mapSize: number, x: number, y: number) => {
+        return x + (mapSize * y);
+    }
+    
     return (
         <table className="grid">
             <tbody>

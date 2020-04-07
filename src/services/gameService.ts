@@ -1,5 +1,5 @@
 import { redis } from '../redis/redis';
-import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState } from 'interfaces/interfaces';
+import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player } from 'interfaces/interfaces';
 import { Socket } from 'socket.io';
 
 export function initGame(socket: Socket) {
@@ -8,8 +8,7 @@ export function initGame(socket: Socket) {
 
         let generalGameState: GeneralGameState = {
             gameId: randomRoomId,
-            players: [socket.handshake.session.userId],
-            playerNames: ['Karl'],
+            players: [{playerId: socket.handshake.session.userId, playerName: 'Karl'}],
             admin: socket.handshake.session.userId,
             rounds: 5,
             currentRound: null,
@@ -20,7 +19,9 @@ export function initGame(socket: Socket) {
             privateLobby: true
         }
 
-        await redis.setAsync(`room:${randomRoomId}`, JSON.stringify({generalGameState}));
+        let playerGameStates = {};
+
+        await redis.setAsync(`room:${randomRoomId}`, JSON.stringify({generalGameState, playerGameStates}));
 
         resolve(generalGameState);
     })
@@ -39,8 +40,11 @@ export function join(gameId: string, socket: Socket, privateLobby: boolean) {
         } else if (generalGameState.players.includes(socket.handshake.session.userId)) { //[NOT] IS FOR DEV ONLY!
             reject(new Error('USER_ALREADY_CONNECTED')); //TODO: Some reconnect functionality
         } else if(!generalGameState.started) {
-            generalGameState.players.push(socket.handshake.session.userId);
-            generalGameState.playerNames.push('Salvatore');
+            let player: Player = {
+                playerId: socket.handshake.session.userId,
+                playerName: 'Salvatore'
+            }
+            generalGameState.players.push(player);
             await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
             resolve(generalGameState);
         } else {
@@ -77,7 +81,7 @@ export function startGame(userId: string, gameId: string) {
             generalGameState.currentRound = 1;
             generalGameState.turn = generalGameState.players[Math.floor(Math.random() * generalGameState.players.length)],
             //TODO map.createTerrain();
-            generalGameState.terrainMap = [3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            generalGameState.terrainMap = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
                 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
@@ -95,26 +99,22 @@ export function startGame(userId: string, gameId: string) {
                 nextXCenter: 4 + 2,
                 nextYCenter: 4 - 1
             }
-            let playerGameStates: PlayerGameState[] = [];
+            
             for(let player in generalGameState.players) {
-                let playerGameState = {playerId: generalGameState.players[player],
+                let playerGameState: PlayerGameState = {
                     coins: 0,
                     inventory: [],
                     ships: [{
-                        size: 2,
-                        xStart: 1,
-                        xEnd: 2,
-                        yStart: 1,
-                        yEnd: 2,
                         shotsOrMoves: 2,
-                        health: [1,1]  //[1,1,1] or [0,0,1] for ship with size 3
+                        position: [{x: 1, y: 1, health: 100},{x: 1, y: 2, health: 100}]
                       }],
                     hits: [],
-                    alive: true}
-                playerGameStates.push(playerGameState)
+                    alive: true
+                }
+            
+                sgs.playerGameStates[generalGameState.players[player].playerId] = playerGameState;
             }
 
-            sgs.playerGameStates = playerGameStates;
             sgs.map = { gameId: generalGameState.gameId,
                 map: [[0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],
             [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''], [0,''],

@@ -1,4 +1,8 @@
-.grid { margin:1em auto; border-collapse:collapse; transform: rotateX(60deg) rotateY(0deg) rotateZ(45deg); }
+.grid { 
+    margin: 1em auto; 
+    border-collapse: collapse; 
+    /*transform: rotateX(60deg) rotateY(0deg) rotateZ(45deg);*/
+}
 .grid td {
     cursor: pointer;
     width:60px; height:60px;
