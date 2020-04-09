@@ -1,3 +1,1 @@
-export const canMove = () => {
-    return false;
-}
+export const turnTime: number = 30000;

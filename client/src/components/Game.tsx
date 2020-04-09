@@ -11,7 +11,7 @@ import GameStats from "./GameStats";
 
 interface GameProps {
     generalGameState: GeneralGameState,
-    playerGameState: PlayerGameState
+    playerGameState: PlayerGameState,
 }
 
 function Game(props: GameProps) {
@@ -20,7 +20,7 @@ function Game(props: GameProps) {
         <div>
             <Grid container spacing={0}>
                 <Grid item style={{height: '10vh'}} xs={12}>
-                    <Gamebar round={props.generalGameState.currentRound!} coins={props.playerGameState.coins}/>
+                    <Gamebar round={props.generalGameState.currentRound!} amountRounds={props.generalGameState.rounds} coins={props.playerGameState.coins} turn={props.generalGameState.turn?.playerId!}/>
                 </Grid>
                 <Grid item xs={10} style={{height: '70vh'}}>
                     <TwoDBattleground terrain={props.generalGameState.terrainMap!} ships={props.playerGameState.ships} hits={props.playerGameState.hits} />}

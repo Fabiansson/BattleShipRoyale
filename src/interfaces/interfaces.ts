@@ -65,7 +65,8 @@ export interface GeneralGameState {
   terrainMap?: number[],
   fog?: Fog,
   started: boolean,
-  privateLobby: boolean
+  privateLobby: boolean,
+  winner?: Player
 }
 
 export interface PlayerGameState {
