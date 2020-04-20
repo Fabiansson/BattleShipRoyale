@@ -42,17 +42,6 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         return table
     }
 
-    const select = (tileNumber: string) => {
-        if (isShip(tileNumber)) {
-            getMoveFields(parseInt(tileNumber));
-            setSelected(tileNumber);
-
-        } else {
-            setMoveFields([]);
-            setSelected('');
-        }
-    }
-
     const handleClick = (event: any) => {
         if (isShip(event.target.id)) {
             if(selected === event.target.id) {
