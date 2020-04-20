@@ -106,10 +106,10 @@ function Lobby(props: LobbyProps) {
                             <Grid item xs={6}>
                                 <h2>Players</h2>
                                 <ul className={classes.list}>
-                                    {props.generalGameState.playerNames.map((player, i) =>
+                                    {props.generalGameState.players.map((player, i) =>
                                         <li key={i} className={classes.playerListElement}>
-                                            <div style={{textAlign: 'center'}}><Avatar className={classes.avatar} src={'https://avatars.dicebear.com/v2/avataaars/' + player + 'd.svg'}>{player}</Avatar>
-                                            <p>{player}</p></div>
+                                            <div style={{textAlign: 'center'}}><Avatar className={classes.avatar} src={'https://avatars.dicebear.com/v2/avataaars/' + player.playerName + 'd.svg'}>{player.playerName}</Avatar>
+                                            <p>{player.playerName}</p></div>
                                             
                                         </li>)}
                                 </ul>

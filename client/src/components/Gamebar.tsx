@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+
+import SocketContext from '../services/SocketProvider';
+import UserContext from '../services/UserProvider';
 
 const gamebarStyle = {
   backgroundColor: '#525252',
@@ -9,7 +12,25 @@ const gamebarStyle = {
   height: '100%'
 };
 
-function Gamebar() {
+const endTurnButtonStyle = {
+  margin: '1rem'
+}
+
+interface GamebarProps {
+  round: number,
+  amountRounds: number,
+  coins: number,
+  turn: string
+}
+
+function Gamebar(props: GamebarProps) {
+  const userId = useContext(UserContext);
+  const socket = useContext(SocketContext);
+
+  const endTurn = () => {
+    socket?.emit('endTurn');
+  }
+
   return (
     <div style={gamebarStyle}>
         <Grid container spacing={0}>
@@ -17,10 +38,19 @@ function Gamebar() {
       <h1>BattleshipRoyale</h1>
       </Grid>
       <Grid item xs={4}>
-      <p>Runde: </p>
+        <p>Round: {props.round} / {props.amountRounds}</p>
       </Grid>
-      <Grid item xs={4}>
-        <p>Coins: </p>
+      <Grid item xs={2}>
+        <p>Coins: {props.coins}</p>
+      </Grid>
+      <Grid item xs={2}>
+      <Button 
+        style={endTurnButtonStyle} 
+        id="endTurn" 
+        variant="contained" 
+        color="primary" 
+        disabled={props.turn !== userId}
+        onClick={endTurn}>End Turn</Button>
       </Grid>
       </Grid>
     </div>);

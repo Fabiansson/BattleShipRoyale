@@ -49,31 +49,37 @@ export interface Fog {
 //Questionable bc a lot of duplicate information
 export interface ServerGameState {
   generalGameState: GeneralGameState,
-  playerGameStates?: PlayerGameState[],
+  playerGameStates: {
+    [key: string]: PlayerGameState
+  },
   map?: Map
 }
 
 export interface GeneralGameState {
   gameId: string,
-  players: string[],
-  playerNames: string[],
+  players: Player[],
   admin: string,
   rounds: number,
   currentRound?: number
-  turn?: string,
+  turn?: Player,
   terrainMap?: number[],
   fog?: Fog,
   started: boolean,
-  privateLobby: boolean
+  privateLobby: boolean,
+  winner?: Player
 }
 
 export interface PlayerGameState {
-  playerId: string,
   coins: number,
   inventory: InventoryItem[],
   ships: Ship[],
   hits: HitCoordinates[],
   alive: boolean,
+}
+
+export interface Player {
+  playerId: string,
+  playerName: string
 }
 
 export interface InventoryItem {
@@ -82,16 +88,18 @@ export interface InventoryItem {
 }
 
 export interface Ship {
-  size: number,
-  xStart: number,
-  xEnd: number,
-  yStart: number,
-  yEnd: number,
   shotsOrMoves: number,
-  health: number[]  //[1,1,1] or [0,0,1] for ship with size 3
+  position: ShipBlock[]
+}
+
+export interface ShipBlock {
+  x: number,
+  y: number,
+  health: number
 }
 
 export interface HitCoordinates {
   x: number,
-  y: number
+  y: number,
+  hit: boolean
 }

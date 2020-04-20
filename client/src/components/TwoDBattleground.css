@@ -1,7 +1,11 @@
-.grid { margin:1em auto; border-collapse:collapse; transform: rotateX(60deg) rotateY(0deg) rotateZ(45deg); }
+.grid { 
+    margin: 1em auto; 
+    border-collapse: collapse; 
+    /*transform: rotateX(60deg) rotateY(0deg) rotateZ(45deg);*/
+}
 .grid td {
     cursor: pointer;
-    width:60px; height:60px;
+    width:50px; height:50px;
     border:1px solid #ccc;
     /*background-image: url(http://img14.deviantart.net/f99b/i/2011/354/d/5/isometric_new_tiles_by_spasquini-d4jnp2i.png);
     background-size: 1600% 100%;*/
@@ -13,8 +17,16 @@
     transform: translateX(-5px) translateY(-5px);
 }
 
-.grid td.clicked {
-    background-color: red;
+.grid td.selected {
+    background-color: #fc3a3a;
+}
+
+.grid td.aimed {
+    background-color: #fc913a;
+}
+
+.grid td.moveOption {
+    background-color: green;
 }
 
 .tile-0{

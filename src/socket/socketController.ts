@@ -1,7 +1,10 @@
 import { Server, Socket, Rooms } from 'socket.io';
 
 import * as game from '../services/gameService';
+import { turnTime } from '../services/gameRuleService';
 import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState } from 'interfaces/interfaces';
+
+let timer = null;
 
 export const initHandlers = (io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
@@ -107,6 +110,14 @@ export const initHandlers = (io: Server, socket: Socket) => {
         
     })
 
+    function startTurnTimer(gameId: string) {
+        if(timer !== null) {
+            clearTimeout(timer);
+            timer = null;
+        }
+        timer = setTimeout(() => { endTurn(gameId) }, turnTime); 
+    }
+
     socket.on('startGame', async () => {
         console.log('Starting game...');
         const userId = socket.handshake.session.userId;
@@ -118,9 +129,10 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 console.log('Game started...');
 
                 io.sockets.in(serverGameState.generalGameState.gameId).emit('generalGameStateUpdate', serverGameState.generalGameState);
-                for(let playerGameState of serverGameState.playerGameStates) {
-                    io.to(playerGameState.playerId).emit('playerGameStateUpdate', playerGameState);
+                for(let playerGameState in serverGameState.playerGameStates) {
+                    io.to(playerGameState).emit('playerGameStateUpdate', serverGameState.playerGameStates[playerGameState]);
                 }
+                startTurnTimer(gameId);
                 return;
             } catch(e) {
                 console.error(e);
@@ -132,5 +144,38 @@ export const initHandlers = (io: Server, socket: Socket) => {
             }
         }
     })
+
+    async function endTurn(gameIdd?: string){
+        console.log('Turn ended.');
+        let userId = null;
+        let gameId = null;
+        if(!gameIdd) {
+            userId = socket.handshake.session.userId;
+            gameId = socket.handshake.session.room;
+        } else {
+            gameId = gameIdd;
+        }
+        try {
+            let generalGameState: GeneralGameState = await game.endTurn(gameId, userId);
+            if(generalGameState.winner) {
+                io.sockets.in(generalGameState.gameId).emit('playerWon');
+                return;
+            }
+            io.sockets.in(generalGameState.gameId).emit('generalGameStateUpdate', generalGameState);
+            startTurnTimer(gameId);
+            return;
+        } catch(e) {
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 5,
+                error: 'Could not end turn.'
+            }
+            socket.emit('error', response);
+        }
+
+
+    }
+
+    socket.on('endTurn', async () => endTurn())
 }
 
