@@ -17,8 +17,16 @@
     transform: translateX(-5px) translateY(-5px);
 }
 
-.grid td.clicked {
-    background-color: red;
+.grid td.selected {
+    background-color: #fc3a3a;
+}
+
+.grid td.aimed {
+    background-color: #fc913a;
+}
+
+.grid td.moveOption {
+    background-color: green;
 }
 
 .tile-0{
