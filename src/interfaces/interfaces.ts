@@ -103,3 +103,8 @@ export interface HitCoordinates {
   y: number,
   hit: boolean
 }
+
+export interface Move {
+  from: number,
+  to: number
+}

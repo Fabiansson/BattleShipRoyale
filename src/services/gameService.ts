@@ -1,6 +1,8 @@
 import { redis } from '../redis/redis';
-import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player } from 'interfaces/interfaces';
+import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move } from 'interfaces/interfaces';
 import { Socket } from 'socket.io';
+import { getCoordinates } from '../helpers/helpers';
+import { turnTime } from './gameRuleService';
 
 let timer = null;
 
@@ -177,5 +179,37 @@ export function endTurn(gameId: string, userId?: string) {
         await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
         resolve(generalGameState);
 
+    })
+}
+
+export function move(gameId: string, userId: string, move: Move) {
+    return new Promise<PlayerGameState>(async function (resolve, reject) {
+        let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let generalGameState: GeneralGameState = sgs.generalGameState;
+        let playerGameState: PlayerGameState = sgs.playerGameStates[userId];
+
+        let mapSize: number = generalGameState.terrainMap.length;
+        let fromCoordinates = getCoordinates(mapSize, move.from);
+        let toCoordinates = getCoordinates(mapSize, move.to);
+
+        if (userId && generalGameState.turn.playerId !== userId) {
+            reject(new Error('NOT_USERS_TURN'));
+            return;
+        }
+
+        for(let ship of playerGameState.ships) {
+            for (let position of ship.position) {
+                if (position.x == fromCoordinates[0] && position.y == fromCoordinates[1]) {
+                    position.x = toCoordinates[0];
+                    position.y = toCoordinates[1];
+                    sgs.playerGameStates[userId] = playerGameState;
+                    await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
+                    resolve(playerGameState);
+                    return
+                }
+            }
+        }
+
+        reject(new Error('NO_CORRESPONDING_SHIP_FOUND'));
     })
 }
