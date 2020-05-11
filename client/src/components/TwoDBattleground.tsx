@@ -13,6 +13,11 @@ interface TwoDBattlegroundProps {
 
 export interface Move {
     from: number,
+    to: string
+}
+
+export interface Attack {
+    from: number,
     to: number
 }
 
@@ -53,11 +58,12 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         if (isShip(event.target.id)) {
             if (selected === event.target.id) {
                 setSelected('');
-                setMoveFields([]);
+                //setMoveFields([]);
                 return;
             }
             setSelected(event.target.id);
-            getMoveFields(parseInt(event.target.id));
+            setMenuAnchor(event.currentTarget);
+            //getMoveFields(parseInt(event.target.id));
             return;
         }
         if (Boolean(selected)) {
@@ -69,19 +75,19 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         setMenuAnchor(null);
     }
     const attack = (anchor: string) => {
-        let attack: Move = { from: parseInt(selected), to: parseInt(anchor) }
+        let attack: Attack = { from: parseInt(selected), to: parseInt(anchor) }
         socket?.emit('attack', attack);
         setMenuAnchor(null);
         setSelected('');
-        setMoveFields([]);
+        //setMoveFields([]);
     }
 
-    const moveTo = (anchor: string) => {
-        let move: Move = { from: parseInt(selected), to: parseInt(anchor) }
+    const moveTo = (direction: string) => {
+        let move: Move = { from: parseInt(selected), to: direction }
         socket?.emit('moveTo', move);
         setMenuAnchor(null);
         setSelected('');
-        setMoveFields([]);
+        //setMoveFields([]);
     }
 
     const isShip = (tileNumber: string) => {
@@ -103,9 +109,9 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
             return 'selected';
         } else if (menuAnchor && menuAnchor.id === tileNumber) {
             return 'aimed';
-        } else if (moveFields.includes(parseInt(tileNumber))) {
+        } /*else if (moveFields.includes(parseInt(tileNumber))) {
             return 'moveOption';
-        }
+        }*/
         return 'tile-' + map[parseInt(tileNumber)];
     }
 
@@ -114,7 +120,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         return x + (mapSize * y);
     }
 
-    const getMoveFields = (tileNumber: number) => {
+    /*const getMoveFields = (tileNumber: number) => {
         let mapData: number[] = props.terrain;
 
         let sourroundingFields = [tileNumber + 1, tileNumber - 1, tileNumber + mapSize, tileNumber - mapSize];
@@ -134,7 +140,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         })
 
         setMoveFields(moveFields);
-    }
+    }*/
 
 
     return (
@@ -148,9 +154,14 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
                     open={Boolean(menuAnchor)}
                     onClose={handleClose}
                 >
+                    {menuAnchor && isShip(menuAnchor.id) && 
+                    <React.Fragment>
+                    <MenuItem onClick={() => moveTo('up')}>Up</MenuItem>
+                    <MenuItem onClick={() => moveTo('down')}>Down</MenuItem>
+                    <MenuItem onClick={() => moveTo('left')}>Left</MenuItem>
+                    <MenuItem onClick={() => moveTo('right')}>Right</MenuItem>
+                    </React.Fragment>}
                     <MenuItem onClick={() => attack(menuAnchor!.id)}>Attack</MenuItem>
-                    {menuAnchor && moveFields.includes(parseInt(menuAnchor.id)) &&
-                        <MenuItem onClick={() => moveTo(menuAnchor.id)}>Move To</MenuItem>}
                 </Menu>
             </tbody>
         </table>

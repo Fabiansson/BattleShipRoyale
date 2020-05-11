@@ -190,7 +190,7 @@ export function move(gameId: string, userId: string, move: Move) {
 
         let mapSize: number = generalGameState.terrainMap.length;
         let fromCoordinates = getCoordinates(mapSize, move.from);
-        let toCoordinates = getCoordinates(mapSize, move.to);
+        //let toCoordinates = getCoordinates(mapSize, move.to);
 
         if (userId && generalGameState.turn.playerId !== userId) {
             reject(new Error('NOT_USERS_TURN'));
@@ -200,8 +200,45 @@ export function move(gameId: string, userId: string, move: Move) {
         for(let ship of playerGameState.ships) {
             for (let position of ship.position) {
                 if (position.x == fromCoordinates[0] && position.y == fromCoordinates[1]) {
-                    position.x = toCoordinates[0];
-                    position.y = toCoordinates[1];
+                    //checkMove(ship, move.to)
+                    if (true) {
+                        for (let position of ship.position) {
+                            switch (move.to) {
+                                case 'left':
+                                    if (position.x >= 1) {
+                                        position.x--;
+                                    } else {
+                                        reject(new Error('NOT_A_POSSIBLE_MOVE'));
+                                        return
+                                    }
+                                  break;
+                                case 'right':
+                                    if (position.x < (mapSize - 2)){
+                                        position.x++;
+                                    } else {
+                                        reject(new Error('NOT_A_POSSIBLE_MOVE'));
+                                        return
+                                    }
+                                  break;
+                                case 'up':
+                                    if (position.y >= 1) {
+                                        position.y--;
+                                    } else {
+                                        reject(new Error('NOT_A_POSSIBLE_MOVE'));
+                                        return
+                                    }
+                                  break;
+                                case 'down':
+                                    if (position.y < (mapSize - 2)){
+                                        position.y++;
+                                    } else {
+                                        reject(new Error('NOT_A_POSSIBLE_MOVE'));
+                                        return
+                                    }
+                                  break;                                    
+                              }
+                        }
+                    }
                     sgs.playerGameStates[userId] = playerGameState;
                     await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
                     resolve(playerGameState);

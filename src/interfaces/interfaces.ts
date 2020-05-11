@@ -106,5 +106,10 @@ export interface HitCoordinates {
 
 export interface Move {
   from: number,
+  to: string
+}
+
+export interface Attack {
+  from: number,
   to: number
 }
