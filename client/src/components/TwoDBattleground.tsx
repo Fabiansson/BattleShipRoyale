@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import './TwoDBattleground.css';
 import { Ship, HitCoordinates } from "../App";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import SocketContext from "../services/SocketProvider";
 
 interface TwoDBattlegroundProps {
     terrain: number[],
@@ -10,14 +11,25 @@ interface TwoDBattlegroundProps {
     hits: HitCoordinates[]
 }
 
+export interface Move {
+    from: number,
+    to: string
+}
+
+export interface Attack {
+    from: number,
+    to: number
+}
+
 function TwoDBattleground(props: TwoDBattlegroundProps) {
+    const socket = useContext(SocketContext);
     const [selected, setSelected] = useState<string>('');
     const [moveFields, setMoveFields] = useState<number[]>([]);
     const [menuAnchor, setMenuAnchor] = useState<HTMLTableCellElement | null>(null);
     let mapSize: number = 0;
 
     const createTableRows = () => {
-        let mapData: number[] = props.terrain;
+        let mapData: number[] = [...props.terrain];
 
         mapSize = Math.floor(Math.sqrt(mapData.length));
 
@@ -33,7 +45,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
             let cols = []
             for (let j = 0; j < mapSize; j++) {
                 let tileNumber: string = "" + i + j;
-                cols.push(<td id={tileNumber} key={tileNumber} className={getBackground(tileNumber)} onClick={handleClick}>
+                cols.push(<td id={tileNumber} key={tileNumber} className={getBackground(tileNumber, mapData)} onClick={handleClick}>
                 </td>)
             }
             table.push(<tr className={'roow-' + i} key={i}>{cols}</tr>)
@@ -44,23 +56,38 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
 
     const handleClick = (event: any) => {
         if (isShip(event.target.id)) {
-            if(selected === event.target.id) {
+            if (selected === event.target.id) {
                 setSelected('');
-                setMoveFields([]);
+                //setMoveFields([]);
                 return;
             }
             setSelected(event.target.id);
-            getMoveFields(parseInt(event.target.id));
+            setMenuAnchor(event.currentTarget);
+            //getMoveFields(parseInt(event.target.id));
             return;
         }
         if (Boolean(selected)) {
             setMenuAnchor(event.currentTarget);
-            console.log(event.currentTarget.id);
         }
     }
 
     const handleClose = () => {
         setMenuAnchor(null);
+    }
+    const attack = (anchor: string) => {
+        let attack: Attack = { from: parseInt(selected), to: parseInt(anchor) }
+        socket?.emit('attack', attack);
+        setMenuAnchor(null);
+        setSelected('');
+        //setMoveFields([]);
+    }
+
+    const moveTo = (direction: string) => {
+        let move: Move = { from: parseInt(selected), to: direction }
+        socket?.emit('moveTo', move);
+        setMenuAnchor(null);
+        setSelected('');
+        //setMoveFields([]);
     }
 
     const isShip = (tileNumber: string) => {
@@ -77,15 +104,15 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         return isShip;
     }
 
-    const getBackground = (tileNumber: string) => {
+    const getBackground = (tileNumber: string, map: number[]) => {
         if (selected === tileNumber) {
             return 'selected';
         } else if (menuAnchor && menuAnchor.id === tileNumber) {
             return 'aimed';
-        } else if (moveFields.includes(parseInt(tileNumber))) {
+        } /*else if (moveFields.includes(parseInt(tileNumber))) {
             return 'moveOption';
-        }
-        return 'tile-' + props.terrain[parseInt(tileNumber)];
+        }*/
+        return 'tile-' + map[parseInt(tileNumber)];
     }
 
 
@@ -93,24 +120,28 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         return x + (mapSize * y);
     }
 
-    const getMoveFields = (tileNumber: number) => {
+    /*const getMoveFields = (tileNumber: number) => {
         let mapData: number[] = props.terrain;
 
-        const size: number = Math.floor(Math.sqrt(mapData.length));
-
-        let sourroundingFields = [tileNumber + 1, tileNumber - 1, tileNumber + size, tileNumber - size, tileNumber + size + 1, tileNumber + size - 1, tileNumber - size + 1, tileNumber - size - 1];
+        let sourroundingFields = [tileNumber + 1, tileNumber - 1, tileNumber + mapSize, tileNumber - mapSize];
 
         let moveFields: number[] = [];
-
+ 
+        ///// VERY CONFUSING
         sourroundingFields.forEach(number => {
             if (number >= 0 && number < mapData.length && mapData[number] === 0) {
+                if ((number === tileNumber + 1) && (number > (Math.ceil((tileNumber + 0.001) / mapSize) * mapSize) - 1)) {
+                    return
+                } else if ((number === tileNumber - 1) && !((number / mapSize) >= Math.floor(tileNumber / mapSize))) {
+                    return
+                }
                 moveFields.push(number);
             }
         })
 
         setMoveFields(moveFields);
-    }
-   
+    }*/
+
 
     return (
         <table className="grid">
@@ -123,9 +154,14 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
                     open={Boolean(menuAnchor)}
                     onClose={handleClose}
                 >
-                    <MenuItem onClick={handleClose}>Attack</MenuItem>
-                    {menuAnchor && moveFields.includes(parseInt(menuAnchor.id)) && 
-                    <MenuItem onClick={handleClose}>Move To</MenuItem>}
+                    {menuAnchor && isShip(menuAnchor.id) && 
+                    <React.Fragment>
+                    <MenuItem onClick={() => moveTo('up')}>Up</MenuItem>
+                    <MenuItem onClick={() => moveTo('down')}>Down</MenuItem>
+                    <MenuItem onClick={() => moveTo('left')}>Left</MenuItem>
+                    <MenuItem onClick={() => moveTo('right')}>Right</MenuItem>
+                    </React.Fragment>}
+                    <MenuItem onClick={() => attack(menuAnchor!.id)}>Attack</MenuItem>
                 </Menu>
             </tbody>
         </table>

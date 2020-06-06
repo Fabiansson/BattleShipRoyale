@@ -2,7 +2,7 @@ import { Server, Socket, Rooms } from 'socket.io';
 
 import * as game from '../services/gameService';
 import { turnTime } from '../services/gameRuleService';
-import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState } from 'interfaces/interfaces';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState } from 'interfaces/interfaces';
 
 let timer = null;
 
@@ -177,5 +177,32 @@ export const initHandlers = (io: Server, socket: Socket) => {
     }
 
     socket.on('endTurn', async () => endTurn())
+
+    socket.on('moveTo', async (data: Move) => {
+        console.log('Moving ship...');
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+
+        try{
+            let playerGameState: PlayerGameState = await game.move(gameId, userId, data);
+            io.to(userId).emit('playerGameStateUpdate', playerGameState);
+        } catch(e) {
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 6,
+                error: 'Could not move ship.'
+            }
+            socket.emit('error', response);
+        }
+    })
+
+    socket.on('attack', async (data: Move) => {
+        console.log('Attacking...');
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+        
+        console.log(data);
+        
+    })
 }
 
