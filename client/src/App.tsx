@@ -114,7 +114,7 @@ function App() {
         })
 
         socket.on('info', function (data: string) {
-          alert(data);
+          alert("INFO: " + data);
         })
 
         socket.on('error', function (data: ErrorResponse) {
@@ -123,10 +123,13 @@ function App() {
               window.location.href = 'http://localhost:3000'
               break;
             default:
-              alert(data.error);
+              alert('ERROR: ' + data);
               console.log('An error occured');
           }
-          console.log('errorrrrrrr');
+        })
+
+        socket.on('youLost', () => {
+          alert('YOU LOST! HAHAHAHAHAHAHAHAHAHAHAHAHAAHAHAHA NOOB!');
         })
 
         if (roomString.length > 1 && !generalGameState) {

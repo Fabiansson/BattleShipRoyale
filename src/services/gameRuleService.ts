@@ -1,12 +1,18 @@
-import { ShipBlock, ServerGameState } from "interfaces/interfaces";
-import { coordinateToIndex } from "../helpers/helpers";
-import sharedsession from "express-socket.io-session";
+import { ShipBlock, ServerGameState, Ship, PlayerGameState } from "interfaces/interfaces";
+import { coordinateToIndex, calculateDistance } from "../helpers/helpers";
 
 export const turnTime: number = 30000;
 
-export function checkMove(map: number[], position: ShipBlock, direction: string) {
+export function checkMove(map: number[], ship: Ship, position: ShipBlock, direction: string) {
     const mapSize = map.length;
     let goalIndex = null;
+
+    if (ship.shotsOrMoves < 1) {
+        throw new Error('NO_MOVES_LEFT');
+    }
+    if(position.health <= 0) {
+        throw new Error('DESTROYED_SHIPS_CAN_NOT_MOVE');
+    }
 
     switch (direction) {
         case 'left':
@@ -27,7 +33,23 @@ export function checkMove(map: number[], position: ShipBlock, direction: string)
             break;
     }
 
-    return false;
+    throw new Error('SHIP_CAN_NOT_MOVE_ON_THIS_TILE');
+}
+
+export function checkLoot(map: number[], ship: Ship, lootFrom: ShipBlock, lootSpot: number) {
+    const fromIndex = coordinateToIndex(map.length, lootFrom.x, lootFrom.y);
+
+    if(calculateDistance(map, fromIndex, lootSpot) != 1) {
+        throw new Error('NOT_CLOSE_ENOUGH_TO_ISLAND_TO_LOOT');
+    }
+    if(lootFrom.health <= 0) {
+        throw new Error('DESTROYED_SHIP_CAN_NOT_LOOT');
+    }
+    if(ship.shotsOrMoves < 1) {
+        throw new Error('NO_MORE_MOVES_FOR_THIS_SHIP');
+    }
+    
+    return true;
 }
 
 export function resetShotsOrMoves(sgs: ServerGameState) {
@@ -44,4 +66,16 @@ export function resetShotsOrMoves(sgs: ServerGameState) {
     }
     
     return newState;
+}
+
+export function checkAlive(victim: PlayerGameState) {
+    let alive = false;
+
+    for(let ship of victim.ships) {
+        for(let position of ship.position) {
+            if(position.health > 0) alive = true;
+        }
+    }
+
+    return alive;
 }

@@ -39,6 +39,7 @@ function Gamebar(props: GamebarProps) {
       </Grid>
       <Grid item xs={4}>
         <p>Round: {props.round} / {props.amountRounds}</p>
+        <h2>YOUR TURN!!!!!!!</h2>
       </Grid>
       <Grid item xs={2}>
         <p>Coins: {props.coins}</p>

@@ -2,7 +2,8 @@ import { redis } from '../redis/redis';
 import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship } from 'interfaces/interfaces';
 import { Socket } from 'socket.io';
 import { getCoordinates } from '../helpers/helpers';
-import { turnTime, checkMove, resetShotsOrMoves } from './gameRuleService';
+import { checkMove, resetShotsOrMoves, checkLoot, checkAlive } from './gameRuleService';
+import { createTerrainMap, placeShips } from './mapService';
 
 let timer = null;
 
@@ -84,17 +85,7 @@ export function startGame(userId: string, gameId: string) {
             generalGameState.started = true;
             generalGameState.currentRound = 1;
             generalGameState.turn = generalGameState.players[Math.floor(Math.random() * generalGameState.players.length)],
-                //TODO map.createTerrain();
-                generalGameState.terrainMap = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-                    0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 1, 1, 0, 0,
-                    0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            generalGameState.terrainMap = createTerrainMap(400);
             //TODO: map.createFog();
             generalGameState.fog = {
                 radius: 100,
@@ -104,14 +95,13 @@ export function startGame(userId: string, gameId: string) {
                 nextYCenter: 4 - 1
             }
 
+            const shipPacks: Ship[][] = placeShips(generalGameState.terrainMap, generalGameState.players.length);
+
             for (let player in generalGameState.players) {
                 let playerGameState: PlayerGameState = {
                     coins: 0,
                     inventory: [],
-                    ships: [{
-                        shotsOrMoves: 2,
-                        position: [{ x: 1, y: 1, health: 1 }, { x: 1, y: 2, health: 1 }]
-                    }],
+                    ships: shipPacks.pop(),
                     hits: [],
                     alive: true
                 }
@@ -192,7 +182,6 @@ export function move(gameId: string, userId: string, move: Move) {
 
         let mapSize: number = generalGameState.terrainMap.length;
         let fromCoordinates = getCoordinates(mapSize, move.from);
-        //let toCoordinates = getCoordinates(mapSize, move.to);
 
         if (userId && generalGameState.turn.playerId !== userId) {
             reject(new Error('NOT_USERS_TURN'));
@@ -203,28 +192,26 @@ export function move(gameId: string, userId: string, move: Move) {
             for (let position of ship.position) {
                 if (position.x == fromCoordinates[0] && position.y == fromCoordinates[1]) {
                     for (let position of ship.position) {
-                        if (checkMove(generalGameState.terrainMap, position, move.to)) {
-                            if(ship.shotsOrMoves == 0) {
-                                reject(new Error('NO_MOVES_LEFT'));
-                                return;
+                        try{
+                            if (checkMove(generalGameState.terrainMap, ship, position, move.to)) {
+                                switch (move.to) {
+                                    case 'left':
+                                        position.x--;
+                                        break;
+                                    case 'right':
+                                        position.x++;
+                                        break;
+                                    case 'up':
+                                        position.y--;
+                                        break;
+                                    case 'down':
+                                        position.y++;
+                                        break;
+                                }
                             }
-                            switch (move.to) {
-                                case 'left':
-                                    position.x--;
-                                    break;
-                                case 'right':
-                                    position.x++;
-                                    break;
-                                case 'up':
-                                    position.y--;
-                                    break;
-                                case 'down':
-                                    position.y++;
-                                    break;
-                            }
-                        } else {
-                            reject(new Error('NOT_A_POSSIBLE_MOVE'));
-                            return
+                        } catch(e) {
+                            reject(e);
+                            return;
                         }
                     }
                     ship.shotsOrMoves--;
@@ -274,7 +261,6 @@ export function attack(gameId: string, userId: string, attack: Attack) {
                     } else {
                         ship.shotsOrMoves--;
                         wpgs.playerGameStates[userId] = playerGameState;
-                        console.log('Attacking ship is: ' + ship + ' attacking block is: ' + position);
                     }
                 }
             }
@@ -284,15 +270,15 @@ export function attack(gameId: string, userId: string, attack: Attack) {
             for (let ship of sgs.playerGameStates[player].ships) {
                 for (let position of ship.position) {
                     if (position.x == toCoordinates[0] && position.y == toCoordinates[1]) {
-                        console.log('ship found');
                         if (position.health > 0) {
                             wpgs.victimId = player;
                             position.health--;
                             playerGameState.coins = playerGameState.coins + 100;
+                            sgs.playerGameStates[player].alive = checkAlive(sgs.playerGameStates[player]);
+
                             wpgs.playerGameStates[player] = sgs.playerGameStates[player];
                             wpgs.attackerMessage = 'You hit a ship!';
                             wpgs.victimMessage = 'One of your ships got hit!';
-                            console.log('Ship damaged or destroyed');
                             await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
                             resolve(wpgs);
                             return;
@@ -305,5 +291,41 @@ export function attack(gameId: string, userId: string, attack: Attack) {
         wpgs.attackerMessage = 'That was a miss!';
         await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
         resolve(wpgs);
+    })
+}
+
+export function loot(gameId: string, userId: string, loot: Attack) {
+    return new Promise<PlayerGameState>(async function (resolve, reject) {
+        let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let generalGameState: GeneralGameState = sgs.generalGameState;
+        let playerGameState: PlayerGameState = sgs.playerGameStates[userId];
+
+        let mapSize: number = generalGameState.terrainMap.length;
+        let fromCoordinates = getCoordinates(mapSize, loot.from);
+
+        if (userId && generalGameState.turn.playerId !== userId) {
+            reject(new Error('NOT_USERS_TURN'));
+            return;
+        }
+
+        for (let ship of playerGameState.ships) {
+            for (let position of ship.position) {
+                if (position.x == fromCoordinates[0] && position.y == fromCoordinates[1]) {
+                    try {
+                        if (checkLoot(generalGameState.terrainMap, ship, position, loot.to)) {
+                            ship.shotsOrMoves--;
+                            //playerGameState = loot(playerGameState);
+
+                            await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
+                            resolve(playerGameState);
+                            return;
+                        }
+                    } catch (e) {
+                        reject(e);
+                        return;
+                    }
+                }
+            }
+        }
     })
 }
