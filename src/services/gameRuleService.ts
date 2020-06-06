@@ -1,5 +1,6 @@
-import { ShipBlock } from "interfaces/interfaces";
+import { ShipBlock, ServerGameState } from "interfaces/interfaces";
 import { coordinateToIndex } from "../helpers/helpers";
+import sharedsession from "express-socket.io-session";
 
 export const turnTime: number = 30000;
 
@@ -27,4 +28,20 @@ export function checkMove(map: number[], position: ShipBlock, direction: string)
     }
 
     return false;
+}
+
+export function resetShotsOrMoves(sgs: ServerGameState) {
+    let newState: ServerGameState = JSON.parse(JSON.stringify(sgs));
+
+    for (let player in newState.playerGameStates) {
+        for (let ship of newState.playerGameStates[player].ships) {
+            for (let position of ship.position) {
+                if(position.health == 1) {
+                    ship.shotsOrMoves++;
+                }
+            }
+        }
+    }
+    
+    return newState;
 }

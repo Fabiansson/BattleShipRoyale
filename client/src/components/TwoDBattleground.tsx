@@ -36,7 +36,11 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         props.ships.forEach(ship => {
             ship.position.forEach(field => {
                 let fieldNumber: number = getFieldFromCoordinates(mapSize, field.x, field.y);
-                mapData[fieldNumber] = 3;
+                if (field.health == 1){
+                    mapData[fieldNumber] = 3;
+                } else {
+                    mapData[fieldNumber] = 4;
+                }
             })
         })
 
