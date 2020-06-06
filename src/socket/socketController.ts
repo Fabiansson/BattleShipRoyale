@@ -2,7 +2,7 @@ import { Server, Socket, Rooms } from 'socket.io';
 
 import * as game from '../services/gameService';
 import { turnTime } from '../services/gameRuleService';
-import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState } from 'interfaces/interfaces';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack } from 'interfaces/interfaces';
 
 let timer = null;
 
@@ -104,7 +104,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     errorId: 3,
                     error: 'Could not change Game Settings.'
                 }
-                socket.emit('error', response);
+                io.to(userId).emit('error', response);
             }
         }
         
@@ -140,7 +140,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     errorId: 4,
                     error: 'Could not start game.'
                 }
-                socket.emit('error', response);
+                io.to(userId).emit('error', response);
             }
         }
     })
@@ -170,7 +170,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 5,
                 error: 'Could not end turn.'
             }
-            socket.emit('error', response);
+            io.to(userId).emit('error', response);
         }
 
 
@@ -192,17 +192,29 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 6,
                 error: 'Could not move ship.'
             }
-            socket.emit('error', response);
+            io.to(userId).emit('error', response);
         }
     })
 
-    socket.on('attack', async (data: Move) => {
+    socket.on('attack', async (data: Attack) => {
         console.log('Attacking...');
         const userId = socket.handshake.session.userId;
         const gameId = socket.handshake.session.room;
-        
-        console.log(data);
-        
+
+        try {
+            let wpgs: WarPlayerGameStates = await game.attack(gameId, userId, data);
+            io.to(userId).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.attackerId]);
+            io.to(userId).emit('info', wpgs.attackerMessage);
+            io.to(wpgs.victimId).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.victimId]);
+            io.to(wpgs.victimId).emit('info', wpgs.victimMessage);
+        } catch(e) {
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 7,
+                error: 'Could not attack target.'
+            }
+            io.to(userId).emit('error', response);
+        }  
     })
 }
 

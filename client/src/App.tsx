@@ -113,14 +113,20 @@ function App() {
           setPlayerGameState(data);
         })
 
+        socket.on('info', function (data: string) {
+          alert(data);
+        })
+
         socket.on('error', function (data: ErrorResponse) {
           switch (data.errorId) {
             case 1:
               window.location.href = 'http://localhost:3000'
               break;
             default:
+              alert(data.error);
               console.log('An error occured');
           }
+          console.log('errorrrrrrr');
         })
 
         if (roomString.length > 1 && !generalGameState) {
