@@ -116,7 +116,7 @@ export interface Attack {
 
 export interface WarPlayerGameStates {
   attackerId: string,
-  victimId: string,
+  victimId?: string,
   playerGameStates: {
     [key: string]: PlayerGameState
   },
