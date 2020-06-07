@@ -111,3 +111,24 @@ export interface Item {
   price: number,
   img: string
 }
+
+export interface Move {
+  from: number,
+  to: string
+}
+
+export interface Attack {
+  from: number,
+  to: number
+}
+
+export interface WarPlayerGameStates {
+  attackerId: string,
+  victimId?: string,
+  playerGameStates: {
+    [key: string]: PlayerGameState
+  },
+  attackerMessage: string,
+  victimMessage: string
+}
+

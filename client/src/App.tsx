@@ -114,14 +114,23 @@ function App() {
           setPlayerGameState(data);
         })
 
+        socket.on('info', function (data: string) {
+          alert("INFO: " + data);
+        })
+
         socket.on('error', function (data: ErrorResponse) {
           switch (data.errorId) {
             case 1:
               window.location.href = 'http://localhost:3000'
               break;
             default:
+              alert('ERROR: ' + data);
               console.log('An error occured');
           }
+        })
+
+        socket.on('youLost', () => {
+          alert('YOU LOST! HAHAHAHAHAHAHAHAHAHAHAHAHAAHAHAHA NOOB!');
         })
 
         if (roomString.length > 1 && !generalGameState) {

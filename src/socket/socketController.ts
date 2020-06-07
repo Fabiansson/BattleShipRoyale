@@ -1,9 +1,9 @@
 import { Server, Socket, Rooms } from 'socket.io';
 import * as game from '../services/gameService';
+
 import { itemList }  from '../services/items';
-import { turnTime } from '../services/gameRuleService';
-import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, PlayerGameState, Item } from 'interfaces/interfaces';
-//import { Socket } from 'dgram';
+import { turnTime, resetShotsOrMoves } from '../services/gameRuleService';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack } from 'interfaces/interfaces';
 
 let timer = null;
 
@@ -105,7 +105,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     errorId: 3,
                     error: 'Could not change Game Settings.'
                 }
-                socket.emit('error', response);
+                io.to(userId).emit('error', response);
             }
         }
         
@@ -141,7 +141,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     errorId: 4,
                     error: 'Could not start game.'
                 }
-                socket.emit('error', response);
+                io.to(userId).emit('error', response);
             }
         }
     })
@@ -163,6 +163,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 return;
             }
             io.sockets.in(generalGameState.gameId).emit('generalGameStateUpdate', generalGameState);
+            io.sockets.in(generalGameState.gameId).emit('turnTimer');
             startTurnTimer(gameId);
             return;
         } catch(e) {
@@ -171,13 +172,77 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 5,
                 error: 'Could not end turn.'
             }
-            socket.emit('error', response);
+            io.to(userId).emit('error', response);
         }
 
 
     }
 
     socket.on('endTurn', async () => endTurn())
+
+    socket.on('moveTo', async (data: Move) => {
+        console.log('Moving ship...');
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+
+        try{
+            let playerGameState: PlayerGameState = await game.move(gameId, userId, data);
+            io.to(userId).emit('playerGameStateUpdate', playerGameState);
+        } catch(e) {
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 6,
+                error: 'Could not move ship.'
+            }
+            io.to(userId).emit('error', response);
+        }
+    })
+
+    socket.on('attack', async (data: Attack) => {
+        console.log('Attacking...');
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+
+        try {
+            let wpgs: WarPlayerGameStates = await game.attack(gameId, userId, data);
+            io.to(userId).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.attackerId]);
+            io.to(userId).emit('info', wpgs.attackerMessage);
+            if(wpgs.victimId) {
+                io.to(wpgs.victimId).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.victimId]);
+                io.to(wpgs.victimId).emit('info', wpgs.victimMessage);
+                if(!wpgs.playerGameStates[wpgs.victimId].alive) {
+                    io.to(wpgs.victimId).emit('youLost');
+                }
+            }
+        } catch(e) {
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 7,
+                error: 'Could not attack target.'
+            }
+            io.to(userId).emit('error', response);
+        }  
+    })
+
+    socket.on('loot', async (data: Attack) => {
+        console.log('Looting...');
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+
+        try {
+            let playerGameState: PlayerGameState = await game.loot(gameId, userId, data);
+            io.to(userId).emit('playerGameStateUpdate', playerGameState);
+        } catch(e) {
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 7,
+                error: 'Could not loot.'
+            }
+            io.to(userId).emit('error', response);
+        }
+    })
+}
+
 
     socket.on('buy', async (data: number) => {
         console.log(data);
