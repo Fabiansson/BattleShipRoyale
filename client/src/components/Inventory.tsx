@@ -13,6 +13,8 @@ const inventoryStyle = {
     opacity: '0.8',
     color: 'white',
     height: '100%', 
+    bottom: '0',
+
 };
 
 function Inventory(props: InventoryProps) {

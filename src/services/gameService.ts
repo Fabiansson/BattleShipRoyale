@@ -349,4 +349,3 @@ export function loot(gameId: string, userId: string, loot: Attack) {
         }
     })
 }
-

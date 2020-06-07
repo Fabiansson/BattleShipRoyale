@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Paper from '@material-ui/core/Paper';
-
+import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import SocketContext from "../services/SocketProvider";
+import { Avatar } from '@material-ui/core';
 
 
 export interface Item {
@@ -46,21 +46,32 @@ useEffect(() => {
     
    const listOfItem = itemList.map(item=>{
         return (
-          
+              <Grid>
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar alt="Picture" src="../assets/mine.svg" />                 
+                <Avatar variant="square" sizes="big" alt="Picture" src={item.img} />               
                 </ListItemAvatar>
+                
+                  <Grid item xs={8}>
                 <ListItemText
-                  primary={item.desc}
-                  secondary={item.price}
+                  primary={item.name}
+                  secondary={item.desc}
+                  
                 />
+                </Grid>
+                <Grid item xs={3}>
+                 <ListItemText
+                  primary={item.price}      
+                />
+                </Grid>
+                
                 <ListItemSecondaryAction>
                 <Button variant="contained" color="primary" onClick={()=>{sendItem(item.id)}}>
                     BUY
                 </Button>
                 </ListItemSecondaryAction>
               </ListItem>
+              </Grid>
       
         );
           })
@@ -75,6 +86,5 @@ useEffect(() => {
         </div>
     )
     }
-
 
 export default Shop;

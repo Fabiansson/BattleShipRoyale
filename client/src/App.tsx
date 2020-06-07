@@ -171,7 +171,7 @@ function App() {
       <ThemeProvider theme={theme}>
           {<UserContext.Provider value={userId}>
             <SocketContext.Provider value={socket}>
-              {!generalGameState && <WelcomeCard />}
+              {!generalGameState && <Shop />}
               {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
               {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
                 <Game generalGameState={generalGameState} playerGameState={playerGameState}/>}
