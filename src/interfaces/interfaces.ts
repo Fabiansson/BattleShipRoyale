@@ -42,6 +42,7 @@ export interface Fog {
   radius: number,
   xCenter: number,
   yCenter: number,
+  nextRadius: number
   nextXCenter: number,
   nextYCenter: number
 }
@@ -49,9 +50,7 @@ export interface Fog {
 //Questionable bc a lot of duplicate information
 export interface ServerGameState {
   generalGameState: GeneralGameState,
-  playerGameStates: {
-    [key: string]: PlayerGameState
-  },
+  playerGameStates: PlayerGameStateCollection,
   map?: Map
 }
 
@@ -125,10 +124,16 @@ export interface Attack {
 export interface WarPlayerGameStates {
   attackerId: string,
   victimId?: string,
-  playerGameStates: {
-    [key: string]: PlayerGameState
-  },
+  playerGameStates: PlayerGameStateCollection,
   attackerMessage: string,
   victimMessage: string
 }
 
+export interface FogReport {
+  serverGameState: ServerGameState,
+  playerGameStates: PlayerGameStateCollection
+}
+
+export interface PlayerGameStateCollection {
+  [key: string]: PlayerGameState
+}

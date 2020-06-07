@@ -3,7 +3,7 @@ import * as game from '../services/gameService';
 
 import { itemList } from '../services/items';
 import { turnTime, resetShotsOrMoves } from '../services/gameRuleService';
-import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack } from 'interfaces/interfaces';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack, FogReport } from 'interfaces/interfaces';
 
 let timer = null;
 
@@ -157,10 +157,15 @@ export const initHandlers = (io: Server, socket: Socket) => {
             gameId = gameIdd;
         }
         try {
-            let generalGameState: GeneralGameState = await game.endTurn(gameId, userId);
-            if (generalGameState.winner) {
+            let endTurn: FogReport = await game.endTurn(gameId, userId);
+            let generalGameState: GeneralGameState = endTurn.serverGameState.generalGameState;
+            if(generalGameState.winner) {
                 io.sockets.in(generalGameState.gameId).emit('playerWon');
                 return;
+            }
+            for(let player in endTurn.playerGameStates) {
+                io.to(player).emit('playerGameStateUpdate', endTurn.playerGameStates[player]);
+                io.to(player).emit('info', 'One ore more of your ships got destroyed by the fog...');
             }
             io.sockets.in(generalGameState.gameId).emit('generalGameStateUpdate', generalGameState);
             io.sockets.in(generalGameState.gameId).emit('turnTimer');

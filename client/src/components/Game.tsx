@@ -23,7 +23,7 @@ function Game(props: GameProps) {
                     <Gamebar round={props.generalGameState.currentRound!} amountRounds={props.generalGameState.rounds} coins={props.playerGameState.coins} turn={props.generalGameState.turn?.playerId!}/>
                 </Grid>
                 <Grid item xs={10} style={{height: '70vh'}}>
-                    <TwoDBattleground terrain={props.generalGameState.terrainMap!} ships={props.playerGameState.ships} hits={props.playerGameState.hits} />}
+                    <TwoDBattleground terrain={props.generalGameState.terrainMap!} fog={props.generalGameState.fog!} ships={props.playerGameState.ships} hits={props.playerGameState.hits} />}
                 </Grid>
                 <Grid item xs={2} style={{height: '70vh'}}>
                     <Chat />

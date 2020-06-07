@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSnackbar } from 'notistack';
 import './App.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
@@ -55,6 +56,7 @@ export interface Fog {
   radius: number,
   xCenter: number,
   yCenter: number,
+  nextRadius: number,
   nextXCenter: number,
   nextYCenter: number
 }
@@ -83,6 +85,7 @@ function App() {
   const [playerGameState, setPlayerGameState] = useState<PlayerGameState | null>(null);
   const [socket, setSocket] = useState<SocketIOClient.Socket>(io({ autoConnect: false }));
   const [userId, setuUserId] = useState<string>('');
+  const { enqueueSnackbar } = useSnackbar();
 
   const theme = createMuiTheme({
     typography: {
@@ -109,13 +112,19 @@ function App() {
           setSocket(socket);
         })
 
-        socket.on('playerGameStateUpdate', function(data: PlayerGameState) {
+        socket.on('playerGameStateUpdate', function (data: PlayerGameState) {
           console.log(data);
           setPlayerGameState(data);
         })
 
         socket.on('info', function (data: string) {
-          alert("INFO: " + data);
+          enqueueSnackbar(data, {
+            variant: 'info',
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+          }
+          })
         })
 
         socket.on('error', function (data: ErrorResponse) {
@@ -124,13 +133,24 @@ function App() {
               window.location.href = 'http://localhost:3000'
               break;
             default:
-              alert('ERROR: ' + data);
-              console.log('An error occured');
+              enqueueSnackbar(data.error, {
+                variant: 'error',
+                anchorOrigin: {
+                  vertical: 'top',
+                  horizontal: 'center',
+              }
+              });
           }
         })
 
         socket.on('youLost', () => {
-          alert('YOU LOST! HAHAHAHAHAHAHAHAHAHAHAHAHAAHAHAHA NOOB!');
+          enqueueSnackbar('HAHAHAHAHAHAH YOU LOST!!!! NOOOB!!', {
+            variant: 'info',
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+          }
+          })
         })
 
         if (roomString.length > 1 && !generalGameState) {
@@ -149,18 +169,14 @@ function App() {
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
-      {<UserContext.Provider value={userId}>
-        <SocketContext.Provider value={socket}>
-        {!generalGameState && <WelcomeCard />} 
-        {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
-        {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
-        <div>
-          {<Game generalGameState={generalGameState} playerGameState={playerGameState}/>}
-          <Shop/>
-          </div>}
-          
-      </SocketContext.Provider>
-      </UserContext.Provider>}
+          {<UserContext.Provider value={userId}>
+            <SocketContext.Provider value={socket}>
+              {!generalGameState && <WelcomeCard />}
+              {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
+              {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
+                <Game generalGameState={generalGameState} playerGameState={playerGameState} />}
+            </SocketContext.Provider>
+          </UserContext.Provider>}
       </ThemeProvider>
     </div>
   );

@@ -1,9 +1,10 @@
-import { ShipBlock, ServerGameState, Ship, PlayerGameState } from "interfaces/interfaces";
+import { ShipBlock, ServerGameState, Ship, PlayerGameState, Fog, PlayerGameStateCollection } from "interfaces/interfaces";
 import { coordinateToIndex, calculateDistance } from "../helpers/helpers";
+import { isInFog } from "./mapService";
 
 export const turnTime: number = 30000;
 
-export function checkMove(map: number[], ship: Ship, position: ShipBlock, direction: string) {
+export function checkMove(map: number[], fog: Fog, ship: Ship, position: ShipBlock, direction: string) {
     const mapSize = map.length;
     let goalIndex = null;
 
@@ -17,29 +18,29 @@ export function checkMove(map: number[], ship: Ship, position: ShipBlock, direct
     switch (direction) {
         case 'left':
             goalIndex = coordinateToIndex(mapSize, position.x - 1, position.y)
-            if (position.x >= 1 && map[goalIndex] == 0) return true;
+            if (position.x >= 1 && map[goalIndex] == 0 && !isInFog(mapSize, fog, goalIndex)) return true;
             break;
         case 'right':
             goalIndex = coordinateToIndex(mapSize, position.x + 1, position.y)
-            if (position.x < (mapSize - 2) && map[goalIndex] == 0) return true;
+            if (position.x < (mapSize - 2) && map[goalIndex] == 0 && !isInFog(mapSize, fog, goalIndex)) return true;
             break;
         case 'up':
             goalIndex = coordinateToIndex(mapSize, position.x, position.y - 1);
-            if (position.y >= 1 && map[goalIndex] == 0) return true;
+            if (position.y >= 1 && map[goalIndex] == 0 && !isInFog(mapSize, fog, goalIndex)) return true;
             break;
         case 'down':
             goalIndex = coordinateToIndex(mapSize, position.x, position.y + 1);
-            if (position.y < (mapSize - 2) && map[goalIndex] == 0) return true;
+            if (position.y < (mapSize - 2) && map[goalIndex] == 0 && !isInFog(mapSize, fog, goalIndex)) return true;
             break;
     }
 
     throw new Error('SHIP_CAN_NOT_MOVE_ON_THIS_TILE');
 }
 
-export function checkLoot(map: number[], ship: Ship, lootFrom: ShipBlock, lootSpot: number) {
+export function checkLoot(map: number[], fog: Fog, ship: Ship, lootFrom: ShipBlock, lootSpot: number) {
     const fromIndex = coordinateToIndex(map.length, lootFrom.x, lootFrom.y);
 
-    if(calculateDistance(map, fromIndex, lootSpot) != 1) {
+    if(calculateDistance(map.length, fromIndex, lootSpot) != 1) {
         throw new Error('NOT_CLOSE_ENOUGH_TO_ISLAND_TO_LOOT');
     }
     if(lootFrom.health <= 0) {
@@ -47,6 +48,9 @@ export function checkLoot(map: number[], ship: Ship, lootFrom: ShipBlock, lootSp
     }
     if(ship.shotsOrMoves < 1) {
         throw new Error('NO_MORE_MOVES_FOR_THIS_SHIP');
+    }
+    if(isInFog(map.length, fog, lootSpot)) {
+        throw new Error('CAN_NOT_LOOT_ISLANDS_IN_FOG');
     }
     
     return true;
@@ -78,4 +82,26 @@ export function checkAlive(victim: PlayerGameState) {
     }
 
     return alive;
+}
+
+export function fogEatsShips(sgs: ServerGameState, fog: Fog) {
+    let playerGameStates: PlayerGameStateCollection = {};
+
+    let newState: ServerGameState = JSON.parse(JSON.stringify(sgs));
+    const mapSize = sgs.generalGameState.terrainMap.length;
+
+    for (let player in newState.playerGameStates) {
+        for(let ship of newState.playerGameStates[player].ships) {
+            for(let position of ship.position) {
+                const blockIndex: number = coordinateToIndex(mapSize, position.x, position.y);
+                if (isInFog(mapSize, fog, blockIndex) && position.health > 0) {
+                    position.health = 0;
+                    newState.playerGameStates[player].alive = checkAlive(newState.playerGameStates[player]);
+                    playerGameStates[player] = newState.playerGameStates[player];
+                }
+            }
+        }
+    }
+
+    return {serverGameState: newState, playerGameStates};
 }

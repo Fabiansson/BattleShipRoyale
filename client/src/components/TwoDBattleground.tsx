@@ -1,12 +1,16 @@
 import React, { useState, useContext } from "react";
 import './TwoDBattleground.css';
-import { Ship, HitCoordinates } from "../App";
+import { Ship, HitCoordinates, Fog } from "../App";
+
+import { useSnackbar } from 'notistack';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import SocketContext from "../services/SocketProvider";
+import { coordinateToIndex, calculateDistance } from "../services/helpers";
 
 interface TwoDBattlegroundProps {
     terrain: number[],
+    fog: Fog
     ships: Ship[],
     hits: HitCoordinates[]
 }
@@ -22,19 +26,22 @@ export interface Attack {
 }
 
 function TwoDBattleground(props: TwoDBattlegroundProps) {
+    const { enqueueSnackbar } = useSnackbar();
     const socket = useContext(SocketContext);
     const [selected, setSelected] = useState<string>('');
     const [menuAnchor, setMenuAnchor] = useState<HTMLTableCellElement | null>(null);
     let mapSize: number = 0;
+    let mapWidth: number = 0;
 
     const createTableRows = () => {
         let mapData: number[] = [...props.terrain];
 
-        mapSize = Math.floor(Math.sqrt(mapData.length));
+        mapSize = mapData.length;
+        mapWidth = Math.floor(Math.sqrt(mapData.length));
 
         props.ships.forEach(ship => {
             ship.position.forEach(field => {
-                let fieldNumber: number = getFieldFromCoordinates(mapSize, field.x, field.y);
+                let fieldNumber: number = coordinateToIndex(mapSize, field.x, field.y);
                 if (field.health === 1){
                     mapData[fieldNumber] = 3;
                 } else {
@@ -44,13 +51,16 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         })
 
         let table = []
-        for (let i = 0; i < mapSize; i++) {
+        for (let i = 0; i < mapWidth; i++) {
             let cols = []
-            for (let j = 0; j < mapSize; j++) {
-                ;
-                let tileNumber: string = (j + mapSize * i).toString(10);
-                cols.push(<td id={tileNumber} key={tileNumber} className={getBackground(tileNumber, mapData)} onClick={handleClick}>
-                </td>)
+            for (let j = 0; j < mapWidth; j++) {
+                let tileNumber: number = j + mapWidth * i;
+                let tileNumberS: string = tileNumber.toString(10);
+                if(!isInFog(props.terrain, props.fog, tileNumber)) {
+                    cols.push(<td id={tileNumberS} key={tileNumberS} className={getBackground(tileNumberS, mapData)} onClick={handleClick}></td>);
+                } else {
+                    cols.push(<td id={tileNumberS} key={tileNumberS} className={'tile-5'} onClick={handleFogClick}></td>);
+                }
             }
             table.push(<tr className={'roow-' + i} key={i}>{cols}</tr>)
         }
@@ -71,6 +81,16 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         if (Boolean(selected)) {
             setMenuAnchor(event.currentTarget);
         }
+    }
+
+    const handleFogClick = () => {
+        enqueueSnackbar('Nothing can be done in the fog...', {
+            variant: 'error',
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+          }
+          });
     }
 
     const handleClose = () => {
@@ -102,9 +122,8 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         let isShip = false;
         props.ships.forEach(ship => {
             ship.position.forEach(field => {
-                let fieldNumber: number = getFieldFromCoordinates(mapSize, field.x, field.y);
+                let fieldNumber: number = coordinateToIndex(mapSize, field.x, field.y);
                 if (fieldNumber === parseInt(tileNumber)) {
-                    console.log('Is ship');
                     isShip = true;
                 }
             })
@@ -125,9 +144,9 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         return 'tile-' + map[parseInt(tileNumber)];
     }
 
-
-    const getFieldFromCoordinates = (mapSize: number, x: number, y: number) => {
-        return x + (mapSize * y);
+    function isInFog(map: number[], fog: Fog, field: number) {
+        const fogCenterIndex = coordinateToIndex(map.length, fog.xCenter, fog.yCenter);
+        return calculateDistance(map.length, fogCenterIndex, field) > fog.radius;
     }
 
 

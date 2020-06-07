@@ -1,5 +1,6 @@
-import { calculateDistance, getRandomInt, shuffle, getCoordinates } from "../helpers/helpers";
-import { Ship } from "interfaces/interfaces";
+import { calculateDistance, getRandomInt, shuffle, getCoordinates, coordinateToIndex } from "../helpers/helpers";
+import { Ship, Fog } from "interfaces/interfaces";
+import { getEnabledCategories } from "trace_events";
 
 export function createTerrainMap(size: number) {
     let map: number[] = [];
@@ -34,7 +35,7 @@ function growIslands(array: number[], percentage: number) {
 
     for (let i = 0; i < array.length; i++) {
         centerPoints.forEach(centerPoint => {
-            if (calculateDistance(array, centerPoint, i) < 2 && tiles > 0) {
+            if (calculateDistance(array.length, centerPoint, i) < 2 && tiles > 0) {
                 array[i] = 1;
                 tiles--;
             }
@@ -59,8 +60,8 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                 switch (j) {
                     case 0:
                         if (getRandomInt(0, 1) == 0) { //HORZONTAL
-                            if (map[random - 1] == 0 && calculateDistance(map, random, random - 1) == 1 &&
-                                map[random + 1] == 0 && calculateDistance(map, random, random + 1) == 1 &&
+                            if (map[random - 1] == 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
+                                map[random + 1] == 0 && calculateDistance(mapSize, random, random + 1) == 1 &&
                                 !blocks.includes(random - 1) && !blocks.includes(random) && !blocks.includes(random + 1)) {
                                 blocks.push(random - 1);
                                 blocks.push(random);
@@ -70,8 +71,8 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                                 continue;
                             }
                         } else {
-                            if (map[random - mapWidth] == 0 && calculateDistance(map, random, random - mapWidth) == 1 &&
-                                map[random + mapWidth] == 0 && calculateDistance(map, random, random + mapWidth) == 1 &&
+                            if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
+                                map[random + mapWidth] == 0 && calculateDistance(mapSize, random, random + mapWidth) == 1 &&
                                 !blocks.includes(random - mapWidth) && !blocks.includes(random) && !blocks.includes(random + mapWidth)) {
                                 blocks.push(random - mapWidth);
                                 blocks.push(random);
@@ -91,7 +92,7 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                         break;
                     case 1:
                         if (getRandomInt(0, 1) == 0) { //HORZONTAL
-                            if (map[random - 1] == 0 && calculateDistance(map, random, random - 1) == 1 &&
+                            if (map[random - 1] == 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
                             !blocks.includes(random - 1) && !blocks.includes(random)) {
                                 blocks.push(random - 1);
                                 blocks.push(random);
@@ -100,7 +101,7 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                                 continue;
                             }
                         } else {
-                            if (map[random - mapWidth] == 0 && calculateDistance(map, random, random - mapWidth) == 1 &&
+                            if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
                             !blocks.includes(random - mapWidth) && !blocks.includes(random)) {
                                 blocks.push(random - mapWidth);
                                 blocks.push(random);
@@ -137,4 +138,57 @@ export function placeShips(map: number[], amountOfPlayers: number) {
         }
     }
     return shipPacks;
+}
+
+export function createFog(mapSize: number) {
+    const mapWidth: number = Math.floor(Math.sqrt(mapSize));
+    const radius = mapWidth; //RANDOM FOG RADIUS DEFINITION
+    const centerIndex = getRandomInt(0, mapSize - 1);
+    const fogCoordinates: number[] = getCoordinates(mapSize, centerIndex); 
+    const nextFogCoordinates: number[] = getNextFogCoordinates(mapSize, centerIndex, radius);
+    
+    let fog: Fog = {
+        radius: radius,
+        xCenter: fogCoordinates[0],
+        yCenter: fogCoordinates[1],
+        nextRadius: getNextRadius(radius),
+        nextXCenter: nextFogCoordinates[0],
+        nextYCenter: nextFogCoordinates[1]
+    }
+
+    return fog;
+}
+
+export function shrinkFog(mapSize: number, fog: Fog) {
+    let newFog: Fog = Object.assign({}, fog);
+
+    const currentCenterIndex: number = coordinateToIndex(mapSize, fog.xCenter, fog.nextYCenter);
+    const nextFogCoordinates: number[] = getNextFogCoordinates(mapSize, currentCenterIndex, fog.radius);
+    newFog.radius = fog.nextRadius;
+    newFog.xCenter = fog.nextXCenter;
+    newFog.yCenter = fog.nextYCenter;
+    newFog.nextRadius = getNextRadius(newFog.radius);
+    newFog.nextXCenter = nextFogCoordinates[0];
+    newFog.nextYCenter = nextFogCoordinates[1];
+
+    return newFog;
+}
+
+function getNextFogCoordinates(mapSize: number, currentCenterIndex: number, radius: number) {
+    const nextCenterIndex = getRandomInt(0, mapSize - 1);
+
+    if(calculateDistance(mapSize, currentCenterIndex, nextCenterIndex) <= 0.1 * radius){
+        return getCoordinates(mapSize, nextCenterIndex);
+    } else {
+        return getNextFogCoordinates(mapSize, currentCenterIndex, radius);
+    }
+}
+
+function getNextRadius(currentRadius: number) {
+    return currentRadius * 0.85;
+}
+
+export function isInFog(mapSize: number, fog: Fog, field: number) {
+    const fogCenterIndex = coordinateToIndex(mapSize, fog.xCenter, fog.yCenter);
+    return calculateDistance(mapSize, fogCenterIndex, field) > fog.radius;
 }
