@@ -23,6 +23,7 @@ export interface ErrorResponse {
 
 export interface InventoryItem {
   itemId: number,
+  name: string,
   amount: number
 }
 
