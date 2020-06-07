@@ -1,11 +1,8 @@
-import React, { useContext} from 'react';
-import SocketContext from "../services/SocketProvider";
+import React from 'react';
 import { PlayerGameState } from "../App";
-import Button from '@material-ui/core/Button';
 import { createStyles, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from '@material-ui/core/Grid';
-import { url } from 'inspector';
 
 interface InventoryProps {
     playerGameState: PlayerGameState,
@@ -30,11 +27,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Inventory(props: InventoryProps) {
     const classes = useStyles();
-    const socket = useContext(SocketContext);
-    const takeItem = (itemId: number) => {
-
-        socket?.emit("use", itemId);
-      }
 
     return (
     <div className={classes.inventory}>

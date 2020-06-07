@@ -22,8 +22,8 @@ function Game(props: GameProps) {
                 <Grid item style={{height: '10vh'}} xs={12}>
                     <Gamebar round={props.generalGameState.currentRound!} amountRounds={props.generalGameState.rounds} coins={props.playerGameState.coins} turn={props.generalGameState.turn?.playerId!}/>
                 </Grid>
-                <Grid item xs={10} style={{height: '70vh'}}>
-                    <TwoDBattleground terrain={props.generalGameState.terrainMap!} lootMap={props.generalGameState.lootMap!} fog={props.generalGameState.fog!} ships={props.playerGameState.ships} hits={props.playerGameState.hits} inventory={props.playerGameState.inventory} />}
+                <Grid item xs={10}>
+                    <TwoDBattleground terrain={props.generalGameState.terrainMap!} lootMap={props.generalGameState.lootMap!} fog={props.generalGameState.fog!} ships={props.playerGameState.ships} hits={props.playerGameState.hits} inventory={props.playerGameState.inventory} />
 
                 </Grid>
                 <Grid item xs={2} style={{height: '70vh'}}>
