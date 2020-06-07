@@ -28,12 +28,12 @@ function GameStats(props: GameStatsProps) {
     const classes = useStyles();
     return (
     <div className={classes.gameStatsStyle}>
-        <h2 className={classes.titel}>Opponent Inventory</h2>
+        <h2 className={classes.titel}>Ships</h2>
         
         <ul>
               {props.generalGameState.players.map(item => {
                   return(
-                <li style={props.generalGameState.turn ? { color: "white" } : { color: "powderblue" }}><span>{item.playerName}:</span> <span> {props.playerGameState.ships.length} Ships</span>
+                <li style={props.generalGameState.turn ? { color: "white" } : { color: "blue" }}><span>{item.playerName}:</span> <span> {props.playerGameState.ships.length} Ships</span>
                   
                   </li>);
 })}
