@@ -177,7 +177,7 @@ function App() {
               {!generalGameState && <WelcomeCard />}
               {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
               {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
-                <Game generalGameState={generalGameState} playerGameState={playerGameState} />}
+                <Game generalGameState={generalGameState} playerGameState={playerGameState}/>}
             </SocketContext.Provider>
           </UserContext.Provider>}
       </ThemeProvider>

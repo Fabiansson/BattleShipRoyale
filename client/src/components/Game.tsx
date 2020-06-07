@@ -11,7 +11,7 @@ import GameStats from "./GameStats";
 
 interface GameProps {
     generalGameState: GeneralGameState,
-    playerGameState: PlayerGameState,
+    playerGameState: PlayerGameState
 }
 
 function Game(props: GameProps) {
@@ -24,6 +24,7 @@ function Game(props: GameProps) {
                 </Grid>
                 <Grid item xs={10} style={{height: '70vh'}}>
                     <TwoDBattleground terrain={props.generalGameState.terrainMap!} lootMap={props.generalGameState.lootMap!} fog={props.generalGameState.fog!} ships={props.playerGameState.ships} hits={props.playerGameState.hits} inventory={props.playerGameState.inventory} />}
+
                 </Grid>
                 <Grid item xs={2} style={{height: '70vh'}}>
                     <Chat />
@@ -32,7 +33,7 @@ function Game(props: GameProps) {
                     <Inventory playerGameState={props.playerGameState}/>
                 </Grid>
                 <Grid item xs={4} style={{height: '20vh'}}>
-                    <GameStats />
+                    <GameStats playerGameState={props.playerGameState} generalGameState={props.generalGameState}/>
                 </Grid>
             </Grid>
         </div>

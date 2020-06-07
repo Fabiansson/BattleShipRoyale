@@ -1,16 +1,44 @@
 import React from "react";
+import { GeneralGameState, PlayerGameState } from "../App";
+import { createStyles, Theme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
-const statsStyle = {
-    backgroundColor: '#525252',
-    opacity: '0.8',
-    color: 'white',
-    height: '100%'
-};
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        gameStatsStyle: {
+            backgroundColor: '#525252',
+            opacity: '0.8',
+            color: 'white',
+            height: '100%'
+        },
+        titel: {
+            margin: "10px",
 
-function GameStats() {
-  return (
-    <div style={statsStyle}>
-        s
+        },
+
+    }),
+);
+
+interface GameStatsProps {
+    generalGameState: GeneralGameState;
+    playerGameState: PlayerGameState;
+}
+
+function GameStats(props: GameStatsProps) {
+    const classes = useStyles();
+    return (
+    <div className={classes.gameStatsStyle}>
+        <h2 className={classes.titel}>Opponent Inventory</h2>
+        
+        <ul>
+              {props.generalGameState.players.map(item => {
+                  return(
+                <li style={props.generalGameState.turn ? { color: "white" } : { color: "powderblue" }}><span>{item.playerName}:</span> <span> {props.playerGameState.ships.length} Ships</span>
+                  
+                  </li>);
+})}
+           
+            </ul>
     </div>);
 }
 
