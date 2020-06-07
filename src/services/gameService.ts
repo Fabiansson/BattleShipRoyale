@@ -1,10 +1,10 @@
 import { redis } from '../redis/redis';
-import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship, PlayerGameStateCollection, FogReport } from 'interfaces/interfaces';
-import { itemList } from './items';
+import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship, PlayerGameStateCollection, FogReport, LootReport, Fog, UseReport, Item, ItemUtilization } from 'interfaces/interfaces';
+import { itemList, getItem, useItem } from './itemService';
 import { Socket } from 'socket.io';
-import { getCoordinates } from '../helpers/helpers';
-import { checkMove, resetShotsOrMoves, checkLoot, checkAlive, fogEatsShips } from './gameRuleService';
-import { createTerrainMap, placeShips, createFog, shrinkFog } from './mapService';
+import { getCoordinates, removeByValue } from '../helpers/helpers';
+import { checkMove, resetShotsOrMoves, checkLoot, checkAlive, fogEatsShips, getRandomItem } from './gameRuleService';
+import { createTerrainMap, placeShips, createFog, shrinkFog, createLootMap, generateShip } from './mapService';
 
 let timer = null;
 
@@ -20,6 +20,7 @@ export function initGame(socket: Socket) {
             currentRound: null,
             turn: null,
             terrainMap: null,
+            lootMap: null,
             fog: null,
             started: false,
             privateLobby: true
@@ -85,16 +86,20 @@ export function startGame(userId: string, gameId: string) {
         if (generalGameState.admin === userId && generalGameState.players.length > 0 && !generalGameState.started) {
             generalGameState.started = true;
             generalGameState.currentRound = 1;
-            generalGameState.turn = generalGameState.players[Math.floor(Math.random() * generalGameState.players.length)],
-            generalGameState.terrainMap = createTerrainMap(400);
-            generalGameState.fog = createFog(400);
+            generalGameState.turn = generalGameState.players[Math.floor(Math.random() * generalGameState.players.length)];
+            const terrainMap: number[] = createTerrainMap(400);
+            const lootMap: number[] = createLootMap(terrainMap, generalGameState.players.length);
+            const fog: Fog = createFog(400);
+            generalGameState.terrainMap = terrainMap;
+            generalGameState.lootMap = lootMap;
+            generalGameState.fog = fog;
 
-            const shipPacks: Ship[][] = placeShips(generalGameState.terrainMap, generalGameState.players.length);
+            const shipPacks: Ship[][] = placeShips(terrainMap, generalGameState.players.length);
 
             for (let player in generalGameState.players) {
                 let playerGameState: PlayerGameState = {
                     coins: 0,
-                    inventory: [],
+                    inventory: [getItem(1)],
                     ships: shipPacks.pop(),
                     hits: [],
                     alive: true
@@ -163,9 +168,8 @@ export function endTurn(gameId: string, userId?: string) {
 
 
 export function buyItem(gameId: string, userId: string, data: number){
-
  return new Promise<PlayerGameState>(async function (resolve, reject) {
-    let item = itemList.find(itemId => itemId.id === data);
+    let item: Item = getItem(data);
     let costItem = itemList.find(itemId => itemId.id === data).price;
     let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
     let playerGameState: PlayerGameState = sgs.playerGameStates[userId];
@@ -175,13 +179,24 @@ export function buyItem(gameId: string, userId: string, data: number){
         return
     }
     else{
-        let resultat: number = playerGameState.coins - costItem
+        let resultat: number = playerGameState.coins - costItem;
         playerGameState.coins = resultat;
 
-        if(playerGameState.inventory[item.id]) {
-            playerGameState.inventory[item.id].amount++;
+        if(item.id === 2 || item.id === 3 || item.id === 4) { //THEN IT IS A SHIP
+            switch(item.id) {
+                case 2: 
+                    //playerGameState.ships.push(generateShip(sgs, 1));
+                    break;
+                case 3:
+                    //playerGameState.ships.push(generateShip(sgs, 2));
+                    break;
+                case 4:
+                    //playerGameState.ships.push(generateShips(sgs, 3));
+                    break;
+            }
+            
         } else {
-            playerGameState.inventory.push({itemId: item.id, name: item.name ,amount: 1})
+            playerGameState.inventory.push(item);
         }
         
         sgs.playerGameStates[userId] = playerGameState;
@@ -255,9 +270,7 @@ export function attack(gameId: string, userId: string, attack: Attack) {
         let wpgs: WarPlayerGameStates = {
             attackerId: userId,
             victimId: null,
-            playerGameStates: {
-
-            },
+            playerGameStates: {},
             attackerMessage: null,
             victimMessage: null
         }
@@ -315,7 +328,7 @@ export function attack(gameId: string, userId: string, attack: Attack) {
 }
 
 export function loot(gameId: string, userId: string, loot: Attack) {
-    return new Promise<PlayerGameState>(async function (resolve, reject) {
+    return new Promise<LootReport>(async function (resolve, reject) {
         let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
         let generalGameState: GeneralGameState = sgs.generalGameState;
         let playerGameState: PlayerGameState = sgs.playerGameStates[userId];
@@ -332,12 +345,15 @@ export function loot(gameId: string, userId: string, loot: Attack) {
             for (let position of ship.position) {
                 if (position.x == fromCoordinates[0] && position.y == fromCoordinates[1]) {
                     try {
-                        if (checkLoot(generalGameState.terrainMap, generalGameState.fog, ship, position, loot.to)) {
+                        if (checkLoot(generalGameState.terrainMap, generalGameState.lootMap, generalGameState.fog, ship, position, loot.to)) {
                             ship.shotsOrMoves--;
-                            //playerGameState = loot(playerGameState);
+                            generalGameState.lootMap = removeByValue(generalGameState.lootMap, loot.to);
+                            playerGameState.inventory.push(getRandomItem());
 
                             await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
-                            resolve(playerGameState);
+                            console.log(JSON.stringify(generalGameState));
+                            console.log(JSON.stringify(playerGameState));
+                            resolve({generalGameState, playerGameState});
                             return;
                         }
                     } catch (e) {
@@ -346,6 +362,34 @@ export function loot(gameId: string, userId: string, loot: Attack) {
                     }
                 }
             }
+        }
+    })
+}
+
+export function use(gameId: string, userId: string, itemUtilization: ItemUtilization) {
+    return new Promise<UseReport>(async function (resolve, reject) {
+        let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let generalGameState: GeneralGameState = sgs.generalGameState;
+
+        if (userId && generalGameState.turn.playerId !== userId) {
+            reject(new Error('NOT_USERS_TURN'));
+            return;
+        }
+
+        try {
+            let useReport: UseReport = useItem(userId, sgs, itemUtilization.itemId, itemUtilization.on);
+            if(useReport.generalGameState){
+                sgs.generalGameState = useReport.generalGameState;
+            }
+            for(let player in useReport.playerGameStates) {
+                sgs.playerGameStates[player] = useReport.playerGameStates[player];
+            }
+            await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
+            resolve(useReport);
+            return;
+        } catch(e) {
+            reject(e);
+            return;
         }
     })
 }

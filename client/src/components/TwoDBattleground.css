@@ -64,3 +64,20 @@
     background-color: rgb(255, 162, 162);
     background-size: cover;
 }
+
+/* CHEST*/
+.tile-6{
+    background-color: rgb(31, 202, 68);
+    background-size: cover;
+}
+
+/* PROTECTEDSHIP*/
+.tile-7{
+    background: url('https://cdn4.vectorstock.com/i/1000x1000/81/63/top-view-wood-boat-icon-simple-style-vector-25678163.jpg');
+    background-size: cover;
+}
+
+/* FUTUREFOG*/
+.soft{
+    opacity: .7;
+}

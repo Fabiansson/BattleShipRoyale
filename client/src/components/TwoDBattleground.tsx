@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import './TwoDBattleground.css';
-import { Ship, Fog, Hit } from "../App";
+import { Ship, Fog, Hit, Item } from "../App";
 
 import { useSnackbar } from 'notistack';
 import Menu from '@material-ui/core/Menu';
@@ -10,9 +10,11 @@ import { coordinateToIndex, calculateDistance } from "../services/helpers";
 
 interface TwoDBattlegroundProps {
     terrain: number[],
+    lootMap: number[],
     fog: Fog
     ships: Ship[],
-    hits: Hit[]
+    hits: Hit[],
+    inventory: Item[]
 }
 
 export interface Move {
@@ -23,6 +25,11 @@ export interface Move {
 export interface Attack {
     from: number,
     to: number
+}
+
+export interface ItemUtilization {
+    itemId: number,
+    on: number
 }
 
 function TwoDBattleground(props: TwoDBattlegroundProps) {
@@ -44,6 +51,8 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
                 let fieldNumber: number = coordinateToIndex(mapSize, field.x, field.y);
                 if (field.health === 1){
                     mapData[fieldNumber] = 3;
+                } else if (field.health >= 2) {
+                    mapData[fieldNumber] = 7;
                 } else {
                     mapData[fieldNumber] = 4;
                 }
@@ -55,16 +64,23 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
             mapData[fieldNumber] = 2;
         })
 
+        props.lootMap.forEach(loot => {
+            mapData[loot] = 6;
+        })
+
         let table = []
         for (let i = 0; i < mapWidth; i++) {
             let cols = []
             for (let j = 0; j < mapWidth; j++) {
                 let tileNumber: number = j + mapWidth * i;
                 let tileNumberS: string = tileNumber.toString(10);
-                if(!isInFog(props.terrain, props.fog, tileNumber)) {
-                    cols.push(<td id={tileNumberS} key={tileNumberS} className={getBackground(tileNumberS, mapData)} onClick={handleClick}></td>);
-                } else {
+                if(isInFog(props.terrain, props.fog, tileNumber, false)) {
                     cols.push(<td id={tileNumberS} key={tileNumberS} className={'tile-5'} onClick={handleFogClick}></td>);
+                    
+                } else if(isInFog(props.terrain, props.fog, tileNumber, true)) {
+                    cols.push(<td id={tileNumberS} key={tileNumberS} className={getBackground(tileNumberS, mapData) + ' soft'} onClick={handleClick}></td>);
+                } else {
+                    cols.push(<td id={tileNumberS} key={tileNumberS} className={getBackground(tileNumberS, mapData)} onClick={handleClick}></td>);
                 }
             }
             table.push(<tr className={'roow-' + i} key={i}>{cols}</tr>)
@@ -123,6 +139,13 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         setSelected('');
     }
 
+    const utilizeItem = (itemId: number, anchor: string) => {
+        let itemUtilization: ItemUtilization = { itemId: itemId, on: parseInt(anchor) };
+        socket?.emit("use", itemUtilization);
+        setMenuAnchor(null);
+        setSelected('');
+      }
+
     const isShip = (tileNumber: string) => {
         let isShip = false;
         props.ships.forEach(ship => {
@@ -149,11 +172,14 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         return 'tile-' + map[parseInt(tileNumber)];
     }
 
-    function isInFog(map: number[], fog: Fog, field: number) {
-        const fogCenterIndex = coordinateToIndex(map.length, fog.xCenter, fog.yCenter);
-        return calculateDistance(map.length, fogCenterIndex, field) > fog.radius;
-    }
+    function isInFog(map: number[], fog: Fog, field: number, next: boolean) {
+        const xCenter = next ? fog.nextXCenter : fog.xCenter;
+        const yCenter = next ? fog.nextYCenter : fog.yCenter;
+        const radius = next ? fog.nextRadius : fog.radius;
 
+        const fogCenterIndex = coordinateToIndex(map.length, xCenter, yCenter);
+        return calculateDistance(map.length, fogCenterIndex, field) > radius;
+    }
 
     return (
         <table className="grid">
@@ -177,6 +203,10 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
                     <MenuItem onClick={() => attack(menuAnchor!.id)}>Attack</MenuItem>}
                     {menuAnchor && !isShip(menuAnchor.id) && isIsland(menuAnchor.id) &&
                     <MenuItem onClick={() => loot(menuAnchor!.id)}>Loot</MenuItem> }
+                    {menuAnchor && isShip(menuAnchor.id) && props.inventory.find(item => item.id === 0) &&
+                    <MenuItem onClick={() => utilizeItem(0, menuAnchor!.id)}>Protect Ship</MenuItem>}
+                    {menuAnchor && isShip(menuAnchor.id) && props.inventory.find(item => item.id === 1) &&
+                    <MenuItem onClick={() => utilizeItem(1, menuAnchor!.id)}>Increase Shots</MenuItem>}
                 </Menu>
             </tbody>
         </table>

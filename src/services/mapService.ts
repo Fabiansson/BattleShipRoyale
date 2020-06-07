@@ -1,6 +1,6 @@
 import { calculateDistance, getRandomInt, shuffle, getCoordinates, coordinateToIndex } from "../helpers/helpers";
-import { Ship, Fog } from "interfaces/interfaces";
-import { getEnabledCategories } from "trace_events";
+import { Ship, Fog, ServerGameState } from "interfaces/interfaces";
+import { CHESTS_PER_PLAYER } from "./gameRuleService";
 
 export function createTerrainMap(size: number) {
     let map: number[] = [];
@@ -45,6 +45,24 @@ function growIslands(array: number[], percentage: number) {
     return array;
 }
 
+export function createLootMap(map: number[], amountOfPlayers: number) {
+    let chests: number = amountOfPlayers * CHESTS_PER_PLAYER;
+    let lootMap: number[] = [];
+    map.forEach((tile, index) => {
+        if (tile === 1) {
+            lootMap.push(index);
+        }
+    });
+
+    lootMap = shuffle(lootMap);
+
+    while(chests < lootMap.length) {
+        lootMap.pop();
+    }
+
+    return lootMap
+}
+
 export function placeShips(map: number[], amountOfPlayers: number) {
     let shipPacks: Ship[][] = [];
     let blocks: number[] = [];
@@ -85,15 +103,15 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                         shipPacks[i].push({
                             shotsOrMoves: 3,
                             position: [
-                                { x: getCoordinates(mapSize, blocks[6 * i + 0])[0], y: getCoordinates(mapSize, blocks[0])[1], health: 1 },
-                                { x: getCoordinates(mapSize, blocks[6 * i + 1])[0], y: getCoordinates(mapSize, blocks[1])[1], health: 1 },
-                                { x: getCoordinates(mapSize, blocks[6 * i  + 2])[0], y: getCoordinates(mapSize, blocks[2])[1], health: 1 }]
+                                { x: getCoordinates(mapSize, blocks[6 * i + 0])[0], y: getCoordinates(mapSize, blocks[6 * i + 0])[1], health: 1 },
+                                { x: getCoordinates(mapSize, blocks[6 * i + 1])[0], y: getCoordinates(mapSize, blocks[6 * i + 1])[1], health: 1 },
+                                { x: getCoordinates(mapSize, blocks[6 * i + 2])[0], y: getCoordinates(mapSize, blocks[6 * i + 2])[1], health: 1 }]
                         });
                         break;
                     case 1:
                         if (getRandomInt(0, 1) == 0) { //HORZONTAL
                             if (map[random - 1] == 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
-                            !blocks.includes(random - 1) && !blocks.includes(random)) {
+                                !blocks.includes(random - 1) && !blocks.includes(random)) {
                                 blocks.push(random - 1);
                                 blocks.push(random);
                             } else {
@@ -102,7 +120,7 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                             }
                         } else {
                             if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
-                            !blocks.includes(random - mapWidth) && !blocks.includes(random)) {
+                                !blocks.includes(random - mapWidth) && !blocks.includes(random)) {
                                 blocks.push(random - mapWidth);
                                 blocks.push(random);
                             } else {
@@ -113,8 +131,8 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                         shipPacks[i].push({
                             shotsOrMoves: 2,
                             position: [
-                                { x: getCoordinates(mapSize, blocks[6 * i + 3])[0], y: getCoordinates(mapSize, blocks[3])[1], health: 1 },
-                                { x: getCoordinates(mapSize, blocks[6 * i + 4])[0], y: getCoordinates(mapSize, blocks[4])[1], health: 1 }]
+                                { x: getCoordinates(mapSize, blocks[6 * i + 3])[0], y: getCoordinates(mapSize, blocks[6 * i + 3])[1], health: 1 },
+                                { x: getCoordinates(mapSize, blocks[6 * i + 4])[0], y: getCoordinates(mapSize, blocks[6 * i + 4])[1], health: 1 }]
                         });
                         break;
                     case 2:
@@ -127,7 +145,7 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                         shipPacks[i].push({
                             shotsOrMoves: 1,
                             position: [
-                                { x: getCoordinates(mapSize, blocks[6 * i + 5])[0], y: getCoordinates(mapSize, blocks[5])[1], health: 1 }]
+                                { x: getCoordinates(mapSize, blocks[6 * i + 5])[0], y: getCoordinates(mapSize, blocks[6 * i + 5])[1], health: 1 }]
                         });
                         break;
                 }
@@ -140,13 +158,17 @@ export function placeShips(map: number[], amountOfPlayers: number) {
     return shipPacks;
 }
 
+export function generateShip(sgs: ServerGameState, size: number) {
+    
+}
+
 export function createFog(mapSize: number) {
     const mapWidth: number = Math.floor(Math.sqrt(mapSize));
     const radius = mapWidth; //RANDOM FOG RADIUS DEFINITION
     const centerIndex = getRandomInt(0, mapSize - 1);
-    const fogCoordinates: number[] = getCoordinates(mapSize, centerIndex); 
+    const fogCoordinates: number[] = getCoordinates(mapSize, centerIndex);
     const nextFogCoordinates: number[] = getNextFogCoordinates(mapSize, centerIndex, radius);
-    
+
     let fog: Fog = {
         radius: radius,
         xCenter: fogCoordinates[0],
@@ -177,7 +199,7 @@ export function shrinkFog(mapSize: number, fog: Fog) {
 function getNextFogCoordinates(mapSize: number, currentCenterIndex: number, radius: number) {
     const nextCenterIndex = getRandomInt(0, mapSize - 1);
 
-    if(calculateDistance(mapSize, currentCenterIndex, nextCenterIndex) <= 0.1 * radius){
+    if (calculateDistance(mapSize, currentCenterIndex, nextCenterIndex) <= 0.1 * radius) {
         return getCoordinates(mapSize, nextCenterIndex);
     } else {
         return getNextFogCoordinates(mapSize, currentCenterIndex, radius);
