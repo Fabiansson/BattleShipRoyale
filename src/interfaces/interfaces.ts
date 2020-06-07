@@ -103,3 +103,11 @@ export interface HitCoordinates {
   y: number,
   hit: boolean
 }
+
+export interface Item {
+  id: number,
+  name: string,
+  desc: string,
+  price: number,
+  img: string
+}
