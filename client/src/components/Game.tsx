@@ -11,7 +11,7 @@ import GameStats from "./GameStats";
 
 interface GameProps {
     generalGameState: GeneralGameState,
-    playerGameState: PlayerGameState,
+    playerGameState: PlayerGameState
 }
 
 function Game(props: GameProps) {
@@ -32,7 +32,7 @@ function Game(props: GameProps) {
                     <Inventory playerGameState={props.playerGameState}/>
                 </Grid>
                 <Grid item xs={4} style={{height: '20vh'}}>
-                    <GameStats />
+                    <GameStats playerGameState={props.playerGameState} generalGameState={props.generalGameState}/>
                 </Grid>
             </Grid>
         </div>
