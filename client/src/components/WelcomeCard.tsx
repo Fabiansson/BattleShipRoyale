@@ -8,11 +8,12 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import frame from "../assets/frame.svg";
 import ship from "../assets/ship.svg";
+import logo from "../assets/logo.svg";
 import SocketContext from '../services/SocketProvider';
-
+import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles({
-  card: {
+  paper: {
     maxWidth: 675,
     minHeight: 600,
     backgroundImage: `url(${frame})`,
@@ -21,8 +22,8 @@ const useStyles = makeStyles({
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: "50px",
-    textAlign: "center"   
+    marginTop: "120px",
+    textAlign: "center",
 
   },
   title: {
@@ -31,6 +32,10 @@ const useStyles = makeStyles({
     fontWeight: "bold"
   },
   shipstyle: {
+    height:"100px"
+  },
+  logostyle: {
+    marginTop: "70px",
     height:"150px"
   },
   button: {
@@ -51,14 +56,12 @@ function WelcomeCard(props: any) {
   }
 
   return (
-    <Card className={classes.card} >
-      <CardContent>
-        <Typography className={classes.title} >
-          Welcome to BattleShipRoyale
-        </Typography>
-      </CardContent>
-      <CardActions>
+    <Paper elevation={0} className={classes.paper} >
+ 
       <Grid container spacing={3}>
+      <Grid item xs={12}>
+      <img src={logo} alt="our logo" className={classes.logostyle} />
+      </Grid>
           <Grid item xs={12}>
       <Button variant="contained" className={classes.button} onClick={joinGame}>Join Game</Button>
       </Grid>
@@ -69,9 +72,8 @@ function WelcomeCard(props: any) {
       <img src={ship} alt="our ship" className={classes.shipstyle} />
       </Grid>
       </Grid>
-     
-      </CardActions>
-    </Card>
+
+    </Paper>
   );
 }
 

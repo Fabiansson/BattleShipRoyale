@@ -71,15 +71,18 @@ function Gamebar(props: GamebarProps) {
   return (
     <div style={gamebarStyle}>
       <Grid container spacing={0}>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <h1>BattleshipRoyale</h1>
         </Grid>
         <Grid item xs={4}>
           <p>Round: {props.round} / {props.amountRounds}</p>
-          <h2>YOUR TURN!!!!!!!</h2>
+        </Grid>
+        <Grid item xs={1}>
+          <p>Coins: {props.coins}</p>
         </Grid>
         <Grid item xs={2}>
-          <p>Coins: {props.coins}</p>
+            {isMyTurn() && 
+            <p>Time remaining: { seconds }s</p>}
         </Grid>
         <Grid item xs={2}>
           <Button
@@ -89,9 +92,8 @@ function Gamebar(props: GamebarProps) {
             color="primary"
             disabled={props.turn !== userId}
             onClick={endTurn}>End Turn</Button>
-            {isMyTurn() && 
-            <p>Time remaining: { seconds }s</p>}
         </Grid>
+
       </Grid>
     </div>);
 }
