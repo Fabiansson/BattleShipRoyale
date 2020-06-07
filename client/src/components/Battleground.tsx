@@ -1,11 +1,11 @@
 import React from "react";
 import './Battleground.css';
-import { Ship, HitCoordinates } from "../App";
+import { Ship, Hit } from "../App";
 
 interface BattlegroundProps {
     terrain: number[],
     ships: Ship[],
-    hits: HitCoordinates[]
+    hits: Hit[]
 }
 
 function Battleground(props: BattlegroundProps) {
