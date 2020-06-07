@@ -8,6 +8,7 @@ import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
 import Game from './components/Game';
+import Shop from './components/Shop';
 
 export interface Room {
   gameId: string,
@@ -150,10 +151,14 @@ function App() {
       <ThemeProvider theme={theme}>
       {<UserContext.Provider value={userId}>
         <SocketContext.Provider value={socket}>
-        {!generalGameState && <WelcomeCard />}
+        {!generalGameState && <WelcomeCard />} 
         {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
         {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
-          <Game generalGameState={generalGameState} playerGameState={playerGameState}/>}
+        <div>
+          {<Game generalGameState={generalGameState} playerGameState={playerGameState}/>}
+          <Shop/>
+          </div>}
+          
       </SocketContext.Provider>
       </UserContext.Provider>}
       </ThemeProvider>

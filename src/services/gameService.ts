@@ -1,4 +1,5 @@
 import { redis } from '../redis/redis';
+import { itemList } from './items';
 import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship } from 'interfaces/interfaces';
 import { Socket } from 'socket.io';
 import { getCoordinates } from '../helpers/helpers';
@@ -174,6 +175,39 @@ export function endTurn(gameId: string, userId?: string) {
     })
 }
 
+
+export function buyItem(gameId: string, userId: string, data: number){
+
+ return new Promise<PlayerGameState>(async function (resolve, reject) {
+    let item = itemList.find(itemId => itemId.id === data);
+    let costItem = itemList.find(itemId => itemId.id === data).price;
+    let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+    let playerGameState: PlayerGameState = sgs.playerGameStates[userId];
+    let coinsOfPlayer: number = sgs.playerGameStates[userId].coins;
+    if(coinsOfPlayer > costItem){
+        reject(new Error("NEED_MORE_COINS"));
+        return
+    }
+    else{
+        let resultat: number = playerGameState.coins - costItem
+        playerGameState.coins = resultat;
+
+        if(playerGameState.inventory[item.id]) {
+            playerGameState.inventory[item.id].amount++;
+        } else {
+            playerGameState.inventory.push({itemId: item.id, amount: 1})
+        }
+        
+        sgs.playerGameStates[userId] = playerGameState;
+        await redis.setAsync(`room:${gameId}` , JSON.stringify(sgs));
+        resolve(playerGameState);
+        console.log(playerGameState);
+        return
+    }
+    })
+ }
+ 
+
 export function move(gameId: string, userId: string, move: Move) {
     return new Promise<PlayerGameState>(async function (resolve, reject) {
         let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
@@ -329,3 +363,4 @@ export function loot(gameId: string, userId: string, loot: Attack) {
         }
     })
 }
+

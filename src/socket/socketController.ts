@@ -1,6 +1,7 @@
 import { Server, Socket, Rooms } from 'socket.io';
-
 import * as game from '../services/gameService';
+
+import { itemList }  from '../services/items';
 import { turnTime, resetShotsOrMoves } from '../services/gameRuleService';
 import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack } from 'interfaces/interfaces';
 
@@ -242,3 +243,37 @@ export const initHandlers = (io: Server, socket: Socket) => {
     })
 }
 
+
+    socket.on('buy', async (data: number) => {
+        console.log(data);
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+        try{
+            let playerGameState: PlayerGameState = await game.buyItem(gameId, userId, data);
+            io.to(userId).emit('playerGameStateUpdate', playerGameState);
+        } catch(e){
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 8,
+                error: "Could not buy Item."
+            }
+            socket.emit('error', response);
+        }
+
+    })
+
+    socket.on("getItemList", () => {
+        console.log("item ok");
+        const userId = socket.handshake.session.userId;
+        try{
+            io.to(userId).emit('recieveShopItem', itemList);
+        } catch(e){
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 9,
+                error: "Could not send Item."
+            }
+            socket.emit('error', response);
+        }
+});
+}

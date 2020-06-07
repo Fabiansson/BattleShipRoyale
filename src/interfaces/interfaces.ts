@@ -104,6 +104,14 @@ export interface HitCoordinates {
   hit: boolean
 }
 
+export interface Item {
+  id: number,
+  name: string,
+  desc: string,
+  price: number,
+  img: string
+}
+
 export interface Move {
   from: number,
   to: string
@@ -123,3 +131,4 @@ export interface WarPlayerGameStates {
   attackerMessage: string,
   victimMessage: string
 }
+
