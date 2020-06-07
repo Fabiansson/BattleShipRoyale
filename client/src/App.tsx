@@ -22,10 +22,12 @@ export interface ErrorResponse {
   error: string
 }
 
-export interface InventoryItem {
-  itemId: number,
+export interface Item {
+  id: number,
   name: string,
-  amount: number
+  desc: string,
+  price: number,
+  img: string
 }
 
 export interface Ship {
@@ -46,7 +48,7 @@ export interface Hit {
 
 export interface PlayerGameState {
   coins: number,
-  inventory: InventoryItem[],
+  inventory: Item[],
   ships: Ship[],
   hits: Hit[],
   alive: boolean,
@@ -69,6 +71,7 @@ export interface GeneralGameState {
   currentRound?: number
   turn?: Player,
   terrainMap?: number[],
+  lootMap?: number[],
   fog?: Fog,
   started: boolean,
   privateLobby: boolean

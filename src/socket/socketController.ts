@@ -1,9 +1,9 @@
 import { Server, Socket, Rooms } from 'socket.io';
 import * as game from '../services/gameService';
 
-import { itemList } from '../services/items';
+import { itemList } from '../services/itemService';
 import { turnTime, resetShotsOrMoves } from '../services/gameRuleService';
-import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack, FogReport } from 'interfaces/interfaces';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack, FogReport, LootReport, UseReport, ItemUtilization } from 'interfaces/interfaces';
 
 let timer = null;
 
@@ -235,8 +235,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
         const gameId = socket.handshake.session.room;
 
         try {
-            let playerGameState: PlayerGameState = await game.loot(gameId, userId, data);
-            io.to(userId).emit('playerGameStateUpdate', playerGameState);
+            let lootReport: LootReport = await game.loot(gameId, userId, data);
+            io.sockets.in(gameId).emit('generalGameStateUpdate', lootReport.generalGameState);
+            io.to(userId).emit('playerGameStateUpdate', lootReport.playerGameState);
         } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
@@ -248,7 +249,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
     })
 
     socket.on('buy', async (data: number) => {
-        console.log(data);
+        console.log('Buying item...');
         const userId = socket.handshake.session.userId;
         const gameId = socket.handshake.session.room;
         try {
@@ -262,11 +263,10 @@ export const initHandlers = (io: Server, socket: Socket) => {
             }
             socket.emit('error', response);
         }
-
     })
 
-    socket.on("getItemList", () => {
-        console.log("item ok");
+    socket.on('getItemList', () => {
+        console.log('Requesting itemList...');
         const userId = socket.handshake.session.userId;
         try {
             io.to(userId).emit('recieveShopItem', itemList);
@@ -279,5 +279,30 @@ export const initHandlers = (io: Server, socket: Socket) => {
             socket.emit('error', response);
         }
     });
+
+    socket.on('use', async (data: ItemUtilization) => {
+        console.log('Using item...');
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+
+        try {
+            let useReport: UseReport = await game.use(gameId, userId, data);
+            
+            if(useReport.generalGameState) {
+                io.sockets.in(gameId).emit('generalGameStateUpdate', useReport.generalGameState);
+            }
+            
+            for(let player in useReport.playerGameStates) {
+                io.to(player).emit('playerGameStateUpdate', useReport.playerGameStates[player]);
+            }
+        } catch (e) {
+            console.error(e);
+            let response: ErrorResponse = {
+                errorId: 11,
+                error: 'Could not use item.'
+            }
+            io.to(userId).emit('error', response);
+        }
+    })
 
 }

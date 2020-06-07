@@ -62,6 +62,7 @@ export interface GeneralGameState {
   currentRound?: number
   turn?: Player,
   terrainMap?: number[],
+  lootMap?: number[],
   fog?: Fog,
   started: boolean,
   privateLobby: boolean,
@@ -70,7 +71,7 @@ export interface GeneralGameState {
 
 export interface PlayerGameState {
   coins: number,
-  inventory: InventoryItem[],
+  inventory: Item[],
   ships: Ship[],
   hits: Hit[],
   alive: boolean,
@@ -79,12 +80,6 @@ export interface PlayerGameState {
 export interface Player {
   playerId: string,
   playerName: string
-}
-
-export interface InventoryItem {
-  itemId: number,
-  name: string,
-  amount: number
 }
 
 export interface Ship {
@@ -136,4 +131,19 @@ export interface FogReport {
 
 export interface PlayerGameStateCollection {
   [key: string]: PlayerGameState
+}
+
+export interface LootReport {
+  generalGameState: GeneralGameState,
+  playerGameState: PlayerGameState
+}
+
+export interface UseReport {
+  generalGameState?: GeneralGameState,
+  playerGameStates: PlayerGameStateCollection
+}
+
+export interface ItemUtilization {
+  itemId: number,
+  on: number
 }
