@@ -181,13 +181,12 @@ export function buyItem(gameId: string, userId: string, data: number){
         if(playerGameState.inventory[item.id]) {
             playerGameState.inventory[item.id].amount++;
         } else {
-            playerGameState.inventory.push({itemId: item.id, amount: 1})
+            playerGameState.inventory.push({itemId: item.id, name: item.name ,amount: 1})
         }
         
         sgs.playerGameStates[userId] = playerGameState;
         await redis.setAsync(`room:${gameId}` , JSON.stringify(sgs));
         resolve(playerGameState);
-        console.log(playerGameState);
         return
     }
     })

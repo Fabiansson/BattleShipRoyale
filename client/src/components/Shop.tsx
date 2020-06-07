@@ -49,9 +49,7 @@ useEffect(() => {
           
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar>
-                    {item.img}
-                  </Avatar>
+                  <Avatar alt="Picture" src="../assets/mine.svg" />                 
                 </ListItemAvatar>
                 <ListItemText
                   primary={item.desc}

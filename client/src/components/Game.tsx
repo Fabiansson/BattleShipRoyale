@@ -29,7 +29,7 @@ function Game(props: GameProps) {
                     <Chat />
                 </Grid>
                 <Grid item xs={8} style={{height: '20vh'}}>
-                    <Inventory />
+                    <Inventory playerGameState={props.playerGameState}/>
                 </Grid>
                 <Grid item xs={4} style={{height: '20vh'}}>
                     <GameStats />

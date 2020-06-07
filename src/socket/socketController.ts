@@ -279,4 +279,5 @@ export const initHandlers = (io: Server, socket: Socket) => {
             socket.emit('error', response);
         }
     });
+
 }

@@ -4,14 +4,14 @@
         "name": "Protection" ,
         "desc": "Allows the Player to protect one ship. If the ship is attacked it won't get destroyed",
         "price": 50,
-        "img":"sdfdf"
+        "img":"hjk"
     },
     {
         "id": 1,
         "name": "Double Shot" ,
         "desc": "The Player shoots twice from the same ship",
         "price": 100,
-        "img": "sdfd"
+        "img": "../../../src/assets/bullet.svg"
     },
     {
         "id": 2,

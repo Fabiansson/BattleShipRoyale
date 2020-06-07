@@ -83,6 +83,7 @@ export interface Player {
 
 export interface InventoryItem {
   itemId: number,
+  name: string,
   amount: number
 }
 
