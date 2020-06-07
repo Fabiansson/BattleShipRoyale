@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext} from 'react';
 import SocketContext from "../services/SocketProvider";
 import { PlayerGameState } from "../App";
 import Button from '@material-ui/core/Button';
@@ -14,9 +14,6 @@ const inventoryStyle = {
     color: 'white',
     height: '100%', 
 };
-
-
-
 
 function Inventory(props: InventoryProps) {
 
@@ -41,30 +38,6 @@ function Inventory(props: InventoryProps) {
            
             </ul>
     </div>);
-
-  /*
-
-   const inventoryList = props.playerGameState.inventory.map((item) =>{
-    return (
-        
-          <li><span>{item.name}:</span> {item.amount}
-            
-             <Button variant="contained" color="primary" onClick={()=>{takeItem(item.itemId)}}>
-                        Use Item
-                    </Button> </li>
-                 
-    );
-      })
-return(
-    <div style={inventoryStyle}>
-        
-        <h1>Shop</h1>
-        <ul>
-            {inventoryList}
-            </ul>
-      
-    </div>
-)*/
 }
 
 export default Inventory;

@@ -1,4 +1,5 @@
 import React from "react";
+import { GeneralGameState, PlayerGameState } from "../App";
 
 const statsStyle = {
     backgroundColor: '#525252',
@@ -7,10 +8,26 @@ const statsStyle = {
     height: '100%'
 };
 
-function GameStats() {
-  return (
+interface GameStatsProps {
+    generalGameState: GeneralGameState;
+    playerGameState: PlayerGameState;
+}
+
+function GameStats(props: GameStatsProps) {
+
+    return (
     <div style={statsStyle}>
-        s
+        <h2>Opponent Inventory</h2>
+        
+        <ul>
+              {props.generalGameState.players.map(item => {
+                  return(
+                <li><span>{item.playerName}:</span> <span> {props.playerGameState.ships.length} Ships</span>
+                  
+                  </li>);
+})}
+           
+            </ul>
     </div>);
 }
 
