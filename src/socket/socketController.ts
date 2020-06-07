@@ -1,7 +1,7 @@
 import { Server, Socket, Rooms } from 'socket.io';
 import * as game from '../services/gameService';
 
-import { itemList }  from '../services/items';
+import { itemList } from '../services/items';
 import { turnTime, resetShotsOrMoves } from '../services/gameRuleService';
 import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack } from 'interfaces/interfaces';
 
@@ -74,7 +74,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     socket.handshake.session.room = generalGameState.gameId;
                     socket.handshake.session.save(() => {
                         return io.sockets.in(socketRoom).emit('generalGameStateUpdate', generalGameState);
-                    }); 
+                    });
                 } catch (e) {
                     //TODO: Retry if failed
                     console.error(e);
@@ -93,13 +93,13 @@ export const initHandlers = (io: Server, socket: Socket) => {
         console.log('Changing game Settings')
         const userId = socket.handshake.session.userId;
         const gameId = socket.handshake.session.room;
-        if(userId && gameId) {
+        if (userId && gameId) {
             try {
                 let generalGameState: GeneralGameState = await game.changeSettings(data, userId, gameId);
                 console.log('GameSettings changed.')
 
                 return io.sockets.in(generalGameState.gameId).emit('generalGameStateUpdate', generalGameState);
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 let response: ErrorResponse = {
                     errorId: 3,
@@ -108,15 +108,15 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 io.to(userId).emit('error', response);
             }
         }
-        
+
     })
 
     function startTurnTimer(gameId: string) {
-        if(timer !== null) {
+        if (timer !== null) {
             clearTimeout(timer);
             timer = null;
         }
-        timer = setTimeout(() => { endTurn(gameId) }, turnTime); 
+        timer = setTimeout(() => { endTurn(gameId) }, turnTime);
     }
 
     socket.on('startGame', async () => {
@@ -124,18 +124,18 @@ export const initHandlers = (io: Server, socket: Socket) => {
         const userId = socket.handshake.session.userId;
         const gameId = socket.handshake.session.room;
         let members: string[] = Object.keys(io.nsps['/'].adapter.rooms[gameId].sockets);
-        if(members.length > 0) { //ONLY FOR DEV
+        if (members.length > 0) { //ONLY FOR DEV
             try {
                 let serverGameState: ServerGameState = await game.startGame(userId, gameId);
                 console.log('Game started...');
 
                 io.sockets.in(serverGameState.generalGameState.gameId).emit('generalGameStateUpdate', serverGameState.generalGameState);
-                for(let playerGameState in serverGameState.playerGameStates) {
+                for (let playerGameState in serverGameState.playerGameStates) {
                     io.to(playerGameState).emit('playerGameStateUpdate', serverGameState.playerGameStates[playerGameState]);
                 }
                 startTurnTimer(gameId);
                 return;
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 let response: ErrorResponse = {
                     errorId: 4,
@@ -146,11 +146,11 @@ export const initHandlers = (io: Server, socket: Socket) => {
         }
     })
 
-    async function endTurn(gameIdd?: string){
+    async function endTurn(gameIdd?: string) {
         console.log('Turn ended.');
         let userId = null;
         let gameId = null;
-        if(!gameIdd) {
+        if (!gameIdd) {
             userId = socket.handshake.session.userId;
             gameId = socket.handshake.session.room;
         } else {
@@ -158,7 +158,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
         }
         try {
             let generalGameState: GeneralGameState = await game.endTurn(gameId, userId);
-            if(generalGameState.winner) {
+            if (generalGameState.winner) {
                 io.sockets.in(generalGameState.gameId).emit('playerWon');
                 return;
             }
@@ -166,7 +166,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
             io.sockets.in(generalGameState.gameId).emit('turnTimer');
             startTurnTimer(gameId);
             return;
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 5,
@@ -185,10 +185,10 @@ export const initHandlers = (io: Server, socket: Socket) => {
         const userId = socket.handshake.session.userId;
         const gameId = socket.handshake.session.room;
 
-        try{
+        try {
             let playerGameState: PlayerGameState = await game.move(gameId, userId, data);
             io.to(userId).emit('playerGameStateUpdate', playerGameState);
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 6,
@@ -207,21 +207,21 @@ export const initHandlers = (io: Server, socket: Socket) => {
             let wpgs: WarPlayerGameStates = await game.attack(gameId, userId, data);
             io.to(userId).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.attackerId]);
             io.to(userId).emit('info', wpgs.attackerMessage);
-            if(wpgs.victimId) {
+            if (wpgs.victimId) {
                 io.to(wpgs.victimId).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.victimId]);
                 io.to(wpgs.victimId).emit('info', wpgs.victimMessage);
-                if(!wpgs.playerGameStates[wpgs.victimId].alive) {
+                if (!wpgs.playerGameStates[wpgs.victimId].alive) {
                     io.to(wpgs.victimId).emit('youLost');
                 }
             }
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 7,
                 error: 'Could not attack target.'
             }
             io.to(userId).emit('error', response);
-        }  
+        }
     })
 
     socket.on('loot', async (data: Attack) => {
@@ -232,7 +232,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
         try {
             let playerGameState: PlayerGameState = await game.loot(gameId, userId, data);
             io.to(userId).emit('playerGameStateUpdate', playerGameState);
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 7,
@@ -241,17 +241,15 @@ export const initHandlers = (io: Server, socket: Socket) => {
             io.to(userId).emit('error', response);
         }
     })
-}
-
 
     socket.on('buy', async (data: number) => {
         console.log(data);
         const userId = socket.handshake.session.userId;
         const gameId = socket.handshake.session.room;
-        try{
+        try {
             let playerGameState: PlayerGameState = await game.buyItem(gameId, userId, data);
             io.to(userId).emit('playerGameStateUpdate', playerGameState);
-        } catch(e){
+        } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 8,
@@ -265,9 +263,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
     socket.on("getItemList", () => {
         console.log("item ok");
         const userId = socket.handshake.session.userId;
-        try{
+        try {
             io.to(userId).emit('recieveShopItem', itemList);
-        } catch(e){
+        } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 9,
@@ -275,5 +273,5 @@ export const initHandlers = (io: Server, socket: Socket) => {
             }
             socket.emit('error', response);
         }
-});
+    });
 }
