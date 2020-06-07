@@ -293,6 +293,7 @@ export function attack(gameId: string, userId: string, attack: Attack) {
                             wpgs.victimId = player;
                             position.health--;
                             playerGameState.coins = playerGameState.coins + 100;
+                            playerGameState.hits.push({x: toCoordinates[0], y: toCoordinates[1]});
                             sgs.playerGameStates[player].alive = checkAlive(sgs.playerGameStates[player]);
 
                             wpgs.playerGameStates[player] = sgs.playerGameStates[player];

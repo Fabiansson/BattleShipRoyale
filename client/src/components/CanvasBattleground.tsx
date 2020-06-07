@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Ship, HitCoordinates } from "../App";
+import { Ship, Hit } from "../App";
 
 export interface TileType {
   name: string,
@@ -23,7 +23,7 @@ export interface TileTypesObject {
 interface CanvasBattlegroundProps {
   terrain: number[],
   ships: Ship[],
-  hits: HitCoordinates[]
+  hits: Hit[]
 }
 
 function CanvasBattleground(props: CanvasBattlegroundProps) {

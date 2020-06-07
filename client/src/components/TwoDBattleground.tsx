@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import './TwoDBattleground.css';
-import { Ship, HitCoordinates, Fog } from "../App";
+import { Ship, Fog, Hit } from "../App";
 
 import { useSnackbar } from 'notistack';
 import Menu from '@material-ui/core/Menu';
@@ -12,7 +12,7 @@ interface TwoDBattlegroundProps {
     terrain: number[],
     fog: Fog
     ships: Ship[],
-    hits: HitCoordinates[]
+    hits: Hit[]
 }
 
 export interface Move {
@@ -48,6 +48,11 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
                     mapData[fieldNumber] = 4;
                 }
             })
+        })
+
+        props.hits.forEach(hit => {
+            let fieldNumber: number = coordinateToIndex(mapSize, hit.x, hit.y);
+            mapData[fieldNumber] = 2;
         })
 
         let table = []
