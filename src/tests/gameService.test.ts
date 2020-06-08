@@ -40,7 +40,6 @@ describe('GameService Test', () => {
       });
 
       it('can not join a game twice', async () => {
-        expect.assertions(1);
         const socketMock = {
             handshake: {
                 session: {

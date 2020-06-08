@@ -39,12 +39,9 @@ export function join(gameId: string, socket: Socket, privateLobby: boolean) {
         let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
         let generalGameState: GeneralGameState = sgs.generalGameState;
 
-        console.log('Room is private: ' + generalGameState.privateLobby);
-        console.log('Join Type is private: ' + privateLobby);
-
         if (generalGameState.privateLobby && !privateLobby) {
             reject(new Error('ROOM_IS_PRIVATE'));
-        } else if (generalGameState.players.includes(socket.handshake.session.userId)) { //[NOT] IS FOR DEV ONLY!
+        } else if (generalGameState.players.find(player => player.playerId === socket.handshake.session.userId)) { //[NOT] IS FOR DEV ONLY!
             reject(new Error('USER_ALREADY_CONNECTED')); //TODO: Some reconnect functionality
         } else if (!generalGameState.started) {
             let player: Player = {

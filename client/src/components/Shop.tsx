@@ -20,7 +20,6 @@ export interface Item {
 }
 
 function Shop() {
-
   const socket = useContext(SocketContext);
 
   const initialList: Item[] = [];
@@ -30,61 +29,55 @@ function Shop() {
     console.log(data);
     let test = [...data];
     console.log(test);
-  setItemList([...data]);
- });
+    setItemList([...data]);
+  });
 
-useEffect(() => {
-  
- socket?.emit("getItemList");
- 
-}, []);
+  useEffect(() => {
+    socket?.emit("getItemList");
+  }, []);
 
   const sendItem = (itemId: number) => {
-
     socket?.emit("buy", itemId);
   }
-    
-   const listOfItem = itemList.map(item=>{
-        return (
-              <Grid>
-              <ListItem>
-                <ListItemAvatar>
-                <Avatar variant="square" sizes="big" alt="Picture" src={item.img} />               
-                </ListItemAvatar>
-                
-                  <Grid item xs={8}>
-                <ListItemText
-                  primary={item.name}
-                  secondary={item.desc}
-                  
-                />
-                </Grid>
-                <Grid item xs={3}>
-                 <ListItemText
-                  primary={item.price}      
-                />
-                </Grid>
-                
-                <ListItemSecondaryAction>
-                <Button variant="contained" color="primary" onClick={()=>{sendItem(item.id)}}>
-                    BUY
+
+  const listOfItem = itemList.map(item => {
+    return (
+      <Grid>
+        <ListItem>
+          <ListItemAvatar>
+            <Avatar variant="square" sizes="big" alt="Picture" src={item.img} />
+          </ListItemAvatar>
+          <Grid item xs={8}>
+            <ListItemText
+              primary={item.name}
+              secondary={item.desc}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <ListItemText
+              primary={item.price}
+            />
+          </Grid>
+          <ListItemSecondaryAction>
+            <Button variant="contained" color="primary" onClick={() => { sendItem(item.id) }}>
+              BUY
                 </Button>
-                </ListItemSecondaryAction>
-              </ListItem>
-              </Grid>
-      
-        );
-          })
-    return(
-        <div>
-            <Paper elevation={3}> 
-            <h1>Shop</h1>
-            <List>
-                {listOfItem}
-            </List>
-            </Paper> 
-        </div>
-    )
-    }
+          </ListItemSecondaryAction>
+        </ListItem>
+      </Grid>
+
+    );
+  })
+  return (
+    <div>
+      <Paper elevation={3}>
+        <h1>Shop</h1>
+        <List>
+          {listOfItem}
+        </List>
+      </Paper>
+    </div>
+  )
+}
 
 export default Shop;
