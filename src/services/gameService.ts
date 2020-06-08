@@ -110,7 +110,7 @@ export function startGame(userId: string, gameId: string) {
             for (let player in generalGameState.players) {
                 let playerGameState: PlayerGameState = {
                     coins: 0,
-                    inventory: [getItem(0)],
+                    inventory: [],
                     ships: shipPacks.pop(),
                     hits: [],
                     alive: true
@@ -394,8 +394,6 @@ export function loot(gameId: string, userId: string, loot: Attack) {
                             }
 
                             await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
-                            console.log(JSON.stringify(generalGameState));
-                            console.log(JSON.stringify(playerGameState));
                             resolve({generalGameState, playerGameState});
                             return;
                         }
