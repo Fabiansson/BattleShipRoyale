@@ -129,14 +129,13 @@ function App() {
           })
         })
 
-        socket.on('error', function (data: string) {
-          console.log(data);
-          switch (data) {
-            case '':
+        socket.on('error', function (data: ErrorResponse) {
+          switch (data.errorId) {
+            case 1:
               window.location.href = 'http://localhost:3000'
               break;
             default:
-              enqueueSnackbar(data, {
+              enqueueSnackbar(data.error, {
                 variant: 'error',
                 anchorOrigin: {
                   vertical: 'top',

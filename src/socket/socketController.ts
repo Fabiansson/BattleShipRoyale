@@ -51,9 +51,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 1,
-                error: 'Joining room failed.'
+                error: e.message
             }
-            socket.emit('error', e.message);
+            socket.emit('error', response);
         }
     })
 
@@ -79,9 +79,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     console.error(e);
                     let response: ErrorResponse = {
                         errorId: 2,
-                        error: 'Finding room failed.'
+                        error: e.message
                     }
-                    socket.emit('error', e.message);
+                    socket.emit('error', response);
                 }
             }
         }
@@ -102,9 +102,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 console.error(e);
                 let response: ErrorResponse = {
                     errorId: 3,
-                    error: 'Could not change Game Settings.'
+                    error: e.message
                 }
-                io.to(userId).emit('error', e.message);
+                io.to(userId).emit('error', response);
             }
         }
 
@@ -138,9 +138,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 console.error(e);
                 let response: ErrorResponse = {
                     errorId: 4,
-                    error: 'Could not start game.'
+                    error: e.message
                 }
-                io.to(userId).emit('error', e.message);
+                io.to(userId).emit('error', response);
             }
         }
     })
@@ -174,9 +174,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 5,
-                error: 'Could not end turn.'
+                error: e.message
             }
-            io.to(userId).emit('error', e.message);
+            io.to(userId).emit('error', response);
         }
 
 
@@ -196,9 +196,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 6,
-                error: 'Could not move ship.'
+                error: e.message
             }
-            io.to(userId).emit('error', e.message);
+            io.to(userId).emit('error', response);
         }
     })
 
@@ -222,9 +222,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 7,
-                error: 'Could not attack target.'
+                error: e.message
             }
-            io.to(userId).emit('error', e.message);
+            io.to(userId).emit('error', response);
         }
     })
 
@@ -241,9 +241,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 7,
-                error: 'Could not loot.'
+                error: e.message
             }
-            io.to(userId).emit('error', e.message);
+            io.to(userId).emit('error', response);
         }
     })
 
@@ -258,9 +258,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 8,
-                error: "Could not buy Item."
+                error: e.message
             }
-            socket.emit('error', e.message);
+            io.to(userId).emit('error', response);
         }
     })
 
@@ -273,9 +273,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 9,
-                error: "Could not send Item."
+                error: e.message
             }
-            socket.emit('error', e.message);
+            io.to(userId).emit('error', response);
         }
     });
 
@@ -298,10 +298,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 11,
-                error: 'Could not use item.'
+                error: e.message
             }
-            io.to(userId).emit('error', e.message);
+            io.to(userId).emit('error', response);
         }
     })
-
 }
