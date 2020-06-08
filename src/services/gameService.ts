@@ -113,7 +113,7 @@ export function startGame(userId: string, gameId: string) {
             for (let player in generalGameState.players) {
                 let playerGameState: PlayerGameState = {
                     coins: 0,
-                    inventory: [getItem(1)],
+                    inventory: [getItem(0)],
                     ships: shipPacks.pop(),
                     hits: [],
                     alive: true

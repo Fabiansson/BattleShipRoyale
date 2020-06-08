@@ -9,7 +9,6 @@ import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
 import Game from './components/Game';
-import Shop from './components/Shop';
 
 export interface Room {
   gameId: string,

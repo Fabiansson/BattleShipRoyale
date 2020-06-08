@@ -7,8 +7,6 @@ import Gamebar from './Gamebar';
 import TwoDBattleground from './TwoDBattleground';
 import Chat from './Chat';
 import Inventory from './Inventory';
-import GameStats from "./GameStats";
-import Shop from "./Shop";
 
 
 interface GameProps {
