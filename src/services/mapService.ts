@@ -198,8 +198,9 @@ export function shrinkFog(mapSize: number, fog: Fog) {
 
 function getNextFogCoordinates(mapSize: number, currentCenterIndex: number, radius: number) {
     const nextCenterIndex = getRandomInt(0, mapSize - 1);
-
-    if (calculateDistance(mapSize, currentCenterIndex, nextCenterIndex) <= 0.1 * radius) {
+ 
+    console.log(calculateDistance(mapSize, currentCenterIndex, nextCenterIndex));
+    if (calculateDistance(mapSize, currentCenterIndex, nextCenterIndex) <= 0.8 * radius) {
         return getCoordinates(mapSize, nextCenterIndex);
     } else {
         return getNextFogCoordinates(mapSize, currentCenterIndex, radius);
