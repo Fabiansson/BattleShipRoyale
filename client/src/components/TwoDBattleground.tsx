@@ -42,7 +42,6 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
     let mapWidth: number = 0;
 
     const createTableRows = () => {
-        console.log(props.fog);
         let mapData: number[] = [...props.terrain];
 
         mapSize = mapData.length;
@@ -92,7 +91,6 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
 
     const handleClick = (event: any) => {
         let ship: Ship | null = isShip(event.target.id);
-        console.log(ship);
         if (ship) {
             if (selected === event.target.id) {
                 setSelected('');
@@ -161,7 +159,6 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
             ship.position.forEach(field => {
                 let fieldNumber: number = coordinateToIndex(mapSize, field.x, field.y);
                 if (fieldNumber === parseInt(tileNumber)) {
-                    console.log('ihere i got');
                     isShip = ship;
                 }
             })

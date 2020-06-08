@@ -64,7 +64,6 @@ export function createChatMessage(userId: string, gameId: string, msg: string) {
     return new Promise<ChatMessage>(async function (resolve, reject) {
         let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
         let senderPlayer: Player = sgs.generalGameState.players.filter(player => player.playerId === userId)[0];
-        console.log(senderPlayer);
 
         let payload: ChatMessage = {
             sender: senderPlayer,
