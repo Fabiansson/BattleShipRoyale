@@ -52,7 +52,7 @@ function GameStats(props: GameStatsProps) {
         <ul>
               {props.generalGameState.players.map(item => {
                   return(
-                <li style={props.generalGameState.turn ? { color: "white" } : { color: "blue" }}><span>{item.playerName}:</span> <span> {countAliveShips(props.playerGameState.ships)
+                <li><span>{item.playerName}:</span> <span> {countAliveShips(props.playerGameState.ships)
                 } Ships</span>     
                   </li>);
 })}     
