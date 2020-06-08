@@ -38,7 +38,7 @@ Whoever has the most wins in his/her pocket, wins the game.
 |-------|--------------------------------------------------------------|--------------------|
 | NFA-1 | Points are counted correctly and by certain rules.           | Necessary          |
 | NFA-2 | Game moves work according to certain rules.                  | Necessary          |
-| NFA-3 | The game is international.                                   | Optional           |
+| NFA-3 | The game is international.                                   | Necessary          |
 | NFA-4 | The User Interface is responsive.                            | Necessary          |
 | NFA-5 | The game can be played online in a browser.                  | Necessary          |
 
