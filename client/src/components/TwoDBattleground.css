@@ -14,7 +14,7 @@
 }
 .grid td:hover{
     opacity: .8;
-    transform: translateX(-5px) translateY(-5px);
+    transform: scale(1.2);
 }
 
 .grid td.selected {
