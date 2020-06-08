@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Lobby renders correctly 1`] = `
+<div
+  className="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column MuiGrid-align-items-xs-center MuiGrid-justify-xs-center"
+  style={
+    Object {
+      "minHeight": "100vh",
+    }
+  }
+>
+  <div
+    className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+    style={
+      Object {
+        "width": "50%",
+      }
+    }
+  >
+    <div
+      className="MuiPaper-root MuiPaper-elevation3 MuiPaper-rounded"
+      style={
+        Object {
+          "padding": "3em",
+        }
+      }
+    >
+      Invite Link: 
+      <a
+        href="http://localhost:3000/adasdadarschloch"
+      >
+        http://localhost:3000/adasdad
+      </a>
+      <div
+        className="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      >
+        <div
+          className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+        >
+          <h2>
+            Players
+          </h2>
+          <ul
+            className="makeStyles-list-1"
+          >
+            <li
+              className="makeStyles-playerListElement-3"
+            >
+              <div
+                style={
+                  Object {
+                    "textAlign": "center",
+                  }
+                }
+              >
+                <div
+                  className="MuiAvatar-root MuiAvatar-circle makeStyles-avatar-2"
+                >
+                  <img
+                    className="MuiAvatar-img"
+                    src="https://avatars.dicebear.com/v2/avataaars/afffffd.svg"
+                  />
+                </div>
+                <p>
+                  afffff
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div
+          className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          style={
+            Object {
+              "height": "300px",
+            }
+          }
+        >
+          <div
+            className="makeStyles-rootGrid-142"
+          >
+            <div
+              className="makeStyles-listDiv-144"
+              id="listDiv"
+            >
+              <ul
+                className="makeStyles-list-143"
+              />
+              <div />
+            </div>
+            <div
+              className="makeStyles-inputField-146"
+            >
+              <div
+                className="MuiInputBase-root MuiInput-root MuiInput-underline"
+                onClick={[Function]}
+              >
+                <input
+                  aria-label="description"
+                  className="MuiInputBase-input MuiInput-input"
+                  id="submitText"
+                  onAnimationStart={[Function]}
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  placeholder="Message"
+                  type="text"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
