@@ -24,7 +24,7 @@ Whoever has the most wins in his/her pocket, wins the game.
 | FA-12 | The game has islands with lootboxes.                                       | Necessary          |
 | FA-13 | Ther will be a winner at the end and it will show who it was.              | Necessary          |
 | FA-14 | The game ends if all rounds are player and only one player has ships left. | Necessary          |
-| FA-15 | The game ends if all players leave.                                        | Necessary          |
+| FA-15 | The game ends if all players leave.                                        | Optional           |
 | FA-16 | The game has his own game progress.                                        | Necessary          |
 | FA-17 | Players can chat with eachother.                                           | Optional           |
 | FA-18 | A player can invite other players into his game.                           | Necessary          |
@@ -38,7 +38,7 @@ Whoever has the most wins in his/her pocket, wins the game.
 |-------|--------------------------------------------------------------|--------------------|
 | NFA-1 | Points are counted correctly and by certain rules.           | Necessary          |
 | NFA-2 | Game moves work according to certain rules.                  | Necessary          |
-| NFA-3 | The game is international.                                   | Necessary          |
+| NFA-3 | The game is international.                                   | Optional           |
 | NFA-4 | The User Interface is responsive.                            | Necessary          |
 | NFA-5 | The game can be played online in a browser.                  | Necessary          |
 
