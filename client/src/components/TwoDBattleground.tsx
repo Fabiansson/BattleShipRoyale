@@ -41,6 +41,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
     let mapWidth: number = 0;
 
     const createTableRows = () => {
+        console.log(props.fog);
         let mapData: number[] = [...props.terrain];
 
         mapSize = mapData.length;
@@ -76,7 +77,6 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
                 let tileNumberS: string = tileNumber.toString(10);
                 if(isInFog(props.terrain, props.fog, tileNumber, false)) {
                     cols.push(<td id={tileNumberS} key={tileNumberS} className={'tile-5'} onClick={handleFogClick}></td>);
-                    
                 } else if(isInFog(props.terrain, props.fog, tileNumber, true)) {
                     cols.push(<td id={tileNumberS} key={tileNumberS} className={getBackground(tileNumberS, mapData) + ' soft'} onClick={handleClick}></td>);
                 } else {

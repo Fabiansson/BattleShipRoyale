@@ -89,7 +89,7 @@ export function startGame(userId: string, gameId: string) {
             generalGameState.turn = generalGameState.players[Math.floor(Math.random() * generalGameState.players.length)];
             const terrainMap: number[] = createTerrainMap(100);
             const lootMap: number[] = createLootMap(terrainMap, generalGameState.players.length);
-            const fog: Fog = createFog(400);
+            const fog: Fog = createFog(100);
             generalGameState.terrainMap = terrainMap;
             generalGameState.lootMap = lootMap;
             generalGameState.fog = fog;
@@ -165,12 +165,12 @@ export function endTurn(gameId: string, userId?: string) {
             generalGameState.turn = null;
             endTurn = sgs
         } else { ///END OF ROUND
-            generalGameState.currentRound++;
+            sgs.generalGameState.currentRound++;
             sgs.playerGameStates = reviveEverything(sgs.playerGameStates);
             sgs.playerGameStates = resetHits(sgs.playerGameStates);
             sgs = resetShotsOrMoves(sgs, true);
-            generalGameState.fog = shrinkFog(generalGameState.terrainMap.length, generalGameState.fog);
-            sgs = fogEatsShips(sgs, generalGameState.fog);
+            sgs.generalGameState.fog = shrinkFog(generalGameState.terrainMap.length, generalGameState.fog);
+            sgs = fogEatsShips(sgs, sgs.generalGameState.fog);
             endTurn = sgs;
         }
 
@@ -188,7 +188,7 @@ export function buyItem(gameId: string, userId: string, data: number){
     let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
     let playerGameState: PlayerGameState = sgs.playerGameStates[userId];
     let coinsOfPlayer: number = sgs.playerGameStates[userId].coins;
-    if(coinsOfPlayer > costItem){
+    if(coinsOfPlayer < costItem){
         reject(new Error("NEED_MORE_COINS"));
         return
     }
@@ -199,13 +199,13 @@ export function buyItem(gameId: string, userId: string, data: number){
         if(item.id === 2 || item.id === 3 || item.id === 4) { //THEN IT IS A SHIP
             switch(item.id) {
                 case 2: 
-                    //playerGameState.ships.push(generateShip(sgs, 1));
+                    playerGameState.ships.push(generateShip(sgs, 1));
                     break;
                 case 3:
-                    //playerGameState.ships.push(generateShip(sgs, 2));
+                    playerGameState.ships.push(generateShip(sgs, 2));
                     break;
                 case 4:
-                    //playerGameState.ships.push(generateShips(sgs, 3));
+                    playerGameState.ships.push(generateShip(sgs, 3));
                     break;
             }
             
@@ -362,7 +362,25 @@ export function loot(gameId: string, userId: string, loot: Attack) {
                         if (checkLoot(generalGameState.terrainMap, generalGameState.lootMap, generalGameState.fog, ship, position, loot.to)) {
                             ship.shotsOrMoves--;
                             generalGameState.lootMap = removeByValue(generalGameState.lootMap, loot.to);
-                            playerGameState.inventory.push(getRandomItem());
+
+                            let item: Item = getRandomItem();
+
+                            if(item.id === 2 || item.id === 3 || item.id === 4) { //THEN IT IS A SHIP
+                                switch(item.id) {
+                                    case 2: 
+                                        playerGameState.ships.push(generateShip(sgs, 1));
+                                        break;
+                                    case 3:
+                                        playerGameState.ships.push(generateShip(sgs, 2));
+                                        break;
+                                    case 4:
+                                        playerGameState.ships.push(generateShip(sgs, 3));
+                                        break;
+                                }
+                                
+                            } else {
+                                playerGameState.inventory.push(item);
+                            }
 
                             await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
                             console.log(JSON.stringify(generalGameState));

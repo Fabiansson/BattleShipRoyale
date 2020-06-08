@@ -68,7 +68,7 @@
 /* CHEST*/
 .tile-6{
     background:url("../assets/chest.svg");
-    background-color: green;
+    background-color: rgb(255, 217, 0);
     background-repeat: no-repeat;
 
     
@@ -82,5 +82,5 @@
 
 /* FUTUREFOG*/
 .soft{
-    opacity: .7;
+    opacity: .5;
 }

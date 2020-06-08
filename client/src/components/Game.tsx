@@ -1,5 +1,6 @@
 import React from "react";
 import Grid from '@material-ui/core/Grid';
+
 import { GeneralGameState, PlayerGameState } from "../App";
 
 import Gamebar from './Gamebar';
@@ -7,6 +8,7 @@ import TwoDBattleground from './TwoDBattleground';
 import Chat from './Chat';
 import Inventory from './Inventory';
 import GameStats from "./GameStats";
+import Shop from "./Shop";
 
 
 interface GameProps {
