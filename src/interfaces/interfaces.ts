@@ -27,7 +27,7 @@ export interface JoinResponse {
 }
 
 export interface ChatMessage {
-  sender?: string,
+  sender?: Player,
   msg: string,
   owner?: boolean
 }

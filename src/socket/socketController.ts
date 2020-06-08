@@ -2,8 +2,8 @@ import { Server, Socket, Rooms } from 'socket.io';
 import * as game from '../services/gameService';
 
 import { itemList } from '../services/itemService';
-import { turnTime, resetShotsOrMoves } from '../services/gameRuleService';
-import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack, FogReport, LootReport, UseReport, ItemUtilization } from 'interfaces/interfaces';
+import { turnTime } from '../services/gameRuleService';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack, FogReport, LootReport, UseReport, ItemUtilization, Player } from 'interfaces/interfaces';
 
 let timer = null;
 
@@ -12,15 +12,14 @@ export const initHandlers = (io: Server, socket: Socket) => {
         console.log(`Socket with id ${socket.id} disconnected.`);
     })
 
-    socket.on("chatMessage", function (msg: ChatMessage) {
-        console.log('chat ' + msg.msg);
-        let sender = socket.handshake.session.userId;
-        let payload: ChatMessage = {
-            sender: sender,
-            msg: msg.msg,
-        }
-        socket.emit("chatMessage", Object.assign(payload, { owner: true }));
-        socket.to(socket.handshake.session.room).emit("chatMessage", Object.assign(payload, { owner: false }));
+    socket.on("chatMessage", async function (msg: ChatMessage) {
+        console.log('Chat message reveived...');
+        const userId = socket.handshake.session.userId;
+        const gameId = socket.handshake.session.room;
+        let chatMessage: ChatMessage = await game.createChatMessage(userId, gameId, msg.msg);
+        
+        socket.emit("chatMessage", Object.assign(chatMessage, { owner: true }));
+        socket.to(socket.handshake.session.room).emit("chatMessage", Object.assign(chatMessage, { owner: false }));
     });
 
     socket.on('open', async function () {
