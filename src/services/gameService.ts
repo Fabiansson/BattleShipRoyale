@@ -105,7 +105,7 @@ export function startGame(userId: string, gameId: string) {
             generalGameState.lootMap = lootMap;
             generalGameState.fog = fog;
 
-            const shipPacks: Ship[][] = placeShips(terrainMap, generalGameState.players.length);
+            const shipPacks: Ship[][] = placeShips(terrainMap, generalGameState.fog, generalGameState.players.length);
 
             for (let player in generalGameState.players) {
                 let playerGameState: PlayerGameState = {

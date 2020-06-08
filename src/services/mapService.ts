@@ -63,7 +63,7 @@ export function createLootMap(map: number[], amountOfPlayers: number) {
     return lootMap
 }
 
-export function placeShips(map: number[], amountOfPlayers: number) {
+export function placeShips(map: number[], fog: Fog, amountOfPlayers: number) {
     let shipPacks: Ship[][] = [];
     let blocks: number[] = [];
 
@@ -74,13 +74,14 @@ export function placeShips(map: number[], amountOfPlayers: number) {
         shipPacks.push([]);
         for (let j = 0; j < 3; j++) {
             let random = getRandomInt(0, mapSize - 1);
-            if (map[random] == 0 && !blocks.includes(random)) {
+            if (map[random] == 0 && !blocks.includes(random) && !isInFog(mapSize, fog, random)) {
                 switch (j) {
                     case 0:
                         if (getRandomInt(0, 1) == 0) { //HORZONTAL
                             if (map[random - 1] == 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
                                 map[random + 1] == 0 && calculateDistance(mapSize, random, random + 1) == 1 &&
-                                !blocks.includes(random - 1) && !blocks.includes(random) && !blocks.includes(random + 1)) {
+                                !blocks.includes(random - 1) && !blocks.includes(random) && !blocks.includes(random + 1)
+                                && !isInFog(mapSize, fog, random - 1) && !isInFog(mapSize, fog, random + 1)) {
                                 blocks.push(random - 1);
                                 blocks.push(random);
                                 blocks.push(random + 1);
@@ -91,7 +92,8 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                         } else {
                             if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
                                 map[random + mapWidth] == 0 && calculateDistance(mapSize, random, random + mapWidth) == 1 &&
-                                !blocks.includes(random - mapWidth) && !blocks.includes(random) && !blocks.includes(random + mapWidth)) {
+                                !blocks.includes(random - mapWidth) && !blocks.includes(random) && !blocks.includes(random + mapWidth)
+                                && !isInFog(mapSize, fog, random - mapWidth) && !isInFog(mapSize, fog, random + mapWidth)) {
                                 blocks.push(random - mapWidth);
                                 blocks.push(random);
                                 blocks.push(random + mapWidth);
@@ -111,7 +113,8 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                     case 1:
                         if (getRandomInt(0, 1) == 0) { //HORZONTAL
                             if (map[random - 1] == 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
-                                !blocks.includes(random - 1) && !blocks.includes(random)) {
+                                !blocks.includes(random - 1) && !blocks.includes(random)
+                                && !isInFog(mapSize, fog, random - 1)) {
                                 blocks.push(random - 1);
                                 blocks.push(random);
                             } else {
@@ -120,7 +123,8 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                             }
                         } else {
                             if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
-                                !blocks.includes(random - mapWidth) && !blocks.includes(random)) {
+                                !blocks.includes(random - mapWidth) && !blocks.includes(random)
+                                && !isInFog(mapSize, fog, random - mapWidth)) {
                                 blocks.push(random - mapWidth);
                                 blocks.push(random);
                             } else {
