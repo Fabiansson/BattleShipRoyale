@@ -156,6 +156,11 @@ function App() {
           })
         })
 
+        socket.on('playerWon', (data: Player) => {
+          enqueueSnackbar(data.playerName + 'won! Congratulations!');
+          
+        })
+
         if (roomString.length > 1 && !generalGameState) {
           socket.emit('join', { gameId: roomString });
         }

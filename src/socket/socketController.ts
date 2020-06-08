@@ -157,15 +157,15 @@ export const initHandlers = (io: Server, socket: Socket) => {
             gameId = gameIdd;
         }
         try {
-            let endTurn: FogReport = await game.endTurn(gameId, userId);
-            let generalGameState: GeneralGameState = endTurn.serverGameState.generalGameState;
+            let endTurn: ServerGameState = await game.endTurn(gameId, userId);
+            let generalGameState: GeneralGameState = endTurn.generalGameState;
             if(generalGameState.winner) {
-                io.sockets.in(generalGameState.gameId).emit('playerWon');
+                io.sockets.in(generalGameState.gameId).emit('playerWon', generalGameState.winner);
                 return;
             }
             for(let player in endTurn.playerGameStates) {
                 io.to(player).emit('playerGameStateUpdate', endTurn.playerGameStates[player]);
-                io.to(player).emit('info', 'One ore more of your ships got destroyed by the fog...');
+                //io.to(player).emit('info', 'One ore more of your ships got destroyed by the fog...');
             }
             io.sockets.in(generalGameState.gameId).emit('generalGameStateUpdate', generalGameState);
             io.sockets.in(generalGameState.gameId).emit('turnTimer');

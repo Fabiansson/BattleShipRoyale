@@ -3,7 +3,7 @@ import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Playe
 import { itemList, getItem, useItem } from './itemService';
 import { Socket } from 'socket.io';
 import { getCoordinates, removeByValue } from '../helpers/helpers';
-import { checkMove, resetShotsOrMoves, checkLoot, checkAlive, fogEatsShips, getRandomItem } from './gameRuleService';
+import { checkMove, resetShotsOrMoves, checkLoot, checkAlive, fogEatsShips, getRandomItem, reviveEverything, resetHits } from './gameRuleService';
 import { createTerrainMap, placeShips, createFog, shrinkFog, createLootMap, generateShip } from './mapService';
 
 let timer = null;
@@ -87,7 +87,7 @@ export function startGame(userId: string, gameId: string) {
             generalGameState.started = true;
             generalGameState.currentRound = 1;
             generalGameState.turn = generalGameState.players[Math.floor(Math.random() * generalGameState.players.length)];
-            const terrainMap: number[] = createTerrainMap(400);
+            const terrainMap: number[] = createTerrainMap(100);
             const lootMap: number[] = createLootMap(terrainMap, generalGameState.players.length);
             const fog: Fog = createFog(400);
             generalGameState.terrainMap = terrainMap;
@@ -118,8 +118,8 @@ export function startGame(userId: string, gameId: string) {
 }
 
 export function endTurn(gameId: string, userId?: string) {
-    return new Promise<FogReport>(async function (resolve, reject) {
-        let endTurn: FogReport = null;
+    return new Promise<ServerGameState>(async function (resolve, reject) {
+        let endTurn: ServerGameState = null;
         let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
         let generalGameState: GeneralGameState = sgs.generalGameState;
 
@@ -131,18 +131,29 @@ export function endTurn(gameId: string, userId?: string) {
         const oldIndex: number = generalGameState.players.map((e) => { return e.playerId }).indexOf(generalGameState.turn.playerId);
         let nextPlayer: Player = null;
         let currentIndex: number = generalGameState.players.map((e) => { return e.playerId }).indexOf(generalGameState.turn.playerId);
+        let alivePlayers: number = 0;
+
         while (true) {
+            for(let player in sgs.playerGameStates){
+                if(sgs.playerGameStates[player].alive){
+                    alivePlayers++;
+                }
+            }
             const nextIndex: number = (currentIndex + 1) % generalGameState.players.length;
             currentIndex = nextIndex;
-            if (currentIndex === oldIndex) {
+            
+            if (currentIndex === oldIndex || alivePlayers === 1) {
                 break;
             }
+            alivePlayers = 0;
+
             nextPlayer = generalGameState.players[nextIndex];
             if (sgs.playerGameStates[nextPlayer.playerId].alive) {
                 generalGameState.turn = nextPlayer;
-                sgs = resetShotsOrMoves(sgs);
+                sgs = resetShotsOrMoves(sgs, false);
+                
+                endTurn = sgs
                 await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
-                endTurn = {serverGameState: sgs, playerGameStates: {}}
                 resolve(endTurn);
                 return;
             }
@@ -152,12 +163,15 @@ export function endTurn(gameId: string, userId?: string) {
         if (generalGameState.currentRound + 1 > generalGameState.rounds) {
             generalGameState.winner = generalGameState.players[oldIndex];
             generalGameState.turn = null;
-            endTurn = {serverGameState: sgs, playerGameStates: {}}
-        } else {
+            endTurn = sgs
+        } else { ///END OF ROUND
             generalGameState.currentRound++;
+            sgs.playerGameStates = reviveEverything(sgs.playerGameStates);
+            sgs.playerGameStates = resetHits(sgs.playerGameStates);
+            sgs = resetShotsOrMoves(sgs, true);
             generalGameState.fog = shrinkFog(generalGameState.terrainMap.length, generalGameState.fog);
-            endTurn = fogEatsShips(sgs, generalGameState.fog);
-            sgs = endTurn.serverGameState;
+            sgs = fogEatsShips(sgs, generalGameState.fog);
+            endTurn = sgs;
         }
 
         await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));

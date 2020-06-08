@@ -61,14 +61,17 @@ export function checkLoot(map: number[], lootMap: number[], fog: Fog, ship: Ship
     return true;
 }
 
-export function resetShotsOrMoves(sgs: ServerGameState) {
+export function resetShotsOrMoves(sgs: ServerGameState, newRound: boolean) {
     let newState: ServerGameState = JSON.parse(JSON.stringify(sgs));
 
     for (let player in newState.playerGameStates) {
         for (let ship of newState.playerGameStates[player].ships) {
             ship.shotsOrMoves = 0;
             for (let position of ship.position) {
-                if(position.health > 0) {
+                if(position.health > 0 && !newRound) {
+                    ship.shotsOrMoves++;
+                }
+                if(newRound) {
                     ship.shotsOrMoves++;
                 }
             }
@@ -91,9 +94,8 @@ export function checkAlive(victim: PlayerGameState) {
 }
 
 export function fogEatsShips(sgs: ServerGameState, fog: Fog) {
-    let playerGameStates: PlayerGameStateCollection = {};
-
     let newState: ServerGameState = JSON.parse(JSON.stringify(sgs));
+    
     const mapSize = sgs.generalGameState.terrainMap.length;
 
     for (let player in newState.playerGameStates) {
@@ -103,13 +105,37 @@ export function fogEatsShips(sgs: ServerGameState, fog: Fog) {
                 if (isInFog(mapSize, fog, blockIndex) && position.health > 0) {
                     position.health = 0;
                     newState.playerGameStates[player].alive = checkAlive(newState.playerGameStates[player]);
-                    playerGameStates[player] = newState.playerGameStates[player];
                 }
             }
         }
     }
 
-    return {serverGameState: newState, playerGameStates};
+    return newState;
+}
+
+export function reviveEverything(playerGameStates: PlayerGameStateCollection) {
+    let newPlayerGameStates: PlayerGameStateCollection = JSON.parse(JSON.stringify(playerGameStates));
+
+    for(let player in newPlayerGameStates) {
+        newPlayerGameStates[player].alive = true;
+        for(let ship of newPlayerGameStates[player].ships) {
+            for(let position of ship.position) {
+                position.health = 1;
+            }
+        }
+    }
+
+    return newPlayerGameStates;
+}
+
+export function resetHits(playerGameStates: PlayerGameStateCollection) {
+    let newPlayerGameStates: PlayerGameStateCollection = JSON.parse(JSON.stringify(playerGameStates));
+
+    for(let player in newPlayerGameStates) {
+        newPlayerGameStates[player].hits = [];
+    }
+
+    return newPlayerGameStates;
 }
 
 export function getRandomItem() {
