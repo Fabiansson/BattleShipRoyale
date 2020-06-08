@@ -123,7 +123,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
         const userId = socket.handshake.session.userId;
         const gameId = socket.handshake.session.room;
         let members: string[] = Object.keys(io.nsps['/'].adapter.rooms[gameId].sockets);
-        if (members.length > 0) { //ONLY FOR DEV
+        if (members.length > 0) { //CHENGE TO 0 FOR DEV
             try {
                 let serverGameState: ServerGameState = await game.startGame(userId, gameId);
                 console.log('Game started...');
