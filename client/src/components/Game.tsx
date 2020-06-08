@@ -31,12 +31,12 @@ function Game(props: GameProps) {
                 <Grid item xs={2} style={{height: '70vh'}}>
                     <Chat />
                 </Grid>
-                <Grid item xs={8} style={{height: '20vh'}}>
+                <Grid item xs={12} style={{height: '20vh'}}>
                     <Inventory playerGameState={props.playerGameState}/>
                 </Grid>
-                <Grid item xs={4} style={{height: '20vh'}}>
+                {/*<Grid item xs={4} style={{height: '20vh'}}>
                     <GameStats playerGameState={props.playerGameState} generalGameState={props.generalGameState}/>
-                </Grid>
+    </Grid>*/}
             </Grid>
         </div>
     );

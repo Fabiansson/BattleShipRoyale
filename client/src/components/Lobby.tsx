@@ -70,7 +70,6 @@ function Lobby(props: LobbyProps) {
 
     return (
         <React.Fragment>
-
             <Grid
                 container
                 spacing={0}

@@ -1,5 +1,5 @@
 import { redis } from '../redis/redis';
-import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship, PlayerGameStateCollection, FogReport, LootReport, Fog, UseReport, Item, ItemUtilization } from 'interfaces/interfaces';
+import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship, PlayerGameStateCollection, FogReport, LootReport, Fog, UseReport, Item, ItemUtilization, ChatMessage } from 'interfaces/interfaces';
 import { itemList, getItem, useItem } from './itemService';
 import { Socket } from 'socket.io';
 import { getCoordinates, removeByValue } from '../helpers/helpers';
@@ -58,6 +58,20 @@ export function join(gameId: string, socket: Socket, privateLobby: boolean) {
             reject(new Error('GAME_ALREADY_STARTED'));
         }
     })
+}
+
+export function createChatMessage(userId: string, gameId: string, msg: string) {
+    return new Promise<ChatMessage>(async function (resolve, reject) {
+        let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
+        let senderPlayer: Player = sgs.generalGameState.players.filter(player => player.playerId === userId)[0];
+
+        let payload: ChatMessage = {
+            sender: senderPlayer,
+            msg: msg,
+        }
+        resolve(payload);
+    })
+    
 }
 
 export function changeSettings(settings: GameSettings, userId: string, gameId: string) {

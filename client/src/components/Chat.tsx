@@ -3,9 +3,10 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
 import SocketContext from "../services/SocketProvider";
 import "../App.css";
+import { Player } from "../App";
 
 export interface ChatMessage {
-  sender?: string,
+  sender?: Player,
   msg: string,
   owner?: boolean
 }
@@ -106,7 +107,7 @@ function Chat(props: any) {
         <ul className={classes.list}>
           {chatList.map((item, index) => (
             <li style={item.owner ? { color: "blue" } : { color: "black" }}
-              key={index}><span className={classes.sender}>{item.sender}:</span> {item.msg}</li>
+              key={index}><span className={classes.sender}>{item.sender?.playerName}:</span> {item.msg}</li>
           ))}
         </ul>
         <div ref={messagesEndRef} />

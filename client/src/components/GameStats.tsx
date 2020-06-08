@@ -28,9 +28,9 @@ function GameStats(props: GameStatsProps) {
     const classes = useStyles();
 
     const countAliveShips = (ships: Ship[]) => {
-        let aliveShips: number  = 0;
+        let aliveShips: number = 0;
         ships.forEach(ship => {
-            if(shipIsAlive(ship)){
+            if (shipIsAlive(ship)) {
                 aliveShips++;
             }
         })
@@ -38,7 +38,7 @@ function GameStats(props: GameStatsProps) {
     }
 
     const shipIsAlive = (ship: Ship) => {
-        for(let position of ship.position) {
+        for (let position of ship.position) {
             if (position.health === 0) {
                 return false;
             }
@@ -47,17 +47,17 @@ function GameStats(props: GameStatsProps) {
     }
 
     return (
-    <div className={classes.gameStatsStyle}>
-        <h2 className={classes.titel}>Ships</h2>  
-        <ul>
-              {props.generalGameState.players.map(item => {
-                  return(
-                <li><span>{item.playerName}:</span> <span> {countAliveShips(props.playerGameState.ships)
-                } Ships</span>     
-                  </li>);
-})}     
+        <div className={classes.gameStatsStyle}>
+            <h2 className={classes.titel}>Ships</h2>
+            <ul>
+                {props.generalGameState.players.map(item => {
+                    return (
+                        <li><span>{item.playerName}:</span> <span> {countAliveShips(props.playerGameState.ships)
+                        } Ships</span>
+                        </li>);
+                })}
             </ul>
-    </div>);
+        </div>);
 }
 
 export default GameStats;

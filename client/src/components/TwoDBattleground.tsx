@@ -36,12 +36,12 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
     const { enqueueSnackbar } = useSnackbar();
     const socket = useContext(SocketContext);
     const [selected, setSelected] = useState<string>('');
+    const [availableRes, setAvailableRes] = useState<number | null>(null);
     const [menuAnchor, setMenuAnchor] = useState<HTMLTableCellElement | null>(null);
     let mapSize: number = 0;
     let mapWidth: number = 0;
 
     const createTableRows = () => {
-        console.log(props.fog);
         let mapData: number[] = [...props.terrain];
 
         mapSize = mapData.length;
@@ -90,12 +90,15 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
     }
 
     const handleClick = (event: any) => {
-        if (isShip(event.target.id)) {
+        let ship: Ship | null = isShip(event.target.id);
+        if (ship) {
             if (selected === event.target.id) {
                 setSelected('');
+                setAvailableRes(null);
                 return;
             }
             setSelected(event.target.id);
+            setAvailableRes(ship!.shotsOrMoves);
             setMenuAnchor(event.currentTarget);
             return;
         }
@@ -123,6 +126,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         socket?.emit('attack', attack);
         setMenuAnchor(null);
         setSelected('');
+        setAvailableRes(null);
     }
 
     const loot = (anchor: string) => {
@@ -130,6 +134,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         socket?.emit('loot', loot);
         setMenuAnchor(null);
         setSelected('');
+        setAvailableRes(null);
     }
 
     const moveTo = (direction: string) => {
@@ -137,6 +142,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         socket?.emit('moveTo', move);
         setMenuAnchor(null);
         setSelected('');
+        setAvailableRes(null);
     }
 
     const utilizeItem = (itemId: number, anchor: string) => {
@@ -144,15 +150,16 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
         socket?.emit("use", itemUtilization);
         setMenuAnchor(null);
         setSelected('');
+        setAvailableRes(null);
       }
 
     const isShip = (tileNumber: string) => {
-        let isShip = false;
+        let isShip = null;
         props.ships.forEach(ship => {
             ship.position.forEach(field => {
                 let fieldNumber: number = coordinateToIndex(mapSize, field.x, field.y);
                 if (fieldNumber === parseInt(tileNumber)) {
-                    isShip = true;
+                    isShip = ship;
                 }
             })
         })
@@ -182,6 +189,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
     }
 
     return (
+        <div>
         <table className="grid">
             <tbody>
                 {createTableRows()}
@@ -210,6 +218,9 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
                 </Menu>
             </tbody>
         </table>
+        {availableRes != null && 
+        <h3>Available shots or moves with this ship: {availableRes}</h3>}
+        </div>
     );
 }
 
