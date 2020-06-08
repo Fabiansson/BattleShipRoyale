@@ -157,7 +157,13 @@ function App() {
         })
 
         socket.on('playerWon', (data: Player) => {
-          enqueueSnackbar(data.playerName + 'won! Congratulations!');
+          enqueueSnackbar(data.playerName + 'won! Congratulations!', {
+            variant: 'success',
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+          }
+          });
           
         })
 

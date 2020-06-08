@@ -3,7 +3,7 @@ import { coordinateToIndex, calculateDistance, getRandomInt } from "../helpers/h
 import { isInFog } from "./mapService";
 import { itemList } from "./itemService";
 
-export const turnTime: number = 30000;
+export const turnTime: number = 60000;
 export const CHESTS_PER_PLAYER: number = 3;
 
 export function checkMove(map: number[], fog: Fog, ship: Ship, position: ShipBlock, direction: string) {

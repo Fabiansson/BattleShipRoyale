@@ -5,12 +5,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { SnackbarProvider } from 'notistack';
 
-ReactDOM.render(<SnackbarProvider maxSnack={3} iconVariant={{
-    success: '✅',
-    error: '✖️',
-    warning: '⚠️',
-    info: 'ℹ️',
-}}>
+ReactDOM.render(<SnackbarProvider maxSnack={3}>
     <App />
     </SnackbarProvider>, document.getElementById('root'));
 
