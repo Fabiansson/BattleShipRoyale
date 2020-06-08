@@ -53,7 +53,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 1,
                 error: 'Joining room failed.'
             }
-            socket.emit('error', response);
+            socket.emit('error', e.message);
         }
     })
 
@@ -81,7 +81,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                         errorId: 2,
                         error: 'Finding room failed.'
                     }
-                    socket.emit('error', response);
+                    socket.emit('error', e.message);
                 }
             }
         }
@@ -104,7 +104,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     errorId: 3,
                     error: 'Could not change Game Settings.'
                 }
-                io.to(userId).emit('error', response);
+                io.to(userId).emit('error', e.message);
             }
         }
 
@@ -140,7 +140,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     errorId: 4,
                     error: 'Could not start game.'
                 }
-                io.to(userId).emit('error', response);
+                io.to(userId).emit('error', e.message);
             }
         }
     })
@@ -176,7 +176,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 5,
                 error: 'Could not end turn.'
             }
-            io.to(userId).emit('error', response);
+            io.to(userId).emit('error', e.message);
         }
 
 
@@ -198,7 +198,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 6,
                 error: 'Could not move ship.'
             }
-            io.to(userId).emit('error', response);
+            io.to(userId).emit('error', e.message);
         }
     })
 
@@ -224,7 +224,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 7,
                 error: 'Could not attack target.'
             }
-            io.to(userId).emit('error', response);
+            io.to(userId).emit('error', e.message);
         }
     })
 
@@ -243,7 +243,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 7,
                 error: 'Could not loot.'
             }
-            io.to(userId).emit('error', response);
+            io.to(userId).emit('error', e.message);
         }
     })
 
@@ -260,7 +260,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 8,
                 error: "Could not buy Item."
             }
-            socket.emit('error', response);
+            socket.emit('error', e.message);
         }
     })
 
@@ -275,7 +275,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 9,
                 error: "Could not send Item."
             }
-            socket.emit('error', response);
+            socket.emit('error', e.message);
         }
     });
 
@@ -300,7 +300,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 11,
                 error: 'Could not use item.'
             }
-            io.to(userId).emit('error', response);
+            io.to(userId).emit('error', e.message);
         }
     })
 
