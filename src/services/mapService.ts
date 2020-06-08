@@ -163,13 +163,14 @@ export function generateShip(sgs: ServerGameState, size: number) {
 
     let random = getRandomInt(0, mapSize - 1);
 
-    if (map[random] === 0 && !hasShip(mapSize, sgs.playerGameStates, random)) {
+    if (map[random] === 0 && !hasShip(mapSize, sgs.playerGameStates, random) && !isInFog(mapSize, sgs.generalGameState.fog, random)) {
         switch (size) {
             case 3:
                 if (getRandomInt(0, 1) == 0) { //HORZONTAL
                     if (map[random - 1] === 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
                         map[random + 1] === 0 && calculateDistance(mapSize, random, random + 1) == 1 &&
-                        !hasShip(mapSize, sgs.playerGameStates, random - 1) && !hasShip(mapSize, sgs.playerGameStates, random + 1)) {
+                        !hasShip(mapSize, sgs.playerGameStates, random - 1) && !hasShip(mapSize, sgs.playerGameStates, random + 1)
+                        && !isInFog(mapSize, sgs.generalGameState.fog, random - 1) && !isInFog(mapSize, sgs.generalGameState.fog, random + 1)) {
                         let c: number[] = getCoordinates(mapSize, random - 1);
                         let h: number[] = getCoordinates(mapSize, random);
                         let k: number[] = getCoordinates(mapSize, random + 1);
@@ -182,7 +183,8 @@ export function generateShip(sgs: ServerGameState, size: number) {
                 } else {
                     if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
                         map[random + mapWidth] == 0 && calculateDistance(mapSize, random, random + mapWidth) == 1 &&
-                        !hasShip(mapSize, sgs.playerGameStates, random - mapWidth) && !hasShip(mapSize, sgs.playerGameStates, random + mapWidth)) {
+                        !hasShip(mapSize, sgs.playerGameStates, random - mapWidth) && !hasShip(mapSize, sgs.playerGameStates, random + mapWidth)
+                        && !isInFog(mapSize, sgs.generalGameState.fog, random - mapWidth) && !isInFog(mapSize, sgs.generalGameState.fog, random + mapWidth)) {
                         let c: number[] = getCoordinates(mapSize, random - mapWidth);
                         let h: number[] = getCoordinates(mapSize, random);
                         let k: number[] = getCoordinates(mapSize, random + mapWidth);
@@ -196,7 +198,7 @@ export function generateShip(sgs: ServerGameState, size: number) {
             case 2:
                 if (getRandomInt(0, 1) == 0) { //HORZONTAL
                     if (map[random - 1] === 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
-                        !hasShip(mapSize, sgs.playerGameStates, random - 1)) {
+                        !hasShip(mapSize, sgs.playerGameStates, random - 1) && !isInFog(mapSize, sgs.generalGameState.fog, random - 1)) {
                         let c: number[] = getCoordinates(mapSize, random - 1);
                         let h: number[] = getCoordinates(mapSize, random);
                         ship.position.push({ x: c[0], y: c[1], health: 1 });
@@ -206,7 +208,7 @@ export function generateShip(sgs: ServerGameState, size: number) {
                     }
                 } else {
                     if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
-                        !hasShip(mapSize, sgs.playerGameStates, random - mapWidth)) {
+                        !hasShip(mapSize, sgs.playerGameStates, random - mapWidth) && !isInFog(mapSize, sgs.generalGameState.fog, random - mapWidth)) {
                         let c: number[] = getCoordinates(mapSize, random - mapWidth);
                         let h: number[] = getCoordinates(mapSize, random);
                         ship.position.push({ x: c[0], y: c[1], health: 1 });
