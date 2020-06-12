@@ -1,5 +1,5 @@
 import { redis } from '../redis/redis';
-import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship, PlayerGameStateCollection, FogReport, LootReport, Fog, UseReport, Item, ItemUtilization, ChatMessage } from 'interfaces/interfaces';
+import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship, PlayerGameStateCollection, FogReport, LootReport, Fog, UseReport, Item, ItemUtilization, ChatMessage, JoinReport } from 'interfaces/interfaces';
 import { itemList, getItem, useItem } from './itemService';
 import { Socket } from 'socket.io';
 import { getCoordinates, removeByValue } from '../helpers/helpers';
@@ -34,23 +34,25 @@ export function initGame(socket: Socket) {
     })
 }
 
-export function join(gameId: string, socket: Socket, privateLobby: boolean) {
-    return new Promise<GeneralGameState>(async function (resolve, reject) {
+export function join(gameId: string, userId: string, privateLobby: boolean) {
+    return new Promise<JoinReport>(async function (resolve, reject) {
         let sgs: ServerGameState = JSON.parse(await redis.getAsync(`room:${gameId}`));
         let generalGameState: GeneralGameState = sgs.generalGameState;
+        let playerGameState: PlayerGameState = sgs.playerGameStates[userId];
 
-        if (generalGameState.privateLobby && !privateLobby) {
+        if (generalGameState.players.find(player => player.playerId === userId)) {
+            console.log('USER REJOINING');
+            resolve({ generalGameState, playerGameState });
+        } else if (generalGameState.privateLobby && !privateLobby) {
             reject(new Error('ROOM_IS_PRIVATE'));
-        } else if (generalGameState.players.find(player => player.playerId === socket.handshake.session.userId)) { //[NOT] IS FOR DEV ONLY!
-            reject(new Error('USER_ALREADY_CONNECTED')); //TODO: Some reconnect functionality
         } else if (!generalGameState.started) {
             let player: Player = {
-                playerId: socket.handshake.session.userId,
+                playerId: userId,
                 playerName: 'Salvatore'
             }
             generalGameState.players.push(player);
             await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
-            resolve(generalGameState);
+            resolve({ generalGameState, playerGameState: null });
         } else {
             reject(new Error('GAME_ALREADY_STARTED'));
         }

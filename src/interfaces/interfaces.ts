@@ -26,6 +26,11 @@ export interface JoinResponse {
   playerNames: string[]
 }
 
+export interface JoinReport {
+  generalGameState: GeneralGameState,
+  playerGameState?: PlayerGameState
+}
+
 export interface ChatMessage {
   sender?: Player,
   msg: string,
