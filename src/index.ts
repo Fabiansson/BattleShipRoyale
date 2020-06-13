@@ -63,7 +63,7 @@ if (process.env.DEBUG === 'express-session') {
     });
 }
 
-console.log('REDISS ENV VARIABLE: ' + process.env.REDIS_URL);
+console.log('REDISS ENV VARIABLE: ' + JSON.stringify(process.env));
 
 server.listen(PORT, HOST, function () {
     console.log("Server running on: " + HOST + " : " + PORT);
