@@ -7,6 +7,8 @@ import { redisStore } from './redis/redis';
 
 import path from 'path';
 
+require('dotenv').config({ path: '/app/.env' })
+
 const app = express();
 const server = http.createServer(app);
 const store = redisStore(expressSession);
