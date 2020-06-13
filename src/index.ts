@@ -75,12 +75,12 @@ fs.readdir(home, function (err, files) {
     });
 })
 
-fs.readFile('../.env', function(err, data) {
+fs.readFile(path.join(__dirname, '../.env'), function(err, data) {
     console.log('READING ENV FILE');
     if (err) {
-        throw err;
+        console.log(err);
     }
-    
+
     console.log(data);
 });
 
