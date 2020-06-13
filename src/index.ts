@@ -4,6 +4,7 @@ import expressSession from 'express-session';
 import { initSocket } from './socket'
 import { PORT, HOST } from './helpers/constants';
 import { redisStore } from './redis/redis';
+require('dotenv').config({path: '../.env'});
 
 import path from 'path'
 const fs = require('fs');
