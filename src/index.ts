@@ -71,20 +71,12 @@ fs.readdir(home, function (err, files) {
         return console.log('unable to scan directory: ' + err);
     }
     files.forEach(file => {
-        console.log(file);
+        fs.readFile(file, function(err,data) {
+            console.log(file);
+            console.log(data);
+        })
     });
 })
-
-fs.readFile(path.join(__dirname, '../.env'), function(err, data) {
-    console.log('READING ENV FILE');
-    if (err) {
-        console.log(err);
-    }
-
-    console.log(data);
-});
-
-console.log()
 
 server.listen(PORT, HOST, function () {
     console.log("Server running on: " + HOST + " : " + PORT);
