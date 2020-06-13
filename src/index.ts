@@ -76,6 +76,7 @@ fs.readdir(home, function (err, files) {
 })
 
 fs.readFile('../.env', function read(err, data) {
+    console.log('READING ENV FILE');
     if (err) {
         throw err;
     }
