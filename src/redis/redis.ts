@@ -9,7 +9,7 @@ const client = redis.createClient(/*REDIS_URL*/{
   host: REDIS_HOST,
   port: REDIS_PORT,
   //url: REDIS_URL
-  //password: REDIS_PASS
+  password: REDIS_PASS
 });
 
 const redisStore = (expressSession) => {
