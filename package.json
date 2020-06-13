@@ -14,9 +14,7 @@
     "build": "tsc && npm run build --prefix client",
     "start": "NODE_ENV=production npm run server",
     "test": "jest",
-    "dokku": {
-      "predeploy": "npm install --prefix client"
-    }
+    "heroku-postbuild": "npm install --prefix client"
   },
   "repository": {
     "type": "git",
