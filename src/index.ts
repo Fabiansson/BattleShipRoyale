@@ -2,12 +2,13 @@ import express from 'express';
 import http from 'http';
 import expressSession from 'express-session';
 import { initSocket } from './socket'
+require('dotenv').config({ path: '/app/.env' })
 import { PORT, HOST } from './helpers/constants';
 import { redisStore } from './redis/redis';
 
 import path from 'path';
 
-require('dotenv').config({ path: '/app/.env' })
+
 
 const app = express();
 const server = http.createServer(app);
@@ -62,7 +63,7 @@ if (process.env.DEBUG === 'express-session') {
     });
 }
 
-console.log('REDISS ENV VARIABLE: ' + process.env);
+console.log('REDISS ENV VARIABLE: ' + process.env.REDIS_URL);
 
 server.listen(PORT, HOST, function () {
     console.log("Server running on: " + HOST + " : " + PORT);
