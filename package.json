@@ -13,7 +13,10 @@
     "dev": "concurrently \"npm run server:build\" \"npm run server:start\" \"npm run client\"",
     "build": "tsc && npm run build --prefix client",
     "start": "NODE_ENV=production npm run server",
-    "test": "jest"
+    "test": "jest",
+    "dokku": {
+      "postdeploy": "npm install --prefix client"
+    }
   },
   "repository": {
     "type": "git",
