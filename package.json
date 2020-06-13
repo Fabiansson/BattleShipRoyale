@@ -15,7 +15,7 @@
     "start": "NODE_ENV=production npm run server",
     "test": "jest",
     "dokku": {
-      "postdeploy": "npm install --prefix client"
+      "predeploy": "npm install --prefix client"
     }
   },
   "repository": {
