@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import expressSession from 'express-session';
 import { initSocket } from './socket'
-require('dotenv').config({ path: '../.env' })
+require('dotenv').config({ path: '../app/.env' })
 import { PORT, HOST } from './helpers/constants';
 import { redisStore } from './redis/redis';
 
