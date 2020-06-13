@@ -75,20 +75,14 @@ fs.readdir(home, function (err, files) {
     });
 })
 
-fs.readFile('../.env', function read(err, data) {
+fs.readFile('../.env', function(err, data) {
     console.log('READING ENV FILE');
     if (err) {
         throw err;
     }
-    const content = data;
-
-    // Invoke the next step here however you like
-    processFile(content);   // Or put the next step in a function and invoke it
+    
+    console.log(data);
 });
-
-function processFile(content) {
-    console.log(content);
-}
 
 console.log()
 
