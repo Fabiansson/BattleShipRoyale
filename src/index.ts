@@ -5,7 +5,8 @@ import { initSocket } from './socket'
 import { PORT, HOST } from './helpers/constants';
 import { redisStore } from './redis/redis';
 
-import path from 'path';
+import path from 'path'
+const fs = require('fs');
 
 
 
@@ -63,7 +64,17 @@ if (process.env.DEBUG === 'express-session') {
 }
 
 console.log('REDISS ENV VARIABLE: ' + JSON.stringify(process.env));
-console.log(__dirname);
+const home = path.join(__dirname, '../')
+
+fs.readdir(home, function (err, files) {
+    if(err){
+        return console.log('unable to scan directory: ' + err);
+    }
+    files.forEach(file => {
+        console.log(file);
+    });
+})
+console.log()
 
 server.listen(PORT, HOST, function () {
     console.log("Server running on: " + HOST + " : " + PORT);
