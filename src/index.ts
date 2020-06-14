@@ -4,7 +4,8 @@ import expressSession from 'express-session';
 import { initSocket } from './socket'
 import { PORT, HOST } from './helpers/constants';
 import { redisStore } from './redis/redis';
-import path from 'path'
+
+import path from 'path';
 
 const app = express();
 const server = http.createServer(app);

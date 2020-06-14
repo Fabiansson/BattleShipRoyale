@@ -14,7 +14,7 @@ export function checkMove(map: number[], fog: Fog, ship: Ship, position: ShipBlo
         throw new Error('NO_MOVES_LEFT');
     }
     if(position.health <= 0) {
-        throw new Error('DESTROYED_SHIPS_CAN_NOT_MOVE');
+        throw new Error('DESTROYED_SHIPS_HAVE_NO_ACTIONS');
     }
 
     switch (direction) {
@@ -46,7 +46,7 @@ export function checkLoot(map: number[], lootMap: number[], fog: Fog, ship: Ship
         throw new Error('NOT_CLOSE_ENOUGH_TO_ISLAND_TO_LOOT');
     }
     if(lootFrom.health <= 0) {
-        throw new Error('DESTROYED_SHIP_CAN_NOT_LOOT');
+        throw new Error('DESTROYED_SHIPS_HAVE_NO_ACTIONS');
     }
     if(ship.shotsOrMoves < 1) {
         throw new Error('NO_MORE_MOVES_FOR_THIS_SHIP');

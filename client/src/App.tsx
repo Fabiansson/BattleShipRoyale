@@ -9,6 +9,7 @@ import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
 import Game from './components/Game';
+import { useTranslation } from 'react-i18next';
 
 export interface Room {
   gameId: string,
@@ -82,12 +83,15 @@ export interface Player {
 }
 
 
+
 function App() {
   const [generalGameState, setGeneralGameState] = useState<GeneralGameState | null>(null);
   const [playerGameState, setPlayerGameState] = useState<PlayerGameState | null>(null);
   const [socket, setSocket] = useState<SocketIOClient.Socket>(io({ autoConnect: false }));
   const [userId, setuUserId] = useState<string>('');
   const { enqueueSnackbar } = useSnackbar();
+  const { t, i18n } = useTranslation();
+
 
   const theme = createMuiTheme({
     typography: {
@@ -130,7 +134,7 @@ function App() {
         })
 
         socket.on('error', function (data: ErrorResponse) {
-          enqueueSnackbar(data.error, {
+          enqueueSnackbar(t(data.error), {
             variant: 'error',
             anchorOrigin: {
               vertical: 'top',
@@ -140,7 +144,7 @@ function App() {
         })
 
         socket.on('youLost', () => {
-          enqueueSnackbar('HAHAHAHAHAHAH YOU LOST!!!! NOOOB!!', {
+          enqueueSnackbar(t("Lost"), {
             variant: 'info',
             anchorOrigin: {
               vertical: 'top',
@@ -174,8 +178,11 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
+
+
   return (
     <div className="App">
+    <div>
       <ThemeProvider theme={theme}>
         {<UserContext.Provider value={userId}>
           <SocketContext.Provider value={socket}>
@@ -186,6 +193,7 @@ function App() {
           </SocketContext.Provider>
         </UserContext.Provider>}
       </ThemeProvider>
+      </div>
     </div>
   );
 }

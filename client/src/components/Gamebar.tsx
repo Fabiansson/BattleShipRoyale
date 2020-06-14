@@ -11,6 +11,8 @@ import SocketContext from '../services/SocketProvider';
 import UserContext from '../services/UserProvider';
 import Shop from "./Shop";
 
+import { useTranslation } from 'react-i18next';
+
 const gamebarStyle = {
   backgroundColor: '#525252',
   opacity: '0.8',
@@ -37,12 +39,13 @@ function Gamebar(props: GamebarProps) {
   const [seconds, setSeconds] = useState<number>(0);
   const [timer, setTimer] = useState<any>(null);
   const [open, setOpen] = useState(false);
+  const { t, i18n } = useTranslation();
 
 
   useEffect(() => {
     if (isMyTurn()) {
       setSeconds(59);
-      enqueueSnackbar('YOUR TURN', {
+      enqueueSnackbar(t("Turn"), {
         variant: 'info',
         anchorOrigin: {
           vertical: 'top',
@@ -88,14 +91,14 @@ function Gamebar(props: GamebarProps) {
           <h1>BattleshipRoyale</h1>
         </Grid>
         <Grid item xs={4}>
-          <p>Round: {props.round} / {props.amountRounds}</p>
+          <p>{t('Round')}: {props.round} / {props.amountRounds}</p>
         </Grid>
         <Grid item xs={1}>
-          <p>Coins: {props.coins}</p>
+          <p>{t('Coins')}: {props.coins}</p>
         </Grid>
         <Grid item xs={2}>
           {isMyTurn() &&
-            <p>Time remaining: {seconds}s</p>}
+            <p>{t('Time')}: {seconds}s</p>}
         </Grid>
         <Grid item xs={2}>
           <Button
@@ -104,8 +107,8 @@ function Gamebar(props: GamebarProps) {
             variant="contained"
             color="primary"
             disabled={props.turn !== userId}
-            onClick={endTurn}>End Turn</Button>
-          <Button style={endTurnButtonStyle} variant="contained" color="primary" onClick={openShop}>Open Shop</Button>
+            onClick={endTurn}>{t('Endturn')}</Button>
+          <Button style={endTurnButtonStyle} variant="contained" color="primary" onClick={openShop}>{t('Shop')}</Button>
         </Grid>
 
       </Grid>
@@ -123,7 +126,7 @@ function Gamebar(props: GamebarProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Close
+          {t('Close')}
           </Button>
         </DialogActions>
       </Dialog>

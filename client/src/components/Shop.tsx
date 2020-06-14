@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
 import SocketContext from "../services/SocketProvider";
 import { Avatar } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 
 export interface Item {
@@ -24,12 +25,12 @@ function Shop() {
 
   const initialList: Item[] = [];
   const [itemList, setItemList] = useState(initialList);
+  const { t, i18n } = useTranslation();
 
   socket?.on("recieveShopItem", (data: Item[]) => {
-    console.log(data);
     let test = [...data];
-    console.log(test);
     setItemList([...data]);
+    console.log([...data]);
   });
 
   useEffect(() => {
@@ -49,8 +50,8 @@ function Shop() {
           </ListItemAvatar>
           <Grid item xs={8}>
             <ListItemText
-              primary={item.name}
-              secondary={item.desc}
+              primary={t(item.name)}
+              secondary={t(item.desc)}
             />
           </Grid>
           <Grid item xs={3}>
@@ -60,7 +61,7 @@ function Shop() {
           </Grid>
           <ListItemSecondaryAction>
             <Button variant="contained" color="primary" onClick={() => { sendItem(item.id) }}>
-              BUY
+            {t('Buy')}
                 </Button>
           </ListItemSecondaryAction>
         </ListItem>
