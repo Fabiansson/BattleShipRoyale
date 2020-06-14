@@ -129,24 +129,18 @@ function App() {
             anchorOrigin: {
               vertical: 'top',
               horizontal: 'center',
-          }
+            }
           })
         })
 
         socket.on('error', function (data: ErrorResponse) {
-          switch (data.errorId) {
-            case 1:
-              window.location.href = 'http://localhost:3000'
-              break;
-            default:
-              enqueueSnackbar(t(data.error), {
-                variant: 'error',
-                anchorOrigin: {
-                  vertical: 'top',
-                  horizontal: 'center',
-              }
-              });
-          }
+          enqueueSnackbar(t(data.error), {
+            variant: 'error',
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+            }
+          });
         })
 
         socket.on('youLost', () => {
@@ -155,19 +149,20 @@ function App() {
             anchorOrigin: {
               vertical: 'top',
               horizontal: 'center',
-          }
+            }
           })
         })
 
         socket.on('playerWon', (data: Player) => {
-          enqueueSnackbar(data.playerName + 'won! Congratulations!', {
+          enqueueSnackbar(data.playerName + ' won! Congratulations!', {
             variant: 'success',
             anchorOrigin: {
               vertical: 'top',
               horizontal: 'center',
-          }
+            }
           });
-          
+          setGeneralGameState(null);
+          setPlayerGameState(null);
         })
 
         if (roomString.length > 1 && !generalGameState) {
@@ -189,14 +184,14 @@ function App() {
     <div className="App">
     <div>
       <ThemeProvider theme={theme}>
-          {<UserContext.Provider value={userId}>
-            <SocketContext.Provider value={socket}>
-              {!generalGameState && <WelcomeCard />}
-              {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
-              {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
-                <Game generalGameState={generalGameState} playerGameState={playerGameState}/>}
-            </SocketContext.Provider>
-          </UserContext.Provider>}
+        {<UserContext.Provider value={userId}>
+          <SocketContext.Provider value={socket}>
+            {!generalGameState && <WelcomeCard />}
+            {generalGameState && !generalGameState.started && <Lobby generalGameState={generalGameState} />}
+            {generalGameState && generalGameState.started && generalGameState.terrainMap && playerGameState &&
+              <Game generalGameState={generalGameState} playerGameState={playerGameState} />}
+          </SocketContext.Provider>
+        </UserContext.Provider>}
       </ThemeProvider>
       </div>
     </div>
