@@ -3,7 +3,8 @@ import * as game from '../services/gameService';
 
 import { itemList } from '../services/itemService';
 import { turnTime } from '../services/gameRuleService';
-import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack, FogReport, LootReport, UseReport, ItemUtilization, Player } from 'interfaces/interfaces';
+import { ChatMessage, GeneralGameState, JoinRequest, ErrorResponse, GameSettings, ServerGameState, Move, PlayerGameState, WarPlayerGameStates, Attack, FogReport, LootReport, UseReport, ItemUtilization, Player, JoinReport } from 'interfaces/interfaces';
+import { redis } from '../redis/redis';
 
 let timer = null;
 
@@ -18,7 +19,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
         const gameId = socket.handshake.session.room;
         let chatMessage: ChatMessage = await game.createChatMessage(userId, gameId, msg.msg);
         
-        socket.emit("chatMessage", Object.assign(chatMessage, { owner: true }));
+        io.to(socket.id).emit("chatMessage", Object.assign(chatMessage, { owner: true }));
         socket.to(socket.handshake.session.room).emit("chatMessage", Object.assign(chatMessage, { owner: false }));
     });
 
@@ -37,42 +38,28 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
     socket.on('join', async function (data: JoinRequest) {
         console.log('Trying to join room with id: ' + data.gameId);
-        if (!io.nsps['/'].adapter.rooms[data.gameId]) { return console.error(new Error('ROOM_DOES_NOT_EXIST')); }
-        try {
-            let generalGameState: GeneralGameState = await game.join(data.gameId, socket, true);
-            console.log('Found matching room to join');
-            socket.join(data.gameId);
-
-            socket.handshake.session.room = generalGameState.gameId;
-            socket.handshake.session.save(() => {
-                return io.sockets.in(data.gameId).emit('generalGameStateUpdate', generalGameState);
-            });
-        } catch (e) {
-            console.error(e);
-            let response: ErrorResponse = {
-                errorId: 1,
-                error: e.message
-            }
-            socket.emit('error', response);
-        }
+        const userId = socket.handshake.session.userId;
+        joinGame(io, socket, data.gameId, userId);
     })
 
     socket.on('findGame', async function () {
         console.log('Trying to find a game...');
+        const userId = socket.handshake.session.userId;
         let socketRooms: Rooms = io.nsps['/'].adapter.rooms;
+
         for (let socketRoom in socketRooms) {
             let members: string[] = Object.keys(io.nsps['/'].adapter.rooms[socketRoom].sockets);
 
             if (members.length < 4 && socketRoom.length < 10) {
                 console.log('FOUND A ROOM...' + socketRoom);
                 try {
-                    let generalGameState: GeneralGameState = await game.join(socketRoom, socket, false);
+                    let joinReport: JoinReport = await game.join(socketRoom, userId, false);
                     console.log('Found matching room to join');
                     socket.join(socketRoom);
 
-                    socket.handshake.session.room = generalGameState.gameId;
+                    socket.handshake.session.room = joinReport.generalGameState.gameId;
                     socket.handshake.session.save(() => {
-                        return io.sockets.in(socketRoom).emit('generalGameStateUpdate', generalGameState);
+                        return io.sockets.in(socketRoom).emit('generalGameStateUpdate', joinReport.generalGameState);
                     });
                 } catch (e) {
                     //TODO: Retry if failed
@@ -81,11 +68,10 @@ export const initHandlers = (io: Server, socket: Socket) => {
                         errorId: 2,
                         error: e.message
                     }
-                    socket.emit('error', response);
+                    return io.to(socket.id).emit('error', response);
                 }
             }
         }
-
     })
 
     socket.on('gameSettings', async (data: GameSettings) => {
@@ -123,14 +109,14 @@ export const initHandlers = (io: Server, socket: Socket) => {
         const userId = socket.handshake.session.userId;
         const gameId = socket.handshake.session.room;
         let members: string[] = Object.keys(io.nsps['/'].adapter.rooms[gameId].sockets);
-        if (members.length > 0) { //CHENGE TO 0 FOR DEV
+        if (members.length > 0) { //CHANGE TO 0 FOR DEV
             try {
                 let serverGameState: ServerGameState = await game.startGame(userId, gameId);
                 console.log('Game started...');
 
                 io.sockets.in(serverGameState.generalGameState.gameId).emit('generalGameStateUpdate', serverGameState.generalGameState);
                 for (let playerGameState in serverGameState.playerGameStates) {
-                    io.to(playerGameState).emit('playerGameStateUpdate', serverGameState.playerGameStates[playerGameState]);
+                    io.to(await getSocket(playerGameState)).emit('playerGameStateUpdate', serverGameState.playerGameStates[playerGameState]);
                 }
                 startTurnTimer(gameId);
                 return;
@@ -140,7 +126,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                     errorId: 4,
                     error: e.message
                 }
-                io.to(userId).emit('error', response);
+                io.to(socket.id).emit('error', response);
             }
         }
     })
@@ -160,10 +146,21 @@ export const initHandlers = (io: Server, socket: Socket) => {
             let generalGameState: GeneralGameState = endTurn.generalGameState;
             if(generalGameState.winner) {
                 io.sockets.in(generalGameState.gameId).emit('playerWon', generalGameState.winner);
+                io.of('/').in(generalGameState.gameId).clients((error, socketIds) => {
+                    if (error) throw error;
+    
+                    socketIds.forEach((socketId) => {
+                        io.sockets.sockets[socketId].leave(generalGameState.gameId);
+                        io.sockets.sockets[socketId].handshake.session.room = null;
+                        io.sockets.sockets[socketId].handshake.session.save(() => {
+                            console.log('Room removed after game end');
+                        });
+                    });
+                  });
                 return;
             }
             for(let player in endTurn.playerGameStates) {
-                io.to(player).emit('playerGameStateUpdate', endTurn.playerGameStates[player]);
+                io.to(await getSocket(player)).emit('playerGameStateUpdate', endTurn.playerGameStates[player]);
                 //io.to(player).emit('info', 'One ore more of your ships got destroyed by the fog...');
             }
             io.sockets.in(generalGameState.gameId).emit('generalGameStateUpdate', generalGameState);
@@ -176,7 +173,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 5,
                 error: e.message
             }
-            io.to(userId).emit('error', response);
+            io.to(socket.id).emit('error', response);
         }
 
 
@@ -191,14 +188,14 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
         try {
             let playerGameState: PlayerGameState = await game.move(gameId, userId, data);
-            io.to(userId).emit('playerGameStateUpdate', playerGameState);
+            io.to(socket.id).emit('playerGameStateUpdate', playerGameState);
         } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 6,
                 error: e.message
             }
-            io.to(userId).emit('error', response);
+            io.to(socket.id).emit('error', response);
         }
     })
 
@@ -209,13 +206,13 @@ export const initHandlers = (io: Server, socket: Socket) => {
 
         try {
             let wpgs: WarPlayerGameStates = await game.attack(gameId, userId, data);
-            io.to(userId).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.attackerId]);
-            io.to(userId).emit('info', wpgs.attackerMessage);
+            io.to(socket.id).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.attackerId]);
+            io.to(socket.id).emit('info', wpgs.attackerMessage);
             if (wpgs.victimId) {
-                io.to(wpgs.victimId).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.victimId]);
-                io.to(wpgs.victimId).emit('info', wpgs.victimMessage);
+                io.to(await getSocket(wpgs.victimId)).emit('playerGameStateUpdate', wpgs.playerGameStates[wpgs.victimId]);
+                io.to(await getSocket(wpgs.victimId)).emit('info', wpgs.victimMessage);
                 if (!wpgs.playerGameStates[wpgs.victimId].alive) {
-                    io.to(wpgs.victimId).emit('youLost');
+                    io.to(await getSocket(wpgs.victimId)).emit('youLost');
                 }
             }
         } catch (e) {
@@ -224,7 +221,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 7,
                 error: e.message
             }
-            io.to(userId).emit('error', response);
+            io.to(await getSocket(userId)).emit('error', response);
         }
     })
 
@@ -236,14 +233,14 @@ export const initHandlers = (io: Server, socket: Socket) => {
         try {
             let lootReport: LootReport = await game.loot(gameId, userId, data);
             io.sockets.in(gameId).emit('generalGameStateUpdate', lootReport.generalGameState);
-            io.to(userId).emit('playerGameStateUpdate', lootReport.playerGameState);
+            io.to(socket.id).emit('playerGameStateUpdate', lootReport.playerGameState);
         } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 7,
                 error: e.message
             }
-            io.to(userId).emit('error', response);
+            io.to(socket.id).emit('error', response);
         }
     })
 
@@ -253,29 +250,29 @@ export const initHandlers = (io: Server, socket: Socket) => {
         const gameId = socket.handshake.session.room;
         try {
             let playerGameState: PlayerGameState = await game.buyItem(gameId, userId, data);
-            io.to(userId).emit('playerGameStateUpdate', playerGameState);
+            io.to(socket.id).emit('playerGameStateUpdate', playerGameState);
         } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 8,
                 error: e.message
             }
-            io.to(userId).emit('error', response);
+            io.to(socket.id).emit('error', response);
         }
     })
 
     socket.on('getItemList', () => {
         console.log('Requesting itemList...');
-        const userId = socket.handshake.session.userId;
+
         try {
-            io.to(userId).emit('recieveShopItem', itemList);
+            io.to(socket.id).emit('recieveShopItem', itemList);
         } catch (e) {
             console.error(e);
             let response: ErrorResponse = {
                 errorId: 9,
                 error: e.message
             }
-            io.to(userId).emit('error', response);
+            io.to(socket.id).emit('error', response);
         }
     });
 
@@ -292,7 +289,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
             }
             
             for(let player in useReport.playerGameStates) {
-                io.to(player).emit('playerGameStateUpdate', useReport.playerGameStates[player]);
+                io.to(await getSocket(player)).emit('playerGameStateUpdate', useReport.playerGameStates[player]);
             }
         } catch (e) {
             console.error(e);
@@ -300,7 +297,58 @@ export const initHandlers = (io: Server, socket: Socket) => {
                 errorId: 11,
                 error: e.message
             }
-            io.to(userId).emit('error', response);
+            io.to(socket.id).emit('error', response);
         }
     })
+}
+
+const getSocket = async (userId: string) => {
+    try {
+        return await redis.getAsync(`userId:${userId}`);
+    } catch (e) {
+        console.error(e);
+        throw new Error('Could not get socket from user');
+    }
+}
+
+export const setSocket = async (userId: string, socketId: string) => {
+    try {
+        await redis.setAsync(`userId:${userId}` , socketId);
+    } catch (e) {
+        console.error(e);
+        throw new Error('Could not set socket for user.');
+    }
+    
+}
+
+export const joinGame = async (io: Server, socket: Socket, gameId: string, userId: string) => {
+    if (!io.nsps['/'].adapter.rooms[gameId]) {
+        socket.handshake.session.room = null;
+        socket.handshake.session.save(() => {
+            console.error(new Error('ROOM_DOES_NOT_EXIST'));
+        });
+
+        return;
+    }
+    try {
+        let joinReport: JoinReport = await game.join(gameId, userId, true);
+        console.log('Found matching room to join');
+        socket.join(gameId);
+
+        socket.handshake.session.room = joinReport.generalGameState.gameId;
+        socket.handshake.session.save(() => {
+            io.sockets.in(gameId).emit('generalGameStateUpdate', joinReport.generalGameState);
+            if(joinReport.playerGameState) {
+                io.to(socket.id).emit('playerGameStateUpdate', joinReport.playerGameState);
+            }
+            return;
+        });
+    } catch (e) {
+        console.error(e);
+        let response: ErrorResponse = {
+            errorId: 1,
+            error: e.message
+        }
+        io.to(socket.id).emit('error', response);
+    }
 }
