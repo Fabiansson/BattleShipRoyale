@@ -2,7 +2,7 @@ import { redis } from '../redis/redis';
 import { GeneralGameState, GameSettings, ServerGameState, PlayerGameState, Player, Move, Attack, WarPlayerGameStates, Ship, PlayerGameStateCollection, FogReport, LootReport, Fog, UseReport, Item, ItemUtilization, ChatMessage, JoinReport } from 'interfaces/interfaces';
 import { itemList, getItem, useItem } from './itemService';
 import { Socket } from 'socket.io';
-import { getCoordinates, removeByValue } from '../helpers/helpers';
+import { getCoordinates, removeByValue, generateName } from '../helpers/helpers';
 import { checkMove, resetShotsOrMoves, checkLoot, checkAlive, fogEatsShips, getRandomItem, reviveEverything, resetHits } from './gameRuleService';
 import { createTerrainMap, placeShips, createFog, shrinkFog, createLootMap, generateShip } from './mapService';
 
@@ -12,7 +12,7 @@ export function initGame(socket: Socket) {
 
         let generalGameState: GeneralGameState = {
             gameId: randomRoomId,
-            players: [{ playerId: socket.handshake.session.userId, playerName: 'Karl' }],
+            players: [{ playerId: socket.handshake.session.userId, playerName: generateName() }],
             admin: socket.handshake.session.userId,
             rounds: 5,
             currentRound: null,
@@ -46,7 +46,7 @@ export function join(gameId: string, userId: string, privateLobby: boolean) {
         } else if (!generalGameState.started) {
             let player: Player = {
                 playerId: userId,
-                playerName: 'Salvatore'
+                playerName: generateName()
             }
             generalGameState.players.push(player);
             await redis.setAsync(`room:${gameId}`, JSON.stringify(sgs));
