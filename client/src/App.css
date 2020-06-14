@@ -43,3 +43,7 @@ canvas {
   background-color: #525252;
   opacity: 0.8;
 }
+
+#languageBar Button {
+  margin: .5em .5em;
+}
