@@ -4,6 +4,7 @@ import Input from '@material-ui/core/Input';
 import SocketContext from "../services/SocketProvider";
 import "../App.css";
 import { Player } from "../App";
+import { useTranslation } from 'react-i18next';
 
 export interface ChatMessage {
   sender?: Player,
@@ -64,6 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Chat(props: any) {
   const classes = useStyles();
+  const { t, i18n } = useTranslation();
   const initialList: ChatMessage[] = [];
   const [chatList, setChatList] = React.useState(initialList);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -113,7 +115,7 @@ function Chat(props: any) {
         <div ref={messagesEndRef} />
       </div>
       <div className={classes.inputField}>
-        <Input id="submitText" placeholder="Message" inputProps={{ 'aria-label': 'description' }} />
+        <Input id="submitText" placeholder={t("Message")} inputProps={{ 'aria-label': 'description' }} />
       </div>
     </div>
   );

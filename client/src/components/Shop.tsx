@@ -28,10 +28,9 @@ function Shop() {
   const { t, i18n } = useTranslation();
 
   socket?.on("recieveShopItem", (data: Item[]) => {
-    console.log(data);
     let test = [...data];
-    console.log(test);
     setItemList([...data]);
+    console.log([...data]);
   });
 
   useEffect(() => {
@@ -51,8 +50,8 @@ function Shop() {
           </ListItemAvatar>
           <Grid item xs={8}>
             <ListItemText
-              primary={item.name}
-              secondary={item.desc}
+              primary={t(item.name)}
+              secondary={t(item.desc)}
             />
           </Grid>
           <Grid item xs={3}>

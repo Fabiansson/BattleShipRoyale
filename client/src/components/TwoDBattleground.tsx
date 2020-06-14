@@ -7,6 +7,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import SocketContext from "../services/SocketProvider";
 import { coordinateToIndex, calculateDistance } from "../services/helpers";
+import { useTranslation } from 'react-i18next';
 
 interface TwoDBattlegroundProps {
     terrain: number[],
@@ -38,6 +39,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
     const [selected, setSelected] = useState<string>('');
     const [availableRes, setAvailableRes] = useState<number | null>(null);
     const [menuAnchor, setMenuAnchor] = useState<HTMLTableCellElement | null>(null);
+    const { t, i18n } = useTranslation();
     let mapSize: number = 0;
     let mapWidth: number = 0;
 
@@ -108,7 +110,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
     }
 
     const handleFogClick = () => {
-        enqueueSnackbar('Nothing can be done in the fog...', {
+        enqueueSnackbar(t("Fog"), {
             variant: 'error',
             anchorOrigin: {
               vertical: 'top',
@@ -202,24 +204,24 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
                 >
                     {menuAnchor && isShip(menuAnchor.id) && 
                     <React.Fragment>
-                    <MenuItem onClick={() => moveTo('up')}>Up</MenuItem>
-                    <MenuItem onClick={() => moveTo('down')}>Down</MenuItem>
-                    <MenuItem onClick={() => moveTo('left')}>Left</MenuItem>
-                    <MenuItem onClick={() => moveTo('right')}>Right</MenuItem>
+                    <MenuItem onClick={() => moveTo('up')}>{t('Up')}</MenuItem>
+                    <MenuItem onClick={() => moveTo('down')}>{t('Down')}</MenuItem>
+                    <MenuItem onClick={() => moveTo('left')}>{t('Left')}</MenuItem>
+                    <MenuItem onClick={() => moveTo('right')}>{t('Right')}</MenuItem>
                     </React.Fragment>}
                     {menuAnchor && !isShip(menuAnchor.id) && !isIsland(menuAnchor.id) &&
-                    <MenuItem onClick={() => attack(menuAnchor!.id)}>Attack</MenuItem>}
+                    <MenuItem onClick={() => attack(menuAnchor!.id)}>{t('Attack')}</MenuItem>}
                     {menuAnchor && !isShip(menuAnchor.id) && isIsland(menuAnchor.id) &&
-                    <MenuItem onClick={() => loot(menuAnchor!.id)}>Loot</MenuItem> }
+                    <MenuItem onClick={() => loot(menuAnchor!.id)}>{t('Loot')}</MenuItem> }
                     {menuAnchor && isShip(menuAnchor.id) && props.inventory.find(item => item.id === 0) &&
-                    <MenuItem onClick={() => utilizeItem(0, menuAnchor!.id)}>Protect Ship</MenuItem>}
+                    <MenuItem onClick={() => utilizeItem(0, menuAnchor!.id)}>{t('Protect')}</MenuItem>}
                     {menuAnchor && isShip(menuAnchor.id) && props.inventory.find(item => item.id === 1) &&
-                    <MenuItem onClick={() => utilizeItem(1, menuAnchor!.id)}>Increase Shots</MenuItem>}
+                    <MenuItem onClick={() => utilizeItem(1, menuAnchor!.id)}>{t('IncreaseShots')}</MenuItem>}
                 </Menu>
             </tbody>
         </table>
         {availableRes != null && 
-        <h3>Available shots or moves with this ship: {availableRes}</h3>}
+        <h3>{t('AvaiableRes')}: {availableRes}</h3>}
         </div>
     );
 }

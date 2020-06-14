@@ -313,7 +313,7 @@ export function attack(gameId: string, userId: string, attack: Attack) {
             for (let position of ship.position) {
                 if (position.x == fromCoordinates[0] && position.y == fromCoordinates[1]) {
                     if (position.health == 0 || ship.shotsOrMoves == 0) {
-                        reject(new Error('SHIP_IS_DOWN_OR_HAS_NO_SHOTS_OR_MOVES'));
+                        reject(new Error('SHIP_HAS_NO_ACTION'));
                         return;
                     } else {
                         ship.shotsOrMoves--;

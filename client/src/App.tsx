@@ -9,8 +9,6 @@ import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
 import Game from './components/Game';
-import Button from '@material-ui/core/Button';
-
 import { useTranslation } from 'react-i18next';
 
 export interface Room {
@@ -94,6 +92,7 @@ function App() {
   const { enqueueSnackbar } = useSnackbar();
   const { t, i18n } = useTranslation();
 
+
   const theme = createMuiTheme({
     typography: {
       fontFamily: [
@@ -140,7 +139,7 @@ function App() {
               window.location.href = 'http://localhost:3000'
               break;
             default:
-              enqueueSnackbar(data.error, {
+              enqueueSnackbar(t(data.error), {
                 variant: 'error',
                 anchorOrigin: {
                   vertical: 'top',
@@ -151,7 +150,7 @@ function App() {
         })
 
         socket.on('youLost', () => {
-          enqueueSnackbar('HAHAHAHAHAHAH YOU LOST!!!! NOOOB!!', {
+          enqueueSnackbar(t("Lost"), {
             variant: 'info',
             anchorOrigin: {
               vertical: 'top',
@@ -184,16 +183,11 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
-  const translate = (lang: string) =>{
-    i18n.changeLanguage(lang);
-  }
+
 
   return (
     <div className="App">
-      <nav>
-    <Button id="de" variant="contained" color="primary" onClick={() => translate('de')}>Deutsch</Button>
-    <Button id="en" variant="contained" color="primary" onClick={() => translate('en')}>English</Button>
-    </nav>
+    <div>
       <ThemeProvider theme={theme}>
           {<UserContext.Provider value={userId}>
             <SocketContext.Provider value={socket}>
@@ -204,6 +198,7 @@ function App() {
             </SocketContext.Provider>
           </UserContext.Provider>}
       </ThemeProvider>
+      </div>
     </div>
   );
 }

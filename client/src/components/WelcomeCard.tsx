@@ -7,7 +7,6 @@ import ship from "../assets/ship.svg";
 import logo from "../assets/logo.svg";
 import SocketContext from '../services/SocketProvider';
 import Paper from '@material-ui/core/Paper';
-
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles({
@@ -54,10 +53,18 @@ function WelcomeCard(props: any) {
     props.socket.emit('open');   
   }
 
-
+  const translate = (lang: string) =>{
+    i18n.changeLanguage(lang);
+  }
 
   return (
     <div>
+      <div className="languageButton">
+      <nav id="languageBar">
+    <Button  variant="contained" color="primary" onClick={() => translate('de')}>Deutsch</Button>
+    <Button  variant="contained" color="primary" onClick={() => translate('en')}>English</Button>
+    </nav>
+    </div>
     <Paper elevation={0} className={classes.paper} >
  
       <Grid container spacing={3}>

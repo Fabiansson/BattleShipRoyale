@@ -100,7 +100,7 @@ function Lobby(props: LobbyProps) {
                                     </FormControl>
                                     <FormControlLabel
                                         control={<Switch checked={gameSettings.privateLobby} onChange={handlePrivateChange} name="PrivateLobby" color="primary" />}
-                                        label="Private Lobby"
+                                        label={t('Lobby')}
                                         labelPlacement="top"
                                     />
                                 </Grid>}

@@ -5,7 +5,7 @@ html, body{
   width: 100%;
   padding: 0;
   margin: 0;
-  overflow: hidden;
+  /*overflow: hidden;*/
   background-color: #282c34;
   background-image: url('./assets/background1.png');
   background-position: 50%;
@@ -32,8 +32,19 @@ html, body{
   }
 }
 
-canvas{
+canvas {
   width: 100vw;
   height: 100vh;
   /*background-image: linear-gradient( 135deg, rgba(224,235,213,1), rgba(37,148,141,1) );*/
+}
+
+#languageBar {
+  height: 50px;
+  background-color: #525252;
+  opacity: 0.8;
+}
+
+.languageButton {
+  margin: 0 auto;
+  display: block;
 }

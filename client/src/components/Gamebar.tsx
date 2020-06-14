@@ -45,7 +45,7 @@ function Gamebar(props: GamebarProps) {
   useEffect(() => {
     if (isMyTurn()) {
       setSeconds(59);
-      enqueueSnackbar('YOUR TURN', {
+      enqueueSnackbar(t("Turn"), {
         variant: 'info',
         anchorOrigin: {
           vertical: 'top',
@@ -126,7 +126,7 @@ function Gamebar(props: GamebarProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Close
+          {t('Close')}
           </Button>
         </DialogActions>
       </Dialog>
