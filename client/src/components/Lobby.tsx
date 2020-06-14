@@ -83,7 +83,7 @@ function Lobby(props: LobbyProps) {
 
                 <Grid item xs={6} style={{width: '50%'}}>
                     <Paper elevation={3} style={{ padding: '3em' }}>
-                    {t('Link')}: <a href={'http://localhost:3000/' + props.generalGameState.gameId}>{'http://localhost:3000/' + props.generalGameState.gameId}</a>
+                    {t('Link')}: <a href={window.location.protocol + '//' + window.location.host + '/' + props.generalGameState.gameId}>{ window.location.protocol + '//' + window.location.host + '/' + props.generalGameState.gameId }</a>
                         <Grid container spacing={2}>
                             {props.generalGameState.admin === userId &&
                                 <Grid item xs={6}>
