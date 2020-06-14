@@ -90,7 +90,7 @@ function App() {
   const [socket, setSocket] = useState<SocketIOClient.Socket>(io({ autoConnect: false }));
   const [userId, setuUserId] = useState<string>('');
   const { enqueueSnackbar } = useSnackbar();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
 
   const theme = createMuiTheme({

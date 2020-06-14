@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Inventory(props: InventoryProps) {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className={classes.inventory}>

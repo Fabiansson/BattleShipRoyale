@@ -39,7 +39,7 @@ function Gamebar(props: GamebarProps) {
   const [seconds, setSeconds] = useState<number>(0);
   const [timer, setTimer] = useState<any>(null);
   const [open, setOpen] = useState(false);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
 
   useEffect(() => {
@@ -54,12 +54,14 @@ function Gamebar(props: GamebarProps) {
       });
       startTimer();
     }
+    // eslint-disable-next-line
   }, [props.turn])
 
   useEffect(() => {
     if (seconds === 0) {
       clearInterval(timer);
     }
+    // eslint-disable-next-line
   }, [seconds])
 
   const startTimer = () => {

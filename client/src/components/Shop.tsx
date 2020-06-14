@@ -25,16 +25,15 @@ function Shop() {
 
   const initialList: Item[] = [];
   const [itemList, setItemList] = useState(initialList);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   socket?.on("recieveShopItem", (data: Item[]) => {
-    let test = [...data];
     setItemList([...data]);
-    console.log([...data]);
   });
 
   useEffect(() => {
     socket?.emit("getItemList");
+    // eslint-disable-next-line
   }, []);
 
   const sendItem = (itemId: number) => {

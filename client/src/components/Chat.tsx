@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Chat(props: any) {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const initialList: ChatMessage[] = [];
   const [chatList, setChatList] = React.useState(initialList);
   const messagesEndRef = useRef<HTMLDivElement>(null);

@@ -52,7 +52,7 @@ function Lobby(props: LobbyProps) {
     const [gameSettings, setGameSettings] = useState<GameSettings>(initialGameSettings);
     const userId = useContext(UserContext);
     const socket = useContext(SocketContext);
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     const handlePrivateChange = () => {
         let newGameSettings: GameSettings = { ...gameSettings, privateLobby: !gameSettings.privateLobby };

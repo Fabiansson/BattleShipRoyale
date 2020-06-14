@@ -39,7 +39,7 @@ function TwoDBattleground(props: TwoDBattlegroundProps) {
     const [selected, setSelected] = useState<string>('');
     const [availableRes, setAvailableRes] = useState<number | null>(null);
     const [menuAnchor, setMenuAnchor] = useState<HTMLTableCellElement | null>(null);
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     let mapSize: number = 0;
     let mapWidth: number = 0;
 
