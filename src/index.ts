@@ -6,8 +6,6 @@ import { PORT, HOST } from './helpers/constants';
 import { redisStore } from './redis/redis';
 import path from 'path'
 
-
-
 const app = express();
 const server = http.createServer(app);
 const store = redisStore(expressSession);
@@ -60,8 +58,6 @@ if (process.env.DEBUG === 'express-session') {
         next();
     });
 }
-
-console.log(JSON.stringify(process.env));
 
 server.listen(PORT, HOST, function () {
     console.log("Server running on: " + HOST + " : " + PORT);
