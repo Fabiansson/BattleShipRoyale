@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSnackbar } from 'notistack';
 import './App.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -167,6 +167,7 @@ function App() {
   }, []);
 
   return (
+    <Suspense fallback="loading">
     <div className="App">
       <ThemeProvider theme={theme}>
           {<UserContext.Provider value={userId}>
@@ -179,6 +180,7 @@ function App() {
           </UserContext.Provider>}
       </ThemeProvider>
     </div>
+    </Suspense>
   );
 }
 

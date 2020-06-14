@@ -5,6 +5,8 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { SnackbarProvider } from 'notistack';
 
+import './i18n';
+
 ReactDOM.render(<SnackbarProvider maxSnack={3} iconVariant={{
     success: '✅',
     error: '✖️',
