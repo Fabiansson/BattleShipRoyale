@@ -1,6 +1,6 @@
 import { calculateDistance, getRandomInt, shuffle, getCoordinates, coordinateToIndex } from "../helpers/helpers";
-import { Ship, Fog } from "interfaces/interfaces";
-import { getEnabledCategories } from "trace_events";
+import { Ship, Fog, ServerGameState, PlayerGameStateCollection } from "interfaces/interfaces";
+import { CHESTS_PER_PLAYER } from "./gameRuleService";
 
 export function createTerrainMap(size: number) {
     let map: number[] = [];
@@ -45,7 +45,25 @@ function growIslands(array: number[], percentage: number) {
     return array;
 }
 
-export function placeShips(map: number[], amountOfPlayers: number) {
+export function createLootMap(map: number[], amountOfPlayers: number) {
+    let chests: number = amountOfPlayers * CHESTS_PER_PLAYER;
+    let lootMap: number[] = [];
+    map.forEach((tile, index) => {
+        if (tile === 1) {
+            lootMap.push(index);
+        }
+    });
+
+    lootMap = shuffle(lootMap);
+
+    while (chests < lootMap.length) {
+        lootMap.pop();
+    }
+
+    return lootMap
+}
+
+export function placeShips(map: number[], fog: Fog, amountOfPlayers: number) {
     let shipPacks: Ship[][] = [];
     let blocks: number[] = [];
 
@@ -56,13 +74,14 @@ export function placeShips(map: number[], amountOfPlayers: number) {
         shipPacks.push([]);
         for (let j = 0; j < 3; j++) {
             let random = getRandomInt(0, mapSize - 1);
-            if (map[random] == 0 && !blocks.includes(random)) {
+            if (map[random] == 0 && !blocks.includes(random) && !isInFog(mapSize, fog, random)) {
                 switch (j) {
                     case 0:
                         if (getRandomInt(0, 1) == 0) { //HORZONTAL
                             if (map[random - 1] == 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
                                 map[random + 1] == 0 && calculateDistance(mapSize, random, random + 1) == 1 &&
-                                !blocks.includes(random - 1) && !blocks.includes(random) && !blocks.includes(random + 1)) {
+                                !blocks.includes(random - 1) && !blocks.includes(random) && !blocks.includes(random + 1)
+                                && !isInFog(mapSize, fog, random - 1) && !isInFog(mapSize, fog, random + 1)) {
                                 blocks.push(random - 1);
                                 blocks.push(random);
                                 blocks.push(random + 1);
@@ -73,7 +92,8 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                         } else {
                             if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
                                 map[random + mapWidth] == 0 && calculateDistance(mapSize, random, random + mapWidth) == 1 &&
-                                !blocks.includes(random - mapWidth) && !blocks.includes(random) && !blocks.includes(random + mapWidth)) {
+                                !blocks.includes(random - mapWidth) && !blocks.includes(random) && !blocks.includes(random + mapWidth)
+                                && !isInFog(mapSize, fog, random - mapWidth) && !isInFog(mapSize, fog, random + mapWidth)) {
                                 blocks.push(random - mapWidth);
                                 blocks.push(random);
                                 blocks.push(random + mapWidth);
@@ -85,15 +105,16 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                         shipPacks[i].push({
                             shotsOrMoves: 3,
                             position: [
-                                { x: getCoordinates(mapSize, blocks[6 * i + 0])[0], y: getCoordinates(mapSize, blocks[0])[1], health: 1 },
-                                { x: getCoordinates(mapSize, blocks[6 * i + 1])[0], y: getCoordinates(mapSize, blocks[1])[1], health: 1 },
-                                { x: getCoordinates(mapSize, blocks[6 * i  + 2])[0], y: getCoordinates(mapSize, blocks[2])[1], health: 1 }]
+                                { x: getCoordinates(mapSize, blocks[6 * i + 0])[0], y: getCoordinates(mapSize, blocks[6 * i + 0])[1], health: 1 },
+                                { x: getCoordinates(mapSize, blocks[6 * i + 1])[0], y: getCoordinates(mapSize, blocks[6 * i + 1])[1], health: 1 },
+                                { x: getCoordinates(mapSize, blocks[6 * i + 2])[0], y: getCoordinates(mapSize, blocks[6 * i + 2])[1], health: 1 }]
                         });
                         break;
                     case 1:
                         if (getRandomInt(0, 1) == 0) { //HORZONTAL
                             if (map[random - 1] == 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
-                            !blocks.includes(random - 1) && !blocks.includes(random)) {
+                                !blocks.includes(random - 1) && !blocks.includes(random)
+                                && !isInFog(mapSize, fog, random - 1)) {
                                 blocks.push(random - 1);
                                 blocks.push(random);
                             } else {
@@ -102,7 +123,8 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                             }
                         } else {
                             if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
-                            !blocks.includes(random - mapWidth) && !blocks.includes(random)) {
+                                !blocks.includes(random - mapWidth) && !blocks.includes(random)
+                                && !isInFog(mapSize, fog, random - mapWidth)) {
                                 blocks.push(random - mapWidth);
                                 blocks.push(random);
                             } else {
@@ -113,21 +135,17 @@ export function placeShips(map: number[], amountOfPlayers: number) {
                         shipPacks[i].push({
                             shotsOrMoves: 2,
                             position: [
-                                { x: getCoordinates(mapSize, blocks[6 * i + 3])[0], y: getCoordinates(mapSize, blocks[3])[1], health: 1 },
-                                { x: getCoordinates(mapSize, blocks[6 * i + 4])[0], y: getCoordinates(mapSize, blocks[4])[1], health: 1 }]
+                                { x: getCoordinates(mapSize, blocks[6 * i + 3])[0], y: getCoordinates(mapSize, blocks[6 * i + 3])[1], health: 1 },
+                                { x: getCoordinates(mapSize, blocks[6 * i + 4])[0], y: getCoordinates(mapSize, blocks[6 * i + 4])[1], health: 1 }]
                         });
                         break;
                     case 2:
-                        if (map[random] == 0 && !blocks.includes(random)) {
-                            blocks.push(random);
-                        } else {
-                            j--;
-                            continue;
-                        }
+                        blocks.push(random);
+
                         shipPacks[i].push({
                             shotsOrMoves: 1,
                             position: [
-                                { x: getCoordinates(mapSize, blocks[6 * i + 5])[0], y: getCoordinates(mapSize, blocks[5])[1], health: 1 }]
+                                { x: getCoordinates(mapSize, blocks[6 * i + 5])[0], y: getCoordinates(mapSize, blocks[6 * i + 5])[1], health: 1 }]
                         });
                         break;
                 }
@@ -140,13 +158,89 @@ export function placeShips(map: number[], amountOfPlayers: number) {
     return shipPacks;
 }
 
+export function generateShip(sgs: ServerGameState, size: number) {
+    let ship: Ship = {shotsOrMoves: size, position: []}
+
+    let map: number[] = sgs.generalGameState.terrainMap;
+    let mapSize: number = sgs.generalGameState.terrainMap.length;
+    let mapWidth = Math.floor(Math.sqrt(mapSize));
+
+    let random = getRandomInt(0, mapSize - 1);
+
+    if (map[random] === 0 && !hasShip(mapSize, sgs.playerGameStates, random) && !isInFog(mapSize, sgs.generalGameState.fog, random)) {
+        switch (size) {
+            case 3:
+                if (getRandomInt(0, 1) == 0) { //HORZONTAL
+                    if (map[random - 1] === 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
+                        map[random + 1] === 0 && calculateDistance(mapSize, random, random + 1) == 1 &&
+                        !hasShip(mapSize, sgs.playerGameStates, random - 1) && !hasShip(mapSize, sgs.playerGameStates, random + 1)
+                        && !isInFog(mapSize, sgs.generalGameState.fog, random - 1) && !isInFog(mapSize, sgs.generalGameState.fog, random + 1)) {
+                        let c: number[] = getCoordinates(mapSize, random - 1);
+                        let h: number[] = getCoordinates(mapSize, random);
+                        let k: number[] = getCoordinates(mapSize, random + 1);
+                        ship.position.push({ x: c[0], y: c[1], health: 1 });
+                        ship.position.push({ x: h[0], y: h[1], health: 1 });
+                        ship.position.push({ x: k[0], y: k[1], health: 1 });
+                    } else {
+                        return generateShip(sgs, size);
+                    }
+                } else {
+                    if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
+                        map[random + mapWidth] == 0 && calculateDistance(mapSize, random, random + mapWidth) == 1 &&
+                        !hasShip(mapSize, sgs.playerGameStates, random - mapWidth) && !hasShip(mapSize, sgs.playerGameStates, random + mapWidth)
+                        && !isInFog(mapSize, sgs.generalGameState.fog, random - mapWidth) && !isInFog(mapSize, sgs.generalGameState.fog, random + mapWidth)) {
+                        let c: number[] = getCoordinates(mapSize, random - mapWidth);
+                        let h: number[] = getCoordinates(mapSize, random);
+                        let k: number[] = getCoordinates(mapSize, random + mapWidth);
+                        ship.position.push({ x: c[0], y: c[1], health: 1 });
+                        ship.position.push({ x: h[0], y: h[1], health: 1 });
+                        ship.position.push({ x: k[0], y: k[1], health: 1 });
+                    } else {
+                        return generateShip(sgs, size);
+                    }
+                }
+            case 2:
+                if (getRandomInt(0, 1) == 0) { //HORZONTAL
+                    if (map[random - 1] === 0 && calculateDistance(mapSize, random, random - 1) == 1 &&
+                        !hasShip(mapSize, sgs.playerGameStates, random - 1) && !isInFog(mapSize, sgs.generalGameState.fog, random - 1)) {
+                        let c: number[] = getCoordinates(mapSize, random - 1);
+                        let h: number[] = getCoordinates(mapSize, random);
+                        ship.position.push({ x: c[0], y: c[1], health: 1 });
+                        ship.position.push({ x: h[0], y: h[1], health: 1 });
+                    } else {
+                        return generateShip(sgs, size);
+                    }
+                } else {
+                    if (map[random - mapWidth] == 0 && calculateDistance(mapSize, random, random - mapWidth) == 1 &&
+                        !hasShip(mapSize, sgs.playerGameStates, random - mapWidth) && !isInFog(mapSize, sgs.generalGameState.fog, random - mapWidth)) {
+                        let c: number[] = getCoordinates(mapSize, random - mapWidth);
+                        let h: number[] = getCoordinates(mapSize, random);
+                        ship.position.push({ x: c[0], y: c[1], health: 1 });
+                        ship.position.push({ x: h[0], y: h[1], health: 1 });
+                    } else {
+                        return generateShip(sgs, size);
+                    }
+                }
+            case 1:
+                let h: number[] = getCoordinates(mapSize, random);
+                ship.position.push({ x: h[0], y: h[1], health: 1 });
+        }
+    } else {
+        return generateShip(sgs, size);
+    }
+
+    return ship;
+}
+
 export function createFog(mapSize: number) {
     const mapWidth: number = Math.floor(Math.sqrt(mapSize));
-    const radius = mapWidth; //RANDOM FOG RADIUS DEFINITION
-    const centerIndex = getRandomInt(0, mapSize - 1);
-    const fogCoordinates: number[] = getCoordinates(mapSize, centerIndex); 
-    const nextFogCoordinates: number[] = getNextFogCoordinates(mapSize, centerIndex, radius);
-    
+    const radius = mapWidth * 0.7; //RANDOM FOG RADIUS DEFINITION
+    //const centerIndex = getRandomInt(0, mapSize - 1);
+    const centerIndex = (mapSize / 2) - (mapWidth / 2);
+    const fogCoordinates: number[] = getCoordinates(mapSize, centerIndex);
+    //const nextFogCoordinates: number[] = getNextFogCoordinates(mapSize, centerIndex, radius);
+    const nextFogCoordinates: number[] = fogCoordinates;
+
     let fog: Fog = {
         radius: radius,
         xCenter: fogCoordinates[0],
@@ -163,13 +257,15 @@ export function shrinkFog(mapSize: number, fog: Fog) {
     let newFog: Fog = Object.assign({}, fog);
 
     const currentCenterIndex: number = coordinateToIndex(mapSize, fog.xCenter, fog.nextYCenter);
-    const nextFogCoordinates: number[] = getNextFogCoordinates(mapSize, currentCenterIndex, fog.radius);
+    //const nextFogCoordinates: number[] = getNextFogCoordinates(mapSize, currentCenterIndex, fog.radius);
     newFog.radius = fog.nextRadius;
-    newFog.xCenter = fog.nextXCenter;
-    newFog.yCenter = fog.nextYCenter;
+    //newFog.xCenter = fog.nextXCenter;
+    //newFog.yCenter = fog.nextYCenter;
     newFog.nextRadius = getNextRadius(newFog.radius);
-    newFog.nextXCenter = nextFogCoordinates[0];
-    newFog.nextYCenter = nextFogCoordinates[1];
+    //newFog.nextXCenter = nextFogCoordinates[0];
+    //newFog.nextYCenter = nextFogCoordinates[1];
+    //newFog.nextXCenter = fog.nextXCenter[0];
+    //newFog.nextYCenter = fog.nextYCenter[1];
 
     return newFog;
 }
@@ -177,7 +273,7 @@ export function shrinkFog(mapSize: number, fog: Fog) {
 function getNextFogCoordinates(mapSize: number, currentCenterIndex: number, radius: number) {
     const nextCenterIndex = getRandomInt(0, mapSize - 1);
 
-    if(calculateDistance(mapSize, currentCenterIndex, nextCenterIndex) <= 0.1 * radius){
+    if (calculateDistance(mapSize, currentCenterIndex, nextCenterIndex) <= 0.5 * radius) {
         return getCoordinates(mapSize, nextCenterIndex);
     } else {
         return getNextFogCoordinates(mapSize, currentCenterIndex, radius);
@@ -186,6 +282,20 @@ function getNextFogCoordinates(mapSize: number, currentCenterIndex: number, radi
 
 function getNextRadius(currentRadius: number) {
     return currentRadius * 0.85;
+}
+
+function hasShip(mapSize: number, playerGameStates: PlayerGameStateCollection, index: number) {
+    for (let player in playerGameStates) {
+        for (let ship of playerGameStates[player].ships) {
+            for (let position of ship.position) {
+                let positionIndex: number = coordinateToIndex(mapSize, position.x, position.y);
+                if (positionIndex === index) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 export function isInFog(mapSize: number, fog: Fog, field: number) {

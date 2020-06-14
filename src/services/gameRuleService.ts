@@ -1,8 +1,10 @@
 import { ShipBlock, ServerGameState, Ship, PlayerGameState, Fog, PlayerGameStateCollection } from "interfaces/interfaces";
-import { coordinateToIndex, calculateDistance } from "../helpers/helpers";
+import { coordinateToIndex, calculateDistance, getRandomInt } from "../helpers/helpers";
 import { isInFog } from "./mapService";
+import { itemList } from "./itemService";
 
-export const turnTime: number = 30000;
+export const turnTime: number = 60000;
+export const CHESTS_PER_PLAYER: number = 3;
 
 export function checkMove(map: number[], fog: Fog, ship: Ship, position: ShipBlock, direction: string) {
     const mapSize = map.length;
@@ -37,7 +39,7 @@ export function checkMove(map: number[], fog: Fog, ship: Ship, position: ShipBlo
     throw new Error('SHIP_CAN_NOT_MOVE_ON_THIS_TILE');
 }
 
-export function checkLoot(map: number[], fog: Fog, ship: Ship, lootFrom: ShipBlock, lootSpot: number) {
+export function checkLoot(map: number[], lootMap: number[], fog: Fog, ship: Ship, lootFrom: ShipBlock, lootSpot: number) {
     const fromIndex = coordinateToIndex(map.length, lootFrom.x, lootFrom.y);
 
     if(calculateDistance(map.length, fromIndex, lootSpot) != 1) {
@@ -52,17 +54,24 @@ export function checkLoot(map: number[], fog: Fog, ship: Ship, lootFrom: ShipBlo
     if(isInFog(map.length, fog, lootSpot)) {
         throw new Error('CAN_NOT_LOOT_ISLANDS_IN_FOG');
     }
+    if (!lootMap.includes(lootSpot)) { //If field contains loot
+        throw new Error('THIS_FIELD_DOES_NOT_CONTAIN_ANY_LOOT');
+    }
     
     return true;
 }
 
-export function resetShotsOrMoves(sgs: ServerGameState) {
+export function resetShotsOrMoves(sgs: ServerGameState, newRound: boolean) {
     let newState: ServerGameState = JSON.parse(JSON.stringify(sgs));
 
     for (let player in newState.playerGameStates) {
         for (let ship of newState.playerGameStates[player].ships) {
+            ship.shotsOrMoves = 0;
             for (let position of ship.position) {
-                if(position.health == 1) {
+                if(position.health > 0 && !newRound) {
+                    ship.shotsOrMoves++;
+                }
+                if(newRound) {
                     ship.shotsOrMoves++;
                 }
             }
@@ -85,9 +94,8 @@ export function checkAlive(victim: PlayerGameState) {
 }
 
 export function fogEatsShips(sgs: ServerGameState, fog: Fog) {
-    let playerGameStates: PlayerGameStateCollection = {};
-
     let newState: ServerGameState = JSON.parse(JSON.stringify(sgs));
+    
     const mapSize = sgs.generalGameState.terrainMap.length;
 
     for (let player in newState.playerGameStates) {
@@ -97,11 +105,42 @@ export function fogEatsShips(sgs: ServerGameState, fog: Fog) {
                 if (isInFog(mapSize, fog, blockIndex) && position.health > 0) {
                     position.health = 0;
                     newState.playerGameStates[player].alive = checkAlive(newState.playerGameStates[player]);
-                    playerGameStates[player] = newState.playerGameStates[player];
                 }
             }
         }
     }
 
-    return {serverGameState: newState, playerGameStates};
+    return newState;
+}
+
+export function reviveEverything(playerGameStates: PlayerGameStateCollection) {
+    let newPlayerGameStates: PlayerGameStateCollection = JSON.parse(JSON.stringify(playerGameStates));
+
+    for(let player in newPlayerGameStates) {
+        newPlayerGameStates[player].alive = true;
+        for(let ship of newPlayerGameStates[player].ships) {
+            for(let position of ship.position) {
+                position.health = 1;
+            }
+        }
+    }
+
+    return newPlayerGameStates;
+}
+
+export function resetHits(playerGameStates: PlayerGameStateCollection) {
+    let newPlayerGameStates: PlayerGameStateCollection = JSON.parse(JSON.stringify(playerGameStates));
+
+    for(let player in newPlayerGameStates) {
+        newPlayerGameStates[player].hits = [];
+    }
+
+    return newPlayerGameStates;
+}
+
+export function getRandomItem() {
+    const amountOfItems = itemList.length;
+    const luckyNumber = getRandomInt(0, amountOfItems - 1);
+
+    return itemList[luckyNumber];
 }

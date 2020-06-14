@@ -1,0 +1,457 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Battleground renders correctly 1`] = `
+<SnackbarProvider
+  maxSnack={3}
+>
+  <TwoDBattleground
+    fog={
+      Object {
+        "nextRadius": 1,
+        "nextXCenter": 0,
+        "nextYCenter": 0,
+        "radius": 2,
+        "xCenter": 0,
+        "yCenter": 0,
+      }
+    }
+    hits={Array []}
+    inventory={Array []}
+    lootMap={
+      Array [
+        1,
+      ]
+    }
+    ships={
+      Array [
+        Object {
+          "position": Array [
+            Object {
+              "health": 1,
+              "x": 2,
+              "y": 2,
+            },
+          ],
+          "shotsOrMoves": 3,
+        },
+      ]
+    }
+    terrain={
+      Array [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+      ]
+    }
+  >
+    <div>
+      <table
+        className="grid"
+      >
+        <tbody>
+          <tr
+            className="roow-0"
+            key="0"
+          >
+            <td
+              className="tile-0"
+              id="0"
+              key="0"
+              onClick={[Function]}
+            />
+            <td
+              className="tile-6"
+              id="1"
+              key="1"
+              onClick={[Function]}
+            />
+            <td
+              className="tile-0 soft"
+              id="2"
+              key="2"
+              onClick={[Function]}
+            />
+          </tr>
+          <tr
+            className="roow-1"
+            key="1"
+          >
+            <td
+              className="tile-0"
+              id="3"
+              key="3"
+              onClick={[Function]}
+            />
+            <td
+              className="tile-0 soft"
+              id="4"
+              key="4"
+              onClick={[Function]}
+            />
+            <td
+              className="tile-5"
+              id="5"
+              key="5"
+              onClick={[Function]}
+            />
+          </tr>
+          <tr
+            className="roow-2"
+            key="2"
+          >
+            <td
+              className="tile-0 soft"
+              id="6"
+              key="6"
+              onClick={[Function]}
+            />
+            <td
+              className="tile-5"
+              id="7"
+              key="7"
+              onClick={[Function]}
+            />
+            <td
+              className="tile-5"
+              id="8"
+              key="8"
+              onClick={[Function]}
+            />
+          </tr>
+          <WithStyles(ForwardRef(Menu))
+            anchorEl={null}
+            id="interactionMenu"
+            keepMounted={true}
+            onClose={[Function]}
+            open={false}
+          >
+            <ForwardRef(Menu)
+              anchorEl={null}
+              classes={
+                Object {
+                  "list": "MuiMenu-list",
+                  "paper": "MuiMenu-paper",
+                }
+              }
+              id="interactionMenu"
+              keepMounted={true}
+              onClose={[Function]}
+              open={false}
+            >
+              <WithStyles(ForwardRef(Popover))
+                PaperProps={
+                  Object {
+                    "classes": Object {
+                      "root": "MuiMenu-paper",
+                    },
+                  }
+                }
+                anchorEl={null}
+                anchorOrigin={
+                  Object {
+                    "horizontal": "left",
+                    "vertical": "top",
+                  }
+                }
+                getContentAnchorEl={[Function]}
+                id="interactionMenu"
+                keepMounted={true}
+                onClose={[Function]}
+                onEntering={[Function]}
+                open={false}
+                transformOrigin={
+                  Object {
+                    "horizontal": "left",
+                    "vertical": "top",
+                  }
+                }
+                transitionDuration="auto"
+              >
+                <ForwardRef(Popover)
+                  PaperProps={
+                    Object {
+                      "classes": Object {
+                        "root": "MuiMenu-paper",
+                      },
+                    }
+                  }
+                  anchorEl={null}
+                  anchorOrigin={
+                    Object {
+                      "horizontal": "left",
+                      "vertical": "top",
+                    }
+                  }
+                  classes={
+                    Object {
+                      "paper": "MuiPopover-paper",
+                      "root": "MuiPopover-root",
+                    }
+                  }
+                  getContentAnchorEl={[Function]}
+                  id="interactionMenu"
+                  keepMounted={true}
+                  onClose={[Function]}
+                  onEntering={[Function]}
+                  open={false}
+                  transformOrigin={
+                    Object {
+                      "horizontal": "left",
+                      "vertical": "top",
+                    }
+                  }
+                  transitionDuration="auto"
+                >
+                  <ForwardRef(Modal)
+                    BackdropProps={
+                      Object {
+                        "invisible": true,
+                      }
+                    }
+                    className="MuiPopover-root"
+                    id="interactionMenu"
+                    keepMounted={true}
+                    onClose={[Function]}
+                    open={false}
+                  >
+                    <ForwardRef(Portal)
+                      disablePortal={false}
+                    >
+                      <Portal
+                        containerInfo={
+                          <body>
+                            <div
+                              aria-hidden="true"
+                              class="MuiPopover-root"
+                              id="interactionMenu"
+                              role="presentation"
+                              style="position: fixed; z-index: 1300; right: 0px; bottom: 0px; top: 0px; left: 0px; visibility: hidden;"
+                            >
+                              <div
+                                data-test="sentinelStart"
+                                tabindex="0"
+                              />
+                              <div
+                                class="MuiPaper-root MuiMenu-paper MuiPopover-paper MuiPaper-elevation8 MuiPaper-rounded"
+                                style="opacity: 0; transform: scale(0.75, 0.5625); visibility: hidden;"
+                                tabindex="-1"
+                              >
+                                <ul
+                                  class="MuiList-root MuiMenu-list MuiList-padding"
+                                  role="menu"
+                                  tabindex="0"
+                                />
+                              </div>
+                              <div
+                                data-test="sentinelEnd"
+                                tabindex="0"
+                              />
+                            </div>
+                          </body>
+                        }
+                      >
+                        <div
+                          className="MuiPopover-root"
+                          id="interactionMenu"
+                          onKeyDown={[Function]}
+                          role="presentation"
+                          style={
+                            Object {
+                              "bottom": 0,
+                              "left": 0,
+                              "position": "fixed",
+                              "right": 0,
+                              "top": 0,
+                              "visibility": "hidden",
+                              "zIndex": 1300,
+                            }
+                          }
+                        >
+                          <ForwardRef(SimpleBackdrop)
+                            invisible={true}
+                            onClick={[Function]}
+                            open={false}
+                          />
+                          <TrapFocus
+                            disableAutoFocus={false}
+                            disableEnforceFocus={false}
+                            disableRestoreFocus={false}
+                            getDoc={[Function]}
+                            isEnabled={[Function]}
+                            open={false}
+                          >
+                            <div
+                              data-test="sentinelStart"
+                              tabIndex={0}
+                            />
+                            <ForwardRef(Grow)
+                              appear={true}
+                              in={false}
+                              onEnter={[Function]}
+                              onEntering={[Function]}
+                              onExited={[Function]}
+                              tabIndex="-1"
+                              timeout="auto"
+                            >
+                              <Transition
+                                addEndListener={[Function]}
+                                appear={true}
+                                enter={true}
+                                exit={true}
+                                in={false}
+                                mountOnEnter={false}
+                                onEnter={[Function]}
+                                onEntered={[Function]}
+                                onEntering={[Function]}
+                                onExit={[Function]}
+                                onExited={[Function]}
+                                onExiting={[Function]}
+                                tabIndex="-1"
+                                timeout={null}
+                                unmountOnExit={false}
+                              >
+                                <WithStyles(ForwardRef(Paper))
+                                  className="MuiPopover-paper"
+                                  classes={
+                                    Object {
+                                      "root": "MuiMenu-paper",
+                                    }
+                                  }
+                                  elevation={8}
+                                  style={
+                                    Object {
+                                      "opacity": 0,
+                                      "transform": "scale(0.75, 0.5625)",
+                                      "visibility": "hidden",
+                                    }
+                                  }
+                                  tabIndex="-1"
+                                >
+                                  <ForwardRef(Paper)
+                                    className="MuiPopover-paper"
+                                    classes={
+                                      Object {
+                                        "elevation0": "MuiPaper-elevation0",
+                                        "elevation1": "MuiPaper-elevation1",
+                                        "elevation10": "MuiPaper-elevation10",
+                                        "elevation11": "MuiPaper-elevation11",
+                                        "elevation12": "MuiPaper-elevation12",
+                                        "elevation13": "MuiPaper-elevation13",
+                                        "elevation14": "MuiPaper-elevation14",
+                                        "elevation15": "MuiPaper-elevation15",
+                                        "elevation16": "MuiPaper-elevation16",
+                                        "elevation17": "MuiPaper-elevation17",
+                                        "elevation18": "MuiPaper-elevation18",
+                                        "elevation19": "MuiPaper-elevation19",
+                                        "elevation2": "MuiPaper-elevation2",
+                                        "elevation20": "MuiPaper-elevation20",
+                                        "elevation21": "MuiPaper-elevation21",
+                                        "elevation22": "MuiPaper-elevation22",
+                                        "elevation23": "MuiPaper-elevation23",
+                                        "elevation24": "MuiPaper-elevation24",
+                                        "elevation3": "MuiPaper-elevation3",
+                                        "elevation4": "MuiPaper-elevation4",
+                                        "elevation5": "MuiPaper-elevation5",
+                                        "elevation6": "MuiPaper-elevation6",
+                                        "elevation7": "MuiPaper-elevation7",
+                                        "elevation8": "MuiPaper-elevation8",
+                                        "elevation9": "MuiPaper-elevation9",
+                                        "outlined": "MuiPaper-outlined",
+                                        "root": "MuiPaper-root MuiMenu-paper",
+                                        "rounded": "MuiPaper-rounded",
+                                      }
+                                    }
+                                    elevation={8}
+                                    style={
+                                      Object {
+                                        "opacity": 0,
+                                        "transform": "scale(0.75, 0.5625)",
+                                        "visibility": "hidden",
+                                      }
+                                    }
+                                    tabIndex="-1"
+                                  >
+                                    <div
+                                      className="MuiPaper-root MuiMenu-paper MuiPopover-paper MuiPaper-elevation8 MuiPaper-rounded"
+                                      style={
+                                        Object {
+                                          "opacity": 0,
+                                          "transform": "scale(0.75, 0.5625)",
+                                          "visibility": "hidden",
+                                        }
+                                      }
+                                      tabIndex="-1"
+                                    >
+                                      <ForwardRef(MenuList)
+                                        actions={
+                                          Object {
+                                            "current": Object {
+                                              "adjustStyleForScrollbar": [Function],
+                                            },
+                                          }
+                                        }
+                                        autoFocus={true}
+                                        autoFocusItem={false}
+                                        className="MuiMenu-list"
+                                        onKeyDown={[Function]}
+                                        variant="selectedMenu"
+                                      >
+                                        <WithStyles(ForwardRef(List))
+                                          className="MuiMenu-list"
+                                          onKeyDown={[Function]}
+                                          role="menu"
+                                          tabIndex={0}
+                                        >
+                                          <ForwardRef(List)
+                                            className="MuiMenu-list"
+                                            classes={
+                                              Object {
+                                                "dense": "MuiList-dense",
+                                                "padding": "MuiList-padding",
+                                                "root": "MuiList-root",
+                                                "subheader": "MuiList-subheader",
+                                              }
+                                            }
+                                            onKeyDown={[Function]}
+                                            role="menu"
+                                            tabIndex={0}
+                                          >
+                                            <ul
+                                              className="MuiList-root MuiMenu-list MuiList-padding"
+                                              onKeyDown={[Function]}
+                                              role="menu"
+                                              tabIndex={0}
+                                            />
+                                          </ForwardRef(List)>
+                                        </WithStyles(ForwardRef(List))>
+                                      </ForwardRef(MenuList)>
+                                    </div>
+                                  </ForwardRef(Paper)>
+                                </WithStyles(ForwardRef(Paper))>
+                              </Transition>
+                            </ForwardRef(Grow)>
+                            <div
+                              data-test="sentinelEnd"
+                              tabIndex={0}
+                            />
+                          </TrapFocus>
+                        </div>
+                      </Portal>
+                    </ForwardRef(Portal)>
+                  </ForwardRef(Modal)>
+                </ForwardRef(Popover)>
+              </WithStyles(ForwardRef(Popover))>
+            </ForwardRef(Menu)>
+          </WithStyles(ForwardRef(Menu))>
+        </tbody>
+      </table>
+    </div>
+  </TwoDBattleground>
+</SnackbarProvider>
+`;

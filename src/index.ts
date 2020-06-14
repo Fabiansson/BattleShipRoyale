@@ -17,7 +17,7 @@ let session: express.RequestHandler = expressSession({
     resave: true,
     saveUninitialized: true,
     cookie: {
-        maxAge: 600000,
+        maxAge: 6000000,
         httpOnly: true,
         sameSite: true,
         secure: false,

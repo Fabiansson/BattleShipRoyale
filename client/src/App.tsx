@@ -9,7 +9,6 @@ import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
 import Game from './components/Game';
-import Shop from './components/Shop';
 
 export interface Room {
   gameId: string,
@@ -22,10 +21,12 @@ export interface ErrorResponse {
   error: string
 }
 
-export interface InventoryItem {
-  itemId: number,
+export interface Item {
+  id: number,
   name: string,
-  amount: number
+  desc: string,
+  price: number,
+  img: string
 }
 
 export interface Ship {
@@ -46,7 +47,7 @@ export interface Hit {
 
 export interface PlayerGameState {
   coins: number,
-  inventory: InventoryItem[],
+  inventory: Item[],
   ships: Ship[],
   hits: Hit[],
   alive: boolean,
@@ -69,6 +70,7 @@ export interface GeneralGameState {
   currentRound?: number
   turn?: Player,
   terrainMap?: number[],
+  lootMap?: number[],
   fog?: Fog,
   started: boolean,
   privateLobby: boolean
@@ -151,6 +153,17 @@ function App() {
               horizontal: 'center',
           }
           })
+        })
+
+        socket.on('playerWon', (data: Player) => {
+          enqueueSnackbar(data.playerName + 'won! Congratulations!', {
+            variant: 'success',
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+          }
+          });
+          
         })
 
         if (roomString.length > 1 && !generalGameState) {

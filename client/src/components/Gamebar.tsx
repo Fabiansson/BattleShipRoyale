@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+
 import { useSnackbar } from 'notistack';
 
 import SocketContext from '../services/SocketProvider';
 import UserContext from '../services/UserProvider';
+import Shop from "./Shop";
 
 const gamebarStyle = {
   backgroundColor: '#525252',
@@ -14,7 +19,8 @@ const gamebarStyle = {
 };
 
 const endTurnButtonStyle = {
-  margin: '1rem'
+  marginTop: '1rem',
+  marginLeft: '1rem'
 }
 
 interface GamebarProps {
@@ -30,13 +36,12 @@ function Gamebar(props: GamebarProps) {
   const { enqueueSnackbar } = useSnackbar();
   const [seconds, setSeconds] = useState<number>(0);
   const [timer, setTimer] = useState<any>(null);
+  const [open, setOpen] = useState(false);
 
 
   useEffect(() => {
-    console.log('turn got changed');
     if (isMyTurn()) {
-      console.log('turn is mine');
-      setSeconds(29);
+      setSeconds(59);
       enqueueSnackbar('YOUR TURN', {
         variant: 'info',
         anchorOrigin: {
@@ -49,7 +54,7 @@ function Gamebar(props: GamebarProps) {
   }, [props.turn])
 
   useEffect(() => {
-    if(seconds === 0) {
+    if (seconds === 0) {
       clearInterval(timer);
     }
   }, [seconds])
@@ -68,18 +73,29 @@ function Gamebar(props: GamebarProps) {
     return props.turn === userId;
   }
 
+  const openShop = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div style={gamebarStyle}>
       <Grid container spacing={0}>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <h1>BattleshipRoyale</h1>
         </Grid>
         <Grid item xs={4}>
           <p>Round: {props.round} / {props.amountRounds}</p>
-          <h2>YOUR TURN!!!!!!!</h2>
+        </Grid>
+        <Grid item xs={1}>
+          <p>Coins: {props.coins}</p>
         </Grid>
         <Grid item xs={2}>
-          <p>Coins: {props.coins}</p>
+          {isMyTurn() &&
+            <p>Time remaining: {seconds}s</p>}
         </Grid>
         <Grid item xs={2}>
           <Button
@@ -89,10 +105,28 @@ function Gamebar(props: GamebarProps) {
             color="primary"
             disabled={props.turn !== userId}
             onClick={endTurn}>End Turn</Button>
-            {isMyTurn() && 
-            <p>Time remaining: { seconds }s</p>}
+          <Button style={endTurnButtonStyle} variant="contained" color="primary" onClick={openShop}>Open Shop</Button>
         </Grid>
+
       </Grid>
+
+      <Dialog
+        fullWidth={true}
+        maxWidth={'md'}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="max-width-dialog-title"
+      >
+        <DialogContent>
+         
+        <Shop />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>);
 }
 
