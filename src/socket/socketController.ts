@@ -113,8 +113,6 @@ export const initHandlers = (io: Server, socket: Socket) => {
             try {
                 let serverGameState: ServerGameState = await game.startGame(userId, gameId);
                 console.log('Game started...');
-                let members: string[] = Object.keys(io.nsps['/'].adapter.rooms[gameId].sockets);
-                console.log(members);
 
                 io.sockets.in(serverGameState.generalGameState.gameId).emit('generalGameStateUpdate', serverGameState.generalGameState);
                 for (let playerGameState in serverGameState.playerGameStates) {
