@@ -39,36 +39,7 @@ export const initHandlers = (io: Server, socket: Socket) => {
     socket.on('join', async function (data: JoinRequest) {
         console.log('Trying to join room with id: ' + data.gameId);
         const userId = socket.handshake.session.userId;
-
-        if (!io.nsps['/'].adapter.rooms[data.gameId]) {
-            socket.handshake.session.room = null;
-            socket.handshake.session.save(() => {
-                console.error(new Error('ROOM_DOES_NOT_EXIST'));
-            });
-
-            return;
-        }
-        try {
-            let joinReport: JoinReport = await game.join(data.gameId, userId, true);
-            console.log('Found matching room to join');
-            socket.join(data.gameId);
-
-            socket.handshake.session.room = joinReport.generalGameState.gameId;
-            socket.handshake.session.save(() => {
-                io.sockets.in(data.gameId).emit('generalGameStateUpdate', joinReport.generalGameState);
-                if(joinReport.playerGameState) {
-                    io.to(socket.id).emit('playerGameStateUpdate', joinReport.playerGameState);
-                }
-                return;
-            });
-        } catch (e) {
-            console.error(e);
-            let response: ErrorResponse = {
-                errorId: 1,
-                error: e.message
-            }
-            io.to(socket.id).emit('error', response);
-        }
+        joinGame(io, socket, data.gameId, userId);
     })
 
     socket.on('findGame', async function () {
@@ -177,6 +148,17 @@ export const initHandlers = (io: Server, socket: Socket) => {
             let generalGameState: GeneralGameState = endTurn.generalGameState;
             if(generalGameState.winner) {
                 io.sockets.in(generalGameState.gameId).emit('playerWon', generalGameState.winner);
+                io.of('/').in(generalGameState.gameId).clients((error, socketIds) => {
+                    if (error) throw error;
+    
+                    socketIds.forEach((socketId) => {
+                        io.sockets.sockets[socketId].leave(generalGameState.gameId);
+                        io.sockets.sockets[socketId].handshake.session.room = null;
+                        io.sockets.sockets[socketId].handshake.session.save(() => {
+                            console.log('Room removed after game end');
+                        });
+                    });
+                  });
                 return;
             }
             for(let player in endTurn.playerGameStates) {
@@ -339,4 +321,36 @@ export const setSocket = async (userId: string, socketId: string) => {
         throw new Error('Could not set socket for user.');
     }
     
+}
+
+export const joinGame = async (io: Server, socket: Socket, gameId: string, userId: string) => {
+    if (!io.nsps['/'].adapter.rooms[gameId]) {
+        socket.handshake.session.room = null;
+        socket.handshake.session.save(() => {
+            console.error(new Error('ROOM_DOES_NOT_EXIST'));
+        });
+
+        return;
+    }
+    try {
+        let joinReport: JoinReport = await game.join(gameId, userId, true);
+        console.log('Found matching room to join');
+        socket.join(gameId);
+
+        socket.handshake.session.room = joinReport.generalGameState.gameId;
+        socket.handshake.session.save(() => {
+            io.sockets.in(gameId).emit('generalGameStateUpdate', joinReport.generalGameState);
+            if(joinReport.playerGameState) {
+                io.to(socket.id).emit('playerGameStateUpdate', joinReport.playerGameState);
+            }
+            return;
+        });
+    } catch (e) {
+        console.error(e);
+        let response: ErrorResponse = {
+            errorId: 1,
+            error: e.message
+        }
+        io.to(socket.id).emit('error', response);
+    }
 }
