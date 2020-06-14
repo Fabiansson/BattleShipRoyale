@@ -6,6 +6,7 @@ import { PORT, HOST } from './helpers/constants';
 import { redisStore } from './redis/redis';
 
 import path from 'path';
+import './i18n';
 
 const app = express();
 const server = http.createServer(app);
