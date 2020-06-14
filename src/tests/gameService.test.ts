@@ -43,8 +43,8 @@ describe('GameService Test', () => {
         };
     
         const game: any = await initGame(socketMock as unknown as Socket);
-        return expect(join(game.gameId, 'randomuserid3', true)).rejects.toEqual(new Error('USER_ALREADY_CONNECTED'))*/
-      });
+        return expect(join(game.gameId, 'randomuserid3', true)).rejects.toEqual(new Error('USER_ALREADY_CONNECTED'))
+      });*/
   
     
   })
