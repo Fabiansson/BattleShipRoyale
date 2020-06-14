@@ -1,8 +1,15 @@
 {
-    "Join": {
-        "1": "Spiel beitreten"
-    },
-    "Host": {
-        "1": "Spiel erstellen"
-    }
+    "Join": "Spiel beitreten",
+    "Host": "Spiel erstellen",
+    "Round": "Runden",
+    "Coins": "Münzen",
+    "Time": "Zeit",
+    "Endturn": "Zug Ende",
+    "Shop": "Shop öffnen",
+    "Inventory": "Inventar",
+    "Link": "Link Einladung",
+    "Settings": "Einstellungen",
+    "Players": "Spieler",
+    "Buy": "Kaufen"
+
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import './App.css';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -9,6 +9,9 @@ import io from 'socket.io-client';
 import SocketContext from './services/SocketProvider';
 import UserContext from './services/UserProvider';
 import Game from './components/Game';
+import Button from '@material-ui/core/Button';
+
+import { useTranslation } from 'react-i18next';
 
 export interface Room {
   gameId: string,
@@ -82,12 +85,14 @@ export interface Player {
 }
 
 
+
 function App() {
   const [generalGameState, setGeneralGameState] = useState<GeneralGameState | null>(null);
   const [playerGameState, setPlayerGameState] = useState<PlayerGameState | null>(null);
   const [socket, setSocket] = useState<SocketIOClient.Socket>(io({ autoConnect: false }));
   const [userId, setuUserId] = useState<string>('');
   const { enqueueSnackbar } = useSnackbar();
+  const { t, i18n } = useTranslation();
 
   const theme = createMuiTheme({
     typography: {
@@ -179,9 +184,16 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
+  const translate = (lang: string) =>{
+    i18n.changeLanguage(lang);
+  }
+
   return (
-    <Suspense fallback="loading">
     <div className="App">
+      <nav>
+    <Button id="de" variant="contained" color="primary" onClick={() => translate('de')}>Deutsch</Button>
+    <Button id="en" variant="contained" color="primary" onClick={() => translate('en')}>English</Button>
+    </nav>
       <ThemeProvider theme={theme}>
           {<UserContext.Provider value={userId}>
             <SocketContext.Provider value={socket}>
@@ -193,7 +205,6 @@ function App() {
           </UserContext.Provider>}
       </ThemeProvider>
     </div>
-    </Suspense>
   );
 }
 

@@ -1,8 +1,16 @@
 {
-    "Join": {
-        "1": "Join Game"
-    },
-    "Host": {
-        "1": "Host Game"
-    }
+    "Join": "Join Game",
+    "Host": "Host Game",
+    "Round": "Rounds",
+    "Coins": "Coins",
+    "Time": "Time remaining",
+    "Endturn": "End Turn",
+    "Shop": "open Shop",
+    "Inventory": "Inventory",
+    "Link": "Invite Link",
+    "Settings": "Settings",
+    "Players": "Players",
+    "Buy": "Buy"
+       
+  
 }

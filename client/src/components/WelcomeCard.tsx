@@ -54,16 +54,10 @@ function WelcomeCard(props: any) {
     props.socket.emit('open');   
   }
 
-  function handleClick(lang: string){
-    i18n.changeLanguage(lang);
-  }
+
 
   return (
     <div>
-    <nav>
-    <Button id="de" variant="contained" color="primary" onClick={() => handleClick('de')}>Deutsch</Button>
-    <Button id="en" variant="contained" color="primary" onClick={() => handleClick('en')}>English</Button>
-    </nav>
     <Paper elevation={0} className={classes.paper} >
  
       <Grid container spacing={3}>
@@ -71,10 +65,10 @@ function WelcomeCard(props: any) {
       <img src={logo} alt="our logo" className={classes.logostyle} />
       </Grid>
           <Grid item xs={12}>
-      <Button variant="contained" className={classes.button} onClick={joinGame}>{t('Join, 1')}</Button>
+      <Button variant="contained" className={classes.button} onClick={joinGame}>{t('Join')}</Button>
       </Grid>
       <Grid item xs={12}>
-      <Button id="join" variant="contained" color="primary" onClick={hostGame}>{t('Host, 1')}</Button>
+      <Button id="join" variant="contained" color="primary" onClick={hostGame}>{t('Host')}</Button>
       </Grid>
       <Grid item xs={12}>
       <img src={ship} alt="our ship" className={classes.shipstyle} />

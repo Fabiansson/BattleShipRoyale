@@ -16,6 +16,7 @@ import { createStyles, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { GeneralGameState } from "../App";
 import Chat from "./Chat";
+import { useTranslation } from 'react-i18next';
 
 export interface LobbyProps {
     generalGameState: GeneralGameState;
@@ -51,6 +52,7 @@ function Lobby(props: LobbyProps) {
     const [gameSettings, setGameSettings] = useState<GameSettings>(initialGameSettings);
     const userId = useContext(UserContext);
     const socket = useContext(SocketContext);
+    const { t, i18n } = useTranslation();
 
     const handlePrivateChange = () => {
         let newGameSettings: GameSettings = { ...gameSettings, privateLobby: !gameSettings.privateLobby };
@@ -81,13 +83,13 @@ function Lobby(props: LobbyProps) {
 
                 <Grid item xs={6} style={{width: '50%'}}>
                     <Paper elevation={3} style={{ padding: '3em' }}>
-                        Invite Link: <a href={'http://localhost:3000/' + props.generalGameState.gameId}>{'http://localhost:3000/' + props.generalGameState.gameId}</a>
+                    {t('Link')}: <a href={'http://localhost:3000/' + props.generalGameState.gameId}>{'http://localhost:3000/' + props.generalGameState.gameId}</a>
                         <Grid container spacing={2}>
                             {props.generalGameState.admin === userId &&
                                 <Grid item xs={6}>
-                                    <h2>Settings</h2>
+                                    <h2>{t('Settings')}</h2>
                                     <FormControl variant="outlined" >
-                                        <InputLabel id="demo-simple-select-outlined-label">Rounds</InputLabel>
+                                        <InputLabel id="demo-simple-select-outlined-label">{t('Round')}</InputLabel>
                                         <Select value={gameSettings.rounds} onChange={handleRoundOptionChange} label="Rounds">
                                             <MenuItem value={1}>1</MenuItem>
                                             <MenuItem value={5}>5</MenuItem>
@@ -103,7 +105,7 @@ function Lobby(props: LobbyProps) {
                                     />
                                 </Grid>}
                             <Grid item xs={6}>
-                                <h2>Players</h2>
+                                <h2>{t('Players')}</h2>
                                 <ul className={classes.list}>
                                     {props.generalGameState.players.map((player, i) =>
                                         <li key={i} className={classes.playerListElement}>
