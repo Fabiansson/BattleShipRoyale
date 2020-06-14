@@ -31,7 +31,9 @@ describe('GameService Test', () => {
         return expect(joinResult).not.toBeNull();
       });
 
-      it('can not join a game twice', async () => {
+      //ONLY LEFT AS EXAMPLE FOR EXCEPTION TESTING. TEST NO LONGER RELEVANT BECAUSE OF RECONNECT FUNCTIONALITY
+
+      /*it('can not join a game twice', async () => {
         const socketMock = {
             handshake: {
                 session: {
@@ -41,7 +43,7 @@ describe('GameService Test', () => {
         };
     
         const game: any = await initGame(socketMock as unknown as Socket);
-        return expect(join(game.gameId, 'randomuserid3', true)).rejects.toEqual(new Error('USER_ALREADY_CONNECTED'))
+        return expect(join(game.gameId, 'randomuserid3', true)).rejects.toEqual(new Error('USER_ALREADY_CONNECTED'))*/
       });
   
     

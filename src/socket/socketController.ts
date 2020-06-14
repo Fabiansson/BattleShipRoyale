@@ -281,9 +281,9 @@ export const initHandlers = (io: Server, socket: Socket) => {
         }
     })
 
-    socket.on('getItemList', async () => {
+    socket.on('getItemList', () => {
         console.log('Requesting itemList...');
-        const userId = socket.handshake.session.userId;
+
         try {
             io.to(socket.id).emit('recieveShopItem', itemList);
         } catch (e) {
