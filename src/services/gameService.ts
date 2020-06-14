@@ -6,8 +6,6 @@ import { getCoordinates, removeByValue } from '../helpers/helpers';
 import { checkMove, resetShotsOrMoves, checkLoot, checkAlive, fogEatsShips, getRandomItem, reviveEverything, resetHits } from './gameRuleService';
 import { createTerrainMap, placeShips, createFog, shrinkFog, createLootMap, generateShip } from './mapService';
 
-let timer = null;
-
 export function initGame(socket: Socket) {
     return new Promise<GeneralGameState>(async function (resolve, reject) {
         let randomRoomId: string = Math.random().toString(36).substring(7);
