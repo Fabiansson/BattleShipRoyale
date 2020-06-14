@@ -4,10 +4,7 @@ import expressSession from 'express-session';
 import { initSocket } from './socket'
 import { PORT, HOST } from './helpers/constants';
 import { redisStore } from './redis/redis';
-require('dotenv').config({path: '../.env'});
-
 import path from 'path'
-const fs = require('fs');
 
 
 
@@ -64,20 +61,7 @@ if (process.env.DEBUG === 'express-session') {
     });
 }
 
-console.log('REDISS ENV VARIABLE: ' + JSON.stringify(process.env));
-const home = path.join(__dirname, '../')
-
-fs.readdir(home, function (err, files) {
-    if(err){
-        return console.log('unable to scan directory: ' + err);
-    }
-    files.forEach(file => {
-        fs.readFile(file, function(err,data) {
-            console.log(file);
-            console.log(data);
-        })
-    });
-})
+console.log(JSON.stringify(process.env));
 
 server.listen(PORT, HOST, function () {
     console.log("Server running on: " + HOST + " : " + PORT);
