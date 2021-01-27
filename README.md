@@ -8,10 +8,10 @@ Whoever has the most wins in his/her pocket, wins the game.
 # Preview
 
 
-![Menu](https://i.postimg.cc/4dRVWvkJ/Screenshot-2021-01-27-React-App.png)
-![Lobby](https://i.postimg.cc/1zqD0CdC/Screenshot-2021-01-27-React-App-1.png)
-![Playground](https://i.postimg.cc/B65Dk842/Screenshot-2021-01-27-React-App-2.png)
-![Shop](https://i.postimg.cc/L87z1Kxg/Screenshot-2021-01-27-React-App-3.png)
+![Menu](https://i.postimg.cc/yY6YCLFD/Screenshot-2021-01-27-React-App.png)
+![Lobby](https://i.postimg.cc/5yg4FzM9/Screenshot-2021-01-27-React-App-1.png)
+![Playground](https://i.postimg.cc/wxQTrCsK/Screenshot-2021-01-27-React-App-2.png)
+![Shop](https://i.postimg.cc/T1f2w9FH/Screenshot-2021-01-27-React-App-3.png)
 
 
 
